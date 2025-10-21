@@ -1,12 +1,18 @@
 """Provides the main screen."""
 
 ##############################################################################
+# Textual imports.
+from textual.app import ComposeResult
+from textual.widgets import Footer, Header
+
+##############################################################################
 # Textual enhanced imports.
 from textual_enhanced.screen import EnhancedScreen
 
 ##############################################################################
 # Local imports.
 from .. import __version__
+
 
 ##############################################################################
 class Main(EnhancedScreen[None]):
@@ -16,5 +22,10 @@ class Main(EnhancedScreen[None]):
 
     COMMAND_MESSAGES = []
 
-### main.py ends here
+    def compose(self) -> ComposeResult:
+        """Compose the content of the main screen."""
+        yield Header()
+        yield Footer()
 
+
+### main.py ends here
