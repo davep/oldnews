@@ -2,8 +2,7 @@
 
 ##############################################################################
 # OldAS imports.
-from oldas import OldASError, OldASInvalidLogin
-from oldas.session import Session
+from oldas import OldASError, OldASInvalidLogin, Session
 
 ##############################################################################
 # Textual imports.

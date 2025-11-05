@@ -7,7 +7,7 @@ from functools import partial
 
 ##############################################################################
 # OldAs imports.
-from oldas.session import Session
+from oldas import Session
 
 ##############################################################################
 # Textual imports.
