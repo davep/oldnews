@@ -62,6 +62,7 @@ def get_args() -> Namespace:
     # Finally, parse the command line.
     return parser.parse_args()
 
+
 ##############################################################################
 def show_bindable_commands() -> None:
     """Show the commands that can have bindings applied."""
@@ -100,5 +101,6 @@ def main() -> None:
         show_themes()
     else:
         OldNews(args).run()
+
 
 ### __main__.py ends here
