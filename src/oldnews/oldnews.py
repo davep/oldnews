@@ -3,6 +3,11 @@
 ##############################################################################
 # Python imports.
 from argparse import Namespace
+from functools import partial
+
+##############################################################################
+# OldAs imports.
+from oldas.session import Session
 
 ##############################################################################
 # Textual imports.
@@ -16,10 +21,12 @@ from textual_enhanced.app import EnhancedApp
 # Local imports.
 from . import __version__
 from .data import (
+    get_auth_token,
     load_configuration,
+    set_auth_token,
     update_configuration,
 )
-from .screens import Main
+from .screens import Login, Main
 
 
 ##############################################################################
@@ -73,9 +80,31 @@ class OldNews(EnhancedApp[None]):
         with update_configuration() as config:
             config.theme = self.theme
 
-    def get_default_screen(self) -> Main:
-        """Get the main screen for the application."""
-        return Main(self._arguments)
+    def login_bounce(self, session: Session | None) -> None:
+        """handle the result of asking the user to log in.
+
+        Args:
+            session: The TOR session if we logged in, or `None`.
+        """
+        if session and session.auth_code:
+            set_auth_token(session.auth_code)
+            self.push_screen(Main(session))
+        else:
+            self.exit()
+
+    def on_mount(self) -> None:
+        """Display the main screen.
+
+        Note:
+            If the TOR access token isn't known, the login dialog will be
+            shown; the main screen will then only be shown once a token as
+            been acquired.
+        """
+        session = partial(Session, "OldNews")
+        if token := get_auth_token():
+            self.push_screen(Main(session(token)))
+        else:
+            self.push_screen(Login(session()), callback=self.login_bounce)
 
 
 ### oldnews.py ends here
