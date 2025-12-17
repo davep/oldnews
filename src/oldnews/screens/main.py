@@ -82,10 +82,11 @@ class Main(EnhancedScreen[None]):
 
     def on_mount(self) -> None:
         """Configure the application once the DOM is mounted."""
-        self.reload_from_tor()
+        self.load_from_tor()
 
     @work(exclusive=True)
-    async def reload_from_tor(self) -> None:
+    async def load_from_tor(self) -> None:
+        """Load the main data from TheOldReader."""
         self.folders = await Folders.load(self._session)
 
 
