@@ -6,6 +6,7 @@ from oldas import Folders, Session
 
 ##############################################################################
 # Textual imports.
+from textual import work
 from textual.app import ComposeResult
 from textual.reactive import var
 from textual.widgets import Footer, Header
@@ -79,8 +80,12 @@ class Main(EnhancedScreen[None]):
         yield Navigation(classes="panel").data_bind(Main.folders)
         yield Footer()
 
-    async def on_mount(self) -> None:
+    def on_mount(self) -> None:
         """Configure the application once the DOM is mounted."""
+        self.reload_from_tor()
+
+    @work(exclusive=True)
+    async def reload_from_tor(self) -> None:
         self.folders = await Folders.load(self._session)
 
 
