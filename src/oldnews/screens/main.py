@@ -2,7 +2,7 @@
 
 ##############################################################################
 # OldAs imports.
-from oldas import Folders, Session
+from oldas import Folders, Session, Subscriptions, Unread
 
 ##############################################################################
 # Textual imports.
@@ -66,7 +66,11 @@ class Main(EnhancedScreen[None]):
     COMMAND_MESSAGES = []
 
     folders: var[Folders] = var(Folders)
-    """The folders."""
+    """The folders that subscriptions are assigned to."""
+    subscriptions: var[Subscriptions] = var(Subscriptions)
+    """The list of subscriptions."""
+    unread: var[Unread | None] = var(None)
+    """The unread counts."""
 
     def __init__(self, session: Session) -> None:
         """Initialise the main screen."""
@@ -77,7 +81,9 @@ class Main(EnhancedScreen[None]):
     def compose(self) -> ComposeResult:
         """Compose the content of the main screen."""
         yield Header()
-        yield Navigation(classes="panel").data_bind(Main.folders)
+        yield Navigation(classes="panel").data_bind(
+            Main.folders, Main.subscriptions, Main.unread
+        )
         yield Footer()
 
     def on_mount(self) -> None:
@@ -88,6 +94,8 @@ class Main(EnhancedScreen[None]):
     async def load_from_tor(self) -> None:
         """Load the main data from TheOldReader."""
         self.folders = await Folders.load(self._session)
+        self.subscriptions = await Subscriptions.load(self._session)
+        self.unread = await Unread.load(self._session)
 
 
 ### main.py ends here
