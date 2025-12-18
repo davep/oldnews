@@ -56,9 +56,7 @@ class Main(EnhancedScreen[None]):
         }
 
         Navigation {
-            min-width: 20%;
-            max-width: 40%;
-            width: auto;
+            width: 25%;
         }
     }
     """

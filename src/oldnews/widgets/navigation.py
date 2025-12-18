@@ -5,6 +5,11 @@
 from oldas import Folder, Folders, Subscription, Subscriptions, Unread
 
 ##############################################################################
+# Rich imports.
+from rich.markup import escape
+from rich.table import Table
+
+##############################################################################
 # Textual imports.
 from textual import on
 from textual.reactive import var
@@ -19,17 +24,18 @@ from textual_enhanced.widgets import EnhancedOptionList
 class FolderView(Option):
     """The view of a folder within the navigation widget."""
 
-    def __init__(self, folder: Folder, expanded: bool) -> None:
+    def __init__(self, folder: Folder, expanded: bool, counts: Unread | None) -> None:
         """Initialise the folder view object.
 
         Args:
             folder: The folder to view.
             expanded: Should we show as being expanded?
+            counts: The unread counts.
         """
         self._folder = folder
         """The folder we're viewing."""
         super().__init__(
-            f"[bold $text-primary]{'▼' if expanded else '▶'} {folder.name}[/]",
+            f"[bold $text-primary]{'▼' if expanded else '▶'} {escape(folder.name)}[/]",
             id=folder.id,
         )
 
@@ -42,15 +48,39 @@ class FolderView(Option):
 class SubscriptionView(Option):
     """The view of a subscription within the navigation widget."""
 
-    def __init__(self, subscription: Subscription) -> None:
+    def __init__(self, subscription: Subscription, counts: Unread | None) -> None:
         """Initialise the subscription view object.
 
         Args:
             subscription: The subscription we're viewing.
+            counts: The unread counts.
         """
         self._subscription = subscription
         """The subscription we're viewing."""
-        super().__init__(f"  [$text-secondary]{subscription.title}[/]")
+        count = (
+            [
+                feed
+                for feed in counts.feeds
+                if feed.id == subscription.id and feed.unread
+            ]
+            if counts
+            else []
+        )
+        unread = str(count[0].unread) if count else ""
+        prompt = Table.grid(expand=True)
+        prompt.add_column(width=2)
+        prompt.add_column(ratio=1)
+        prompt.add_column(width=1)
+        prompt.add_column()
+        prompt.add_row(
+            "",
+            escape(subscription.title)
+            if unread
+            else f"[dim]{escape(subscription.title)}[/]",
+            "",
+            unread,
+        )
+        super().__init__(prompt)
 
     def subscription(self) -> Subscription:
         """The subscription we're viewing."""
@@ -60,13 +90,6 @@ class SubscriptionView(Option):
 ##############################################################################
 class Navigation(EnhancedOptionList):
     """The main navigation widget."""
-
-    DEFAULT_CSS = """
-    Navigation {
-        text-wrap: nowrap;
-        text-overflow: ellipsis;
-    }
-    """
 
     folders: var[Folders] = var(Folders)
     """The folders that subscriptions are assigned to."""
@@ -96,7 +119,7 @@ class Navigation(EnhancedOptionList):
             if any(
                 category.id == parent_folder for category in subscription.categories
             ):
-                self.add_option(SubscriptionView(subscription))
+                self.add_option(SubscriptionView(subscription, self.unread))
 
     def _add_folder(self, folder: Folder) -> None:
         """Add the given folder to the navigation.
@@ -104,7 +127,9 @@ class Navigation(EnhancedOptionList):
         Args:
             folder: The folder to add.
         """
-        self.add_option(FolderView(folder, expanded := folder.id in self._expanded))
+        self.add_option(
+            FolderView(folder, expanded := folder.id in self._expanded, self.unread)
+        )
         if expanded:
             self._add_subscriptions(folder.id)
 
