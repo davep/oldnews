@@ -75,8 +75,16 @@ class Navigation(EnhancedOptionList):
     unread: var[Unread | None] = var(None)
     """The unread counts."""
 
-    _expanded: var[dict[str, bool]] = var(dict)
-    """Tracks the expanded state of each folder."""
+    def __init__(self, id: str | None = None, classes: str | None = None):
+        """Initialise the navigation object.
+
+        Args:
+            id: The ID of the navigation widget in the DOM.
+            classes: The CSS classes of the navigation widget.
+        """
+        super().__init__(id=id, classes=classes)
+        self._expanded: set[str] = set()
+        """The IDs of the folders that are expanded."""
 
     def _add_subscriptions(self, parent_folder: str) -> None:
         """Add the subscriptions for a given parent folder.
@@ -96,9 +104,7 @@ class Navigation(EnhancedOptionList):
         Args:
             folder: The folder to add.
         """
-        self.add_option(
-            FolderView(folder, expanded := self._expanded.get(folder.id, False))
-        )
+        self.add_option(FolderView(folder, expanded := folder.id in self._expanded))
         if expanded:
             self._add_subscriptions(folder.id)
 
@@ -111,7 +117,6 @@ class Navigation(EnhancedOptionList):
 
     def _watch_folders(self) -> None:
         """React to the folders being updated."""
-        self._expanded = {folder.id: False for folder in self.folders}
         self._refresh_navigation()
 
     def _watch_subscriptions(self) -> None:
@@ -128,8 +133,8 @@ class Navigation(EnhancedOptionList):
         Args:
             folder: The folder to perform the action for.
         """
-        if (folder_id := folder.id) is not None:
-            self._expanded[folder_id] = not self._expanded[folder_id]
+        if folder.id is not None:
+            self._expanded ^= {folder.id}
             self._refresh_navigation()
 
     @on(EnhancedOptionList.OptionSelected)
