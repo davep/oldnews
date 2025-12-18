@@ -61,6 +61,13 @@ class SubscriptionView(Option):
 class Navigation(EnhancedOptionList):
     """The main navigation widget."""
 
+    DEFAULT_CSS = """
+    Navigation {
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+    }
+    """
+
     folders: var[Folders] = var(Folders)
     """The folders that subscriptions are assigned to."""
     subscriptions: var[Subscriptions] = var(Subscriptions)
