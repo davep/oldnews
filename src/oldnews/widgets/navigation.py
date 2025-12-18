@@ -6,11 +6,13 @@ from operator import attrgetter
 
 ##############################################################################
 # OldAs imports.
-from oldas import Counts, Folder, Folders, Subscription, Subscriptions, Unread
+from oldas import Folder, Folders, Subscription, Subscriptions, Unread
 
 ##############################################################################
 # Rich imports.
+from rich.console import Group
 from rich.markup import escape
+from rich.rule import Rule
 from rich.table import Table
 
 ##############################################################################
@@ -25,9 +27,7 @@ from textual_enhanced.widgets import EnhancedOptionList
 
 
 ##############################################################################
-def _unread(
-    item_id: str, type_getter: attrgetter[Counts], counts: Unread | None
-) -> int:
+def _unread(item_id: str, type_getter: attrgetter, counts: Unread | None) -> int:
     """Get the given unread count for a given item.
 
     Args:
@@ -58,8 +58,22 @@ class FolderView(Option):
         """
         self._folder = folder
         """The folder we're viewing."""
+        unread = _unread(folder.id, attrgetter("folders"), counts)
+        prompt = Table.grid(expand=True)
+        prompt.add_column(width=2)
+        prompt.add_column(ratio=1)
+        prompt.add_column(width=1)
+        prompt.add_column()
+        prompt.add_row(
+            "▼" if expanded else "▶",
+            f"[bold]{escape(folder.name)}[/]"
+            if unread
+            else f"[bold dim]{escape(folder.name)}[/]",
+            "",
+            str(unread) if unread else "",
+        )
         super().__init__(
-            f"[bold $text-primary]{'▼' if expanded else '▶'} {escape(folder.name)}[/]",
+            Group(rule := Rule(style="dim"), prompt, rule) if expanded else prompt,
             id=folder.id,
         )
 
