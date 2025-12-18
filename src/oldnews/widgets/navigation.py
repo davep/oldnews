@@ -91,6 +91,11 @@ class Navigation(EnhancedOptionList):
                 self.add_option(SubscriptionView(subscription))
 
     def _add_folder(self, folder: Folder) -> None:
+        """Add the given folder to the navigation.
+
+        Args:
+            folder: The folder to add.
+        """
         self.add_option(
             FolderView(folder, expanded := self._expanded.get(folder.id, False))
         )
