@@ -6,7 +6,7 @@ from oldas import Folders, Session, Subscriptions, Unread
 
 ##############################################################################
 # Textual imports.
-from textual import work
+from textual import on, work
 from textual.app import ComposeResult
 from textual.reactive import var
 from textual.widgets import Footer, Header
@@ -107,6 +107,18 @@ class Main(EnhancedScreen[None]):
         self.folders = await Folders.load(self._session)
         self.subscriptions = await Subscriptions.load(self._session)
         self.unread = await Unread.load(self._session)
+
+    @on(Navigation.FolderSelected)
+    @on(Navigation.SubscriptionSelected)
+    def _handle_navigaion_selection(
+        self, message: Navigation.FolderSelected | Navigation.SubscriptionSelected
+    ) -> None:
+        """Handle a navigation selection being made.
+
+        Args:
+            message: The message to react to.
+        """
+        self.notify("Something was selected")
 
 
 ### main.py ends here

@@ -2,6 +2,7 @@
 
 ##############################################################################
 # Python imports.
+from dataclasses import dataclass
 from operator import attrgetter
 
 ##############################################################################
@@ -18,6 +19,7 @@ from rich.table import Table
 ##############################################################################
 # Textual imports.
 from textual import on
+from textual.message import Message
 from textual.reactive import var
 from textual.widgets.option_list import Option
 
@@ -129,6 +131,20 @@ class Navigation(EnhancedOptionList):
     unread: var[Unread | None] = var(None)
     """The unread counts."""
 
+    @dataclass
+    class FolderSelected(Message):
+        """Message sent when a folder is selected."""
+
+        folder: Folder
+        """The folder that was selected."""
+
+    @dataclass
+    class SubscriptionSelected(Message):
+        """Message sent when a subscription is selected."""
+
+        subscription: Subscription
+        """The subscription that as selected."""
+
     def __init__(self, id: str | None = None, classes: str | None = None):
         """Initialise the navigation object.
 
@@ -200,8 +216,12 @@ class Navigation(EnhancedOptionList):
         Args:
             message: The message to handle.
         """
+        message.stop()
         if isinstance(message.option, FolderView):
+            self.post_message(self.FolderSelected(message.option.folder))
             self._select_folder(message.option)
+        elif isinstance(message.option, SubscriptionView):
+            self.post_message(self.SubscriptionSelected(message.option.subscription))
 
 
 ### navigation.py ends here
