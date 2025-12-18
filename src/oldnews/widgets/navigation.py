@@ -1,8 +1,12 @@
 """Provides the main navigation widget."""
 
 ##############################################################################
+# Python imports.
+from operator import attrgetter
+
+##############################################################################
 # OldAs imports.
-from oldas import Folder, Folders, Subscription, Subscriptions, Unread
+from oldas import Counts, Folder, Folders, Subscription, Subscriptions, Unread
 
 ##############################################################################
 # Rich imports.
@@ -18,6 +22,26 @@ from textual.widgets.option_list import Option
 ##############################################################################
 # Textual enhanced imports.
 from textual_enhanced.widgets import EnhancedOptionList
+
+
+##############################################################################
+def _unread(
+    item_id: str, type_getter: attrgetter[Counts], counts: Unread | None
+) -> int:
+    """Get the given unread count for a given item.
+
+    Args:
+        item_id: The ID of the item to get the count for.
+        type_getter: The getter for the type of unread item.
+        counts: The unread counts.
+
+    Returns:
+        The unread count.
+    """
+    if counts is None:
+        return 0
+    count = [item for item in type_getter(counts) if item.id == item_id and item.unread]
+    return count[0].unread if count else 0
 
 
 ##############################################################################
@@ -57,16 +81,7 @@ class SubscriptionView(Option):
         """
         self._subscription = subscription
         """The subscription we're viewing."""
-        count = (
-            [
-                feed
-                for feed in counts.feeds
-                if feed.id == subscription.id and feed.unread
-            ]
-            if counts
-            else []
-        )
-        unread = str(count[0].unread) if count else ""
+        unread = _unread(subscription.id, attrgetter("feeds"), counts)
         prompt = Table.grid(expand=True)
         prompt.add_column(width=2)
         prompt.add_column(ratio=1)
@@ -78,7 +93,7 @@ class SubscriptionView(Option):
             if unread
             else f"[dim]{escape(subscription.title)}[/]",
             "",
-            unread,
+            str(unread) if unread else "",
         )
         super().__init__(prompt)
 
