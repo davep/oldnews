@@ -58,7 +58,9 @@ class FolderView(Option):
         """
         self._folder = folder
         """The folder we're viewing."""
-        unread = _unread(folder.id, attrgetter("folders"), counts)
+        style = "bold dim"
+        if unread := _unread(folder.id, attrgetter("folders"), counts):
+            style = "bold"
         prompt = Table.grid(expand=True)
         prompt.add_column(width=2)
         prompt.add_column(ratio=1)
@@ -66,9 +68,7 @@ class FolderView(Option):
         prompt.add_column()
         prompt.add_row(
             "▼" if expanded else "▶",
-            f"[bold]{escape(folder.name)}[/]"
-            if unread
-            else f"[bold dim]{escape(folder.name)}[/]",
+            f"[{style}]{escape(folder.name)}[/]",
             "",
             str(unread) if unread else "",
         )
@@ -95,7 +95,9 @@ class SubscriptionView(Option):
         """
         self._subscription = subscription
         """The subscription we're viewing."""
-        unread = _unread(subscription.id, attrgetter("feeds"), counts)
+        style = "dim"
+        if unread := _unread(subscription.id, attrgetter("feeds"), counts):
+            style = f"not {style}"
         prompt = Table.grid(expand=True)
         prompt.add_column(width=2)
         prompt.add_column(ratio=1)
@@ -103,9 +105,7 @@ class SubscriptionView(Option):
         prompt.add_column()
         prompt.add_row(
             "",
-            escape(subscription.title)
-            if unread
-            else f"[dim]{escape(subscription.title)}[/]",
+            f"[{style}]{escape(subscription.title)}[/]",
             "",
             str(unread) if unread else "",
         )
