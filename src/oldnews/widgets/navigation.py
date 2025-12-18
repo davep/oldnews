@@ -77,6 +77,7 @@ class FolderView(Option):
             id=folder.id,
         )
 
+    @property
     def folder(self) -> Folder:
         """The folder we're viewing."""
         return self._folder
@@ -111,6 +112,7 @@ class SubscriptionView(Option):
         )
         super().__init__(prompt)
 
+    @property
     def subscription(self) -> Subscription:
         """The subscription we're viewing."""
         return self._subscription
