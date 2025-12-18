@@ -27,6 +27,10 @@ from textual.widgets.option_list import Option
 # Textual enhanced imports.
 from textual_enhanced.widgets import EnhancedOptionList
 
+##############################################################################
+# Local imports.
+from ..data import get_navigation_state, save_navigation_state
+
 
 ##############################################################################
 def _unread(item_id: str, type_getter: attrgetter, counts: Unread | None) -> int:
@@ -153,7 +157,7 @@ class Navigation(EnhancedOptionList):
             classes: The CSS classes of the navigation widget.
         """
         super().__init__(id=id, classes=classes)
-        self._expanded: set[str] = set()
+        self._expanded = get_navigation_state()
         """The IDs of the folders that are expanded."""
 
     def _add_subscriptions(self, parent_folder: str) -> None:
@@ -207,6 +211,7 @@ class Navigation(EnhancedOptionList):
         """
         if view.folder.id is not None:
             self._expanded ^= {view.folder.id}
+            save_navigation_state(self._expanded)
             self._refresh_navigation()
 
     @on(EnhancedOptionList.OptionSelected)

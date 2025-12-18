@@ -9,14 +9,17 @@ from .config import (
     save_configuration,
     update_configuration,
 )
+from .navigation_state import get_navigation_state, save_navigation_state
 
 ##############################################################################
 # Exports.
 __all__ = [
     "Configuration",
     "get_auth_token",
+    "get_navigation_state",
     "load_configuration",
     "save_configuration",
+    "save_navigation_state",
     "set_auth_token",
     "update_configuration",
 ]
