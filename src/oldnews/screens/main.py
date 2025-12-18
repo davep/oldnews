@@ -13,11 +13,13 @@ from textual.widgets import Footer, Header
 
 ##############################################################################
 # Textual enhanced imports.
+from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
 from textual_enhanced.screen import EnhancedScreen
 
 ##############################################################################
 # Local imports.
 from .. import __version__
+from ..providers import MainCommands
 from ..widgets import Navigation
 
 
@@ -61,7 +63,18 @@ class Main(EnhancedScreen[None]):
     }
     """
 
-    COMMAND_MESSAGES = []
+    COMMAND_MESSAGES = [
+        # Keep these together as they're bound to function keys and destined
+        # for the footer.
+        Help,
+        Quit,
+        # Everything else.
+        ChangeTheme,
+    ]
+
+    BINDINGS = Command.bindings(*COMMAND_MESSAGES)
+
+    COMMANDS = {MainCommands}
 
     folders: var[Folders] = var(Folders)
     """The folders that subscriptions are assigned to."""
