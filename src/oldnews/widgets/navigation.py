@@ -91,7 +91,9 @@ class Navigation(EnhancedOptionList):
                 self.add_option(SubscriptionView(subscription))
 
     def _add_folder(self, folder: Folder) -> None:
-        self.add_option(FolderView(folder, expanded := self._expanded[folder.id]))
+        self.add_option(
+            FolderView(folder, expanded := self._expanded.get(folder.id, False))
+        )
         if expanded:
             self._add_subscriptions(folder.id)
 
@@ -102,9 +104,17 @@ class Navigation(EnhancedOptionList):
             for folder in self.folders:
                 self._add_folder(folder)
 
-    def _watch_unread(self) -> None:
-        """React to the unread data changed."""
+    def _watch_folders(self) -> None:
+        """React to the folders being updated."""
         self._expanded = {folder.id: False for folder in self.folders}
+        self._refresh_navigation()
+
+    def _watch_subscriptions(self) -> None:
+        """React to the subscriptions being updated."""
+        self._refresh_navigation()
+
+    def _watch_unread(self) -> None:
+        """React to the unread data being updated."""
         self._refresh_navigation()
 
     def _select_folder(self, folder: FolderView) -> None:
