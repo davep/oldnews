@@ -183,14 +183,14 @@ class Navigation(EnhancedOptionList):
         """React to the unread data being updated."""
         self._refresh_navigation()
 
-    def _select_folder(self, folder: FolderView) -> None:
+    def _select_folder(self, view: FolderView) -> None:
         """Perform the selection action for the given folder.
 
         Args:
-            folder: The folder to perform the action for.
+            view: The folder we're viewing.
         """
-        if folder.id is not None:
-            self._expanded ^= {folder.id}
+        if view.folder.id is not None:
+            self._expanded ^= {view.folder.id}
             self._refresh_navigation()
 
     @on(EnhancedOptionList.OptionSelected)
