@@ -2,15 +2,53 @@
 
 ##############################################################################
 # OldAs imports.
-from oldas import Articles
+from oldas import Article, Articles
+
+##############################################################################
+# Rich imports.
+from rich.console import Group
+from rich.markup import escape
+from rich.table import Table
 
 ##############################################################################
 # Textual imports.
 from textual.reactive import var
+from textual.widgets.option_list import Option
 
 ##############################################################################
 # Textual enhanced imports.
 from textual_enhanced.widgets import EnhancedOptionList
+
+
+##############################################################################
+class ArticleView(Option):
+    """The view of an article in the article list."""
+
+    def __init__(self, article: Article) -> None:
+        """Initialise the article object.
+
+        Args:
+            article: The article to view.
+        """
+        self._article = article
+        """The article to view."""
+        provenance = (
+            f"{article.origin.title}, {article.author}"
+            if article.author and article.author != article.origin.title
+            else article.origin.title
+        )
+        details = Table.grid(expand=True)
+        details.add_column(ratio=1)
+        details.add_column(width=20, justify="right")
+        details.add_row(
+            f"[dim italic]{escape(provenance)}[/]", f"[dim]{article.published}[/]"
+        )
+        super().__init__(Group(escape(self._article.title), details))
+
+    @property
+    def article(self) -> Article:
+        """The article being viewed."""
+        return self._article
 
 
 ##############################################################################
@@ -22,7 +60,9 @@ class ArticleList(EnhancedOptionList):
 
     def _watch_articles(self) -> None:
         """React to the article list being changed."""
-        self.clear_options().add_options([article.title for article in self.articles])
+        self.clear_options().add_options(
+            [ArticleView(article) for article in self.articles]
+        )
         if self.option_count:
             self.highlighted = 0
 
