@@ -2,7 +2,15 @@
 
 ##############################################################################
 # OldAs imports.
-from oldas import Folders, Session, Subscriptions, Unread
+from oldas import (
+    Articles,
+    Folder,
+    Folders,
+    Session,
+    Subscription,
+    Subscriptions,
+    Unread,
+)
 
 ##############################################################################
 # Textual imports.
@@ -20,7 +28,7 @@ from textual_enhanced.screen import EnhancedScreen
 # Local imports.
 from .. import __version__
 from ..providers import MainCommands
-from ..widgets import Navigation
+from ..widgets import ArticleList, Navigation
 
 
 ##############################################################################
@@ -82,6 +90,8 @@ class Main(EnhancedScreen[None]):
     """The list of subscriptions."""
     unread: var[Unread | None] = var(None)
     """The unread counts."""
+    articles: var[Articles] = var(Articles)
+    """The currently-viewed list of articles."""
 
     def __init__(self, session: Session) -> None:
         """Initialise the main screen."""
@@ -95,6 +105,7 @@ class Main(EnhancedScreen[None]):
         yield Navigation(classes="panel").data_bind(
             Main.folders, Main.subscriptions, Main.unread
         )
+        yield ArticleList(classes="panel").data_bind(Main.articles)
         yield Footer()
 
     def on_mount(self) -> None:
@@ -108,17 +119,27 @@ class Main(EnhancedScreen[None]):
         self.subscriptions = await Subscriptions.load(self._session)
         self.unread = await Unread.load(self._session)
 
-    @on(Navigation.FolderSelected)
-    @on(Navigation.SubscriptionSelected)
-    def _handle_navigaion_selection(
-        self, message: Navigation.FolderSelected | Navigation.SubscriptionSelected
+    @work(exclusive=True)
+    async def _get_related_unread_articles(
+        self, category: Folder | Subscription
     ) -> None:
+        """Get the unread articles related to the given category.
+
+        Args:
+            category: The category to get the unread articles for.
+        """
+        self.query_one(ArticleList).loading = True
+        self.articles = await Articles.load_unread(self._session, category)
+        self.query_one(ArticleList).loading = False
+
+    @on(Navigation.CategorySelected)
+    def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:
         """Handle a navigation selection being made.
 
         Args:
             message: The message to react to.
         """
-        self.notify("Something was selected")
+        self._get_related_unread_articles(message.category)
 
 
 ### main.py ends here

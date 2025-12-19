@@ -136,18 +136,11 @@ class Navigation(EnhancedOptionList):
     """The unread counts."""
 
     @dataclass
-    class FolderSelected(Message):
-        """Message sent when a folder is selected."""
+    class CategorySelected(Message):
+        """Message sent when some sort of category is selected."""
 
-        folder: Folder
-        """The folder that was selected."""
-
-    @dataclass
-    class SubscriptionSelected(Message):
-        """Message sent when a subscription is selected."""
-
-        subscription: Subscription
-        """The subscription that as selected."""
+        category: Folder | Subscription
+        """The category that was selected."""
 
     def __init__(self, id: str | None = None, classes: str | None = None):
         """Initialise the navigation object.
@@ -223,10 +216,10 @@ class Navigation(EnhancedOptionList):
         """
         message.stop()
         if isinstance(message.option, FolderView):
-            self.post_message(self.FolderSelected(message.option.folder))
+            self.post_message(self.CategorySelected(message.option.folder))
             self._select_folder(message.option)
         elif isinstance(message.option, SubscriptionView):
-            self.post_message(self.SubscriptionSelected(message.option.subscription))
+            self.post_message(self.CategorySelected(message.option.subscription))
 
 
 ### navigation.py ends here
