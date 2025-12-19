@@ -32,18 +32,23 @@ class ArticleView(Option):
         """
         self._article = article
         """The article to view."""
+        header = Table.grid(expand=True)
+        header.add_column(width=2)
+        header.add_column(ratio=1)
+        header.add_row("!" if article.is_unread else "", escape(article.title))
         provenance = (
             f"{article.origin.title}, {article.author}"
             if article.author and article.author != article.origin.title
             else article.origin.title
         )
         details = Table.grid(expand=True)
+        details.add_column(width=2)
         details.add_column(ratio=1)
         details.add_column(width=20, justify="right")
         details.add_row(
-            f"[dim italic]{escape(provenance)}[/]", f"[dim]{article.published}[/]"
+            "", f"[dim italic]{escape(provenance)}[/]", f"[dim]{article.published}[/]"
         )
-        super().__init__(Group(escape(self._article.title), details))
+        super().__init__(Group(header, details))
 
     @property
     def article(self) -> Article:
