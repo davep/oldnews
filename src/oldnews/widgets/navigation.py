@@ -128,6 +128,8 @@ class SubscriptionView(Option):
 class Navigation(EnhancedOptionList):
     """The main navigation widget."""
 
+    BINDINGS = [("ctrl+enter", "toggle_folder")]
+
     folders: var[Folders] = var(Folders)
     """The folders that subscriptions are assigned to."""
     subscriptions: var[Subscriptions] = var(Subscriptions)
@@ -196,14 +198,17 @@ class Navigation(EnhancedOptionList):
         """React to the unread data being updated."""
         self._refresh_navigation()
 
-    def _select_folder(self, view: FolderView) -> None:
-        """Perform the selection action for the given folder.
-
-        Args:
-            view: The folder we're viewing.
-        """
-        if view.folder.id is not None:
-            self._expanded ^= {view.folder.id}
+    def _action_toggle_folder(self) -> None:
+        """Action that toggles the expanded state of a folder."""
+        if self.highlighted is None:
+            return
+        if not isinstance(
+            option := self.get_option_at_index(self.highlighted), FolderView
+        ):
+            self.notify("Only folders can be collapsed/expanded", severity="warning")
+            return
+        if option.folder.id is not None:
+            self._expanded ^= {option.folder.id}
             save_navigation_state(self._expanded)
             self._refresh_navigation()
 
@@ -217,7 +222,6 @@ class Navigation(EnhancedOptionList):
         message.stop()
         if isinstance(message.option, FolderView):
             self.post_message(self.CategorySelected(message.option.folder))
-            self._select_folder(message.option)
         elif isinstance(message.option, SubscriptionView):
             self.post_message(self.CategorySelected(message.option.subscription))
 
