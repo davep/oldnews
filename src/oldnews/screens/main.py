@@ -128,9 +128,8 @@ class Main(EnhancedScreen[None]):
         Args:
             category: The category to get the unread articles for.
         """
-        self.query_one(ArticleList).loading = True
-        self.articles = await Articles.load_unread(self._session, category)
-        self.query_one(ArticleList).loading = False
+        with self.busy_looking(ArticleList):
+            self.articles = await Articles.load_unread(self._session, category)
 
     @on(Navigation.CategorySelected)
     def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:
