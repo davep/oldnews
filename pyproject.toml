@@ -6,8 +6,9 @@ readme = "README.md"
 authors = [
     { name = "Dave Pearson", email = "davep@davep.org" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
+    "sqlalchemy>=2.0.45",
     "textual>=6.3.0",
     "textual-enhanced>=1.2.0",
     "xdg-base-dirs>=6.0.2",
