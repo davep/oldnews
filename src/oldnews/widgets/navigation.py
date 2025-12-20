@@ -1,6 +1,10 @@
 """Provides the main navigation widget."""
 
 ##############################################################################
+# Backward compatibility.
+from __future__ import annotations
+
+##############################################################################
 # Python imports.
 from dataclasses import dataclass
 from operator import attrgetter
