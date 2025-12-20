@@ -24,7 +24,7 @@ class ArticleContent(Vertical):
     ArticleContent {
         display: none;
 
-        &.has-article {
+        &.--has-article {
             display: block;
         }
     }
@@ -40,7 +40,7 @@ class ArticleContent(Vertical):
 
     def _watch_article(self) -> None:
         """React to the article being updated."""
-        self.set_class(self.article is not None, "has-article")
+        self.set_class(self.article is not None, "--has-article")
         if self.article is not None:
             self.query_one(Markdown).update(convert(self.article.summary.content))
 
