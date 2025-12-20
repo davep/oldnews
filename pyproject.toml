@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "textual>=6.3.0",
-    "textual-enhanced>=1.0.0",
+    "textual-enhanced>=1.2.0",
     "xdg-base-dirs>=6.0.2",
 ]
 
