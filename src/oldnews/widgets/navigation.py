@@ -7,7 +7,7 @@ from operator import attrgetter
 
 ##############################################################################
 # OldAs imports.
-from oldas import Folder, Folders, Subscription, Subscriptions, Unread
+from oldas import Count, Folder, Folders, Subscription, Subscriptions, Unread
 
 ##############################################################################
 # Rich imports.
@@ -33,7 +33,9 @@ from ..data import get_navigation_state, save_navigation_state
 
 
 ##############################################################################
-def _unread(item_id: str, type_getter: attrgetter, counts: Unread | None) -> int:
+def _unread(
+    item_id: str, type_getter: attrgetter[list[Count]], counts: Unread | None
+) -> int:
     """Get the given unread count for a given item.
 
     Args:
