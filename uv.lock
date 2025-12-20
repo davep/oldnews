@@ -311,6 +311,17 @@ wheels = [
 ]
 
 [[package]]
+name = "html-to-markdown"
+version = "2.15.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1a/dd/49b12a67c3fee06dad03df72466530e357685afe3cf57fd458af1aa2bd83/html_to_markdown-2.15.0.tar.gz", hash = "sha256:eda8bec6eb60eccdb25869632768181376d4bf6fbd5e1a7d2bd6c7465e292024", size = 165803, upload-time = "2025-12-19T09:16:41.565Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5c/65/1fad855b17cdff6b9e3c600ceaba91a99e55ff8efab0daeff5616a8baeb8/html_to_markdown-2.15.0-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:940c89338ab77f52dded236d48503555b307f9540d082c6ea61914479de3d99e", size = 7322681, upload-time = "2025-12-19T09:16:35.484Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/dd/998ed378f355a2f3c9098f2851e153600dadce771a15a71810602a7f5972/html_to_markdown-2.15.0-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:1b22e987b229c2bd059d599a7fbf44b83029a2ec08b5b1b32e7381d4e242fa36", size = 8054767, upload-time = "2025-12-19T09:16:37.689Z" },
+    { url = "https://files.pythonhosted.org/packages/c1/28/14459433c42737078cc246e587b31898f819a97bc8832ff95ae545213479/html_to_markdown-2.15.0-cp310-abi3-win_amd64.whl", hash = "sha256:31df269d6ede461926970ff6ab910e8479000088d0deba182e54e4788cfb4094", size = 8096277, upload-time = "2025-12-19T09:16:39.912Z" },
+]
+
+[[package]]
 name = "identify"
 version = "2.6.15"
 source = { registry = "https://pypi.org/simple" }
@@ -698,6 +709,7 @@ name = "oldnews"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
+    { name = "html-to-markdown" },
     { name = "textual" },
     { name = "textual-enhanced" },
     { name = "xdg-base-dirs" },
@@ -714,6 +726,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "html-to-markdown", specifier = ">=2.15.0" },
     { name = "textual", specifier = ">=6.3.0" },
     { name = "textual-enhanced", specifier = ">=1.2.0" },
     { name = "xdg-base-dirs", specifier = ">=6.0.2" },
