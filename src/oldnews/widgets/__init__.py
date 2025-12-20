@@ -2,11 +2,12 @@
 
 ##############################################################################
 # Local imports.
+from .article_content import ArticleContent
 from .article_list import ArticleList
 from .navigation import Navigation
 
 ##############################################################################
 # Exports.
-__all__ = ["ArticleList", "Navigation"]
+__all__ = ["ArticleContent", "ArticleList", "Navigation"]
 
 ### __init__.py ends here

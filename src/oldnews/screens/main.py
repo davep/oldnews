@@ -3,6 +3,7 @@
 ##############################################################################
 # OldAs imports.
 from oldas import (
+    Article,
     Articles,
     Folder,
     Folders,
@@ -16,6 +17,7 @@ from oldas import (
 # Textual imports.
 from textual import on, work
 from textual.app import ComposeResult
+from textual.containers import Vertical
 from textual.reactive import var
 from textual.widgets import Footer, Header
 
@@ -28,7 +30,7 @@ from textual_enhanced.screen import EnhancedScreen
 # Local imports.
 from .. import __version__
 from ..providers import MainCommands
-from ..widgets import ArticleList, Navigation
+from ..widgets import ArticleContent, ArticleList, Navigation
 
 
 ##############################################################################
@@ -43,7 +45,6 @@ class Main(EnhancedScreen[None]):
         hatch: right $surface;
 
         .panel {
-            height: 1fr;
             padding-right: 0;
             border: none;
             border-left: round $border 50%;
@@ -66,7 +67,16 @@ class Main(EnhancedScreen[None]):
         }
 
         Navigation {
+            height: 1fr;
             width: 25%;
+        }
+
+        ArticleList {
+            height: 1fr;
+        }
+
+        ArticleContent {
+            height: 2fr;
         }
     }
     """
@@ -92,6 +102,8 @@ class Main(EnhancedScreen[None]):
     """The unread counts."""
     articles: var[Articles] = var(Articles)
     """The currently-viewed list of articles."""
+    article: var[Article | None] = var(None)
+    """The currently-viewed article."""
 
     def __init__(self, session: Session) -> None:
         """Initialise the main screen."""
@@ -105,7 +117,9 @@ class Main(EnhancedScreen[None]):
         yield Navigation(classes="panel").data_bind(
             Main.folders, Main.subscriptions, Main.unread
         )
-        yield ArticleList(classes="panel").data_bind(Main.articles)
+        with Vertical():
+            yield ArticleList(classes="panel").data_bind(Main.articles)
+            yield ArticleContent(classes="panel").data_bind(Main.article)
         yield Footer()
 
     def on_mount(self) -> None:
@@ -138,7 +152,17 @@ class Main(EnhancedScreen[None]):
         Args:
             message: The message to react to.
         """
+        self.article = None
         self._get_related_unread_articles(message.category)
+
+    @on(ArticleList.ViewArticle)
+    def _view_article(self, message: ArticleList.ViewArticle) -> None:
+        """Handle a request to view an article.
+
+        Args:
+            message: The message requesting an article be viewed.
+        """
+        self.article = message.article
 
 
 ### main.py ends here

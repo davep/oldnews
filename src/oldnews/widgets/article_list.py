@@ -1,6 +1,10 @@
 """Widget to show a list of articles."""
 
 ##############################################################################
+# Python imports.
+from dataclasses import dataclass
+
+##############################################################################
 # OldAs imports.
 from oldas import Article, Articles
 
@@ -12,6 +16,8 @@ from rich.table import Table
 
 ##############################################################################
 # Textual imports.
+from textual import on
+from textual.message import Message
 from textual.reactive import var
 from textual.widgets.option_list import Option
 
@@ -63,6 +69,11 @@ class ArticleList(EnhancedOptionList):
     articles: var[Articles] = var(Articles)
     """The list of articles to show."""
 
+    @dataclass
+    class ViewArticle(Message):
+        article: Article
+        """The article to view."""
+
     def _watch_articles(self) -> None:
         """React to the article list being changed."""
         self.clear_options().add_options(
@@ -70,6 +81,16 @@ class ArticleList(EnhancedOptionList):
         )
         if self.option_count:
             self.highlighted = 0
+
+    @on(EnhancedOptionList.OptionSelected)
+    def _select_article(self, message: EnhancedOptionList.OptionSelected) -> None:
+        """Select an article to view.
+
+        Args:
+            message: The message to handle.
+        """
+        assert isinstance(message.option, ArticleView)
+        self.post_message(self.ViewArticle(message.option.article))
 
 
 ### article_list.py ends here
