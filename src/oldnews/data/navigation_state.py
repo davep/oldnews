@@ -1,23 +1,16 @@
 """Code relating to persisting the state of navigation."""
 
 ##############################################################################
-# Python imports.
-from json import JSONDecodeError, dumps, loads
-from pathlib import Path
-
-##############################################################################
-# Local imports.
-from .locations import data_dir
+# TypeDAL imports.
+from typedal import TypeDAL, TypedField, TypedTable
 
 
 ##############################################################################
-def navigation_state_file() -> Path:
-    """The location of the navigation state file.
+class NavigationState(TypedTable):
+    """Table that holds state of the navigation table."""
 
-    Returns:
-        The path to the navigation state file.
-    """
-    return data_dir() / "navigation-state.json"
+    expanded_folder_id: TypedField[str]
+    """The ID of a folder that is in the expanded state."""
 
 
 ##############################################################################
@@ -27,25 +20,22 @@ def get_navigation_state() -> set[str]:
     Returns:
         The saved navigation state.
     """
-    try:
-        return set(loads(navigation_state_file().read_text(encoding="utf-8")))
-    except (JSONDecodeError, OSError):
-        return set()
+    return set(
+        row.expanded_folder_id
+        for row in NavigationState.select(NavigationState.expanded_folder_id)
+    )
 
 
 ##############################################################################
-def save_navigation_state(state: set[str]) -> None:
+def save_navigation_state(db: TypeDAL, state: set[str]) -> None:
     """Save the navigation state.
 
     Args:
         state: The state to save.
     """
-    try:
-        navigation_state_file().write_text(
-            dumps(list(state), indent=4), encoding="utf-8"
-        )
-    except OSError:
-        pass
+    NavigationState.truncate()
+    NavigationState.bulk_insert([{"expanded_folder_id": folder} for folder in state])
+    db.commit()
 
 
 ### navigation_state.py ends here

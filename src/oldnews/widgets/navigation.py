@@ -22,7 +22,7 @@ from rich.table import Table
 
 ##############################################################################
 # Textual imports.
-from textual import on
+from textual import on, work
 from textual.message import Message
 from textual.reactive import var
 from textual.widgets.option_list import Option
@@ -30,6 +30,10 @@ from textual.widgets.option_list import Option
 ##############################################################################
 # Textual enhanced imports.
 from textual_enhanced.widgets import EnhancedOptionList
+
+##############################################################################
+# TypeDAL imports.
+from typedal import TypeDAL
 
 ##############################################################################
 # Local imports.
@@ -150,14 +154,17 @@ class Navigation(EnhancedOptionList):
         category: Folder | Subscription
         """The category that was selected."""
 
-    def __init__(self, id: str | None = None, classes: str | None = None):
+    def __init__(self, db: TypeDAL, id: str | None = None, classes: str | None = None):
         """Initialise the navigation object.
 
         Args:
+            db: The database/
             id: The ID of the navigation widget in the DOM.
             classes: The CSS classes of the navigation widget.
         """
         super().__init__(id=id, classes=classes)
+        self._db = db
+        """The database."""
         self._expanded = get_navigation_state()
         """The IDs of the folders that are expanded."""
 
@@ -215,8 +222,13 @@ class Navigation(EnhancedOptionList):
             return
         if option.folder.id is not None:
             self._expanded ^= {option.folder.id}
-            save_navigation_state(self._expanded)
+            self._save_state()
             self._refresh_navigation()
+
+    @work(thread=True)
+    def _save_state(self) -> None:
+        """Save the folder expanded/collapsed state."""
+        save_navigation_state(self._db, self._expanded)
 
     @on(EnhancedOptionList.OptionSelected)
     def _handle_selection(self, message: EnhancedOptionList.OptionSelected) -> None:

@@ -9,6 +9,7 @@ from .config import (
     save_configuration,
     update_configuration,
 )
+from .db import get_database
 from .navigation_state import get_navigation_state, save_navigation_state
 
 ##############################################################################
@@ -16,6 +17,7 @@ from .navigation_state import get_navigation_state, save_navigation_state
 __all__ = [
     "Configuration",
     "get_auth_token",
+    "get_database",
     "get_navigation_state",
     "load_configuration",
     "save_configuration",
