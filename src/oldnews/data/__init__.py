@@ -10,6 +10,7 @@ from .config import (
     update_configuration,
 )
 from .db import initialise_database
+from .local_folders import get_local_folders, save_local_folders
 from .navigation_state import get_navigation_state, save_navigation_state
 
 ##############################################################################
@@ -24,6 +25,8 @@ __all__ = [
     "save_navigation_state",
     "set_auth_token",
     "update_configuration",
+    "save_local_folders",
+    "get_local_folders",
 ]
 
 ### __init__.py ends here

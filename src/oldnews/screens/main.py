@@ -1,6 +1,10 @@
 """Provides the main screen."""
 
 ##############################################################################
+# Python imports.
+from dataclasses import dataclass
+
+##############################################################################
 # OldAs imports.
 from oldas import (
     Article,
@@ -18,6 +22,7 @@ from oldas import (
 from textual import on, work
 from textual.app import ComposeResult
 from textual.containers import Vertical
+from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Footer, Header
 
@@ -26,9 +31,12 @@ from textual.widgets import Footer, Header
 from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
 from textual_enhanced.screen import EnhancedScreen
 
+from oldnews.data.local_folders import get_local_folders
+
 ##############################################################################
 # Local imports.
 from .. import __version__
+from ..data import save_local_folders
 from ..providers import MainCommands
 from ..widgets import ArticleContent, ArticleList, Navigation
 
@@ -105,6 +113,16 @@ class Main(EnhancedScreen[None]):
     article: var[Article | None] = var(None)
     """The currently-viewed article."""
 
+    @dataclass
+    class NewFolders(Message):
+        """Message sent when new folders are acquired."""
+
+        folders: Folders
+        """The new folders."""
+
+    class ReloadFromToR(Message):
+        """Message that requests that we reload from TheOldReader."""
+
     def __init__(self, session: Session) -> None:
         """Initialise the main screen."""
         super().__init__()
@@ -124,12 +142,35 @@ class Main(EnhancedScreen[None]):
 
     def on_mount(self) -> None:
         """Configure the application once the DOM is mounted."""
-        self.load_from_tor()
+        self._load_locally()
 
+    @on(NewFolders)
+    def _new_folders(self, message: NewFolders) -> None:
+        """Handle new folders being found.
+
+        Args:
+            message: The message with the new folders.
+        """
+        self.folders = message.folders
+
+    @work(thread=True, exclusive=True)
+    def _load_locally(self) -> None:
+        """Load up any locally-held data."""
+        if folders := get_local_folders():
+            self.post_message(self.NewFolders(folders))
+        # Now that we've loaded everything that we have locally, kick off a
+        # refresh from TheOldReader.
+        #
+        # TODO: I might want to delay this a moment, or not. Have a think.
+        self.post_message(self.ReloadFromToR())
+
+    @on(ReloadFromToR)
     @work(exclusive=True)
     async def load_from_tor(self) -> None:
         """Load the main data from TheOldReader."""
-        self.folders = await Folders.load(self._session)
+        self.post_message(
+            self.NewFolders(save_local_folders(await Folders.load(self._session)))
+        )
         self.subscriptions = await Subscriptions.load(self._session)
         self.unread = await Unread.load(self._session)
 

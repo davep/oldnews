@@ -7,9 +7,11 @@ from pathlib import Path
 ##############################################################################
 # TypeDAL imports.
 from typedal import TypeDAL
+from typedal.config import TypeDALConfig
 
 ##############################################################################
 # Local imports.
+from .local_folders import LocalFolders
 from .locations import data_dir
 from .navigation_state import NavigationState
 
@@ -31,7 +33,14 @@ def initialise_database() -> TypeDAL:
     Returns:
         The database.
     """
-    dal = TypeDAL(f"sqlite://{db_file()}", folder=data_dir())
+    # Note the passing of an empty TypeDALConfig. Not doing this seems to
+    # result in a:
+    #
+    #    Could not load typedal config toml: 'typedal'
+    #
+    # warning to stdout, otherwise.
+    dal = TypeDAL(f"sqlite://{db_file()}", folder=data_dir(), config=TypeDALConfig())
+    dal.define(LocalFolders)
     dal.define(NavigationState)
     return dal
 
