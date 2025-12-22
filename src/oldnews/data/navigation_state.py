@@ -2,7 +2,7 @@
 
 ##############################################################################
 # TypeDAL imports.
-from typedal import TypeDAL, TypedField, TypedTable
+from typedal import TypedField, TypedTable
 
 
 ##############################################################################

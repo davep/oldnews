@@ -9,6 +9,7 @@ from operator import attrgetter
 ##############################################################################
 # Local imports.
 from . import __doc__, __version__
+from .data import initialise_database
 from .oldnews import OldNews
 
 
@@ -100,6 +101,7 @@ def main() -> None:
     elif args.theme == "?":
         show_themes()
     else:
+        initialise_database()
         OldNews(args).run()
 
 

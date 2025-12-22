@@ -29,7 +29,6 @@ from textual_enhanced.screen import EnhancedScreen
 ##############################################################################
 # Local imports.
 from .. import __version__
-from ..data import get_database
 from ..providers import MainCommands
 from ..widgets import ArticleContent, ArticleList, Navigation
 
@@ -111,13 +110,11 @@ class Main(EnhancedScreen[None]):
         super().__init__()
         self._session = session
         """The TOR session."""
-        self._db = get_database()
-        """The database."""
 
     def compose(self) -> ComposeResult:
         """Compose the content of the main screen."""
         yield Header()
-        yield Navigation(self._db, classes="panel").data_bind(
+        yield Navigation(classes="panel").data_bind(
             Main.folders, Main.subscriptions, Main.unread
         )
         with Vertical():

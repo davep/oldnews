@@ -25,7 +25,7 @@ def db_file() -> Path:
 
 
 ##############################################################################
-def get_database() -> TypeDAL:
+def initialise_database() -> TypeDAL:
     """Create the database.
 
     Returns:

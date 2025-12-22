@@ -32,10 +32,6 @@ from textual.widgets.option_list import Option
 from textual_enhanced.widgets import EnhancedOptionList
 
 ##############################################################################
-# TypeDAL imports.
-from typedal import TypeDAL
-
-##############################################################################
 # Local imports.
 from ..data import get_navigation_state, save_navigation_state
 
@@ -154,17 +150,14 @@ class Navigation(EnhancedOptionList):
         category: Folder | Subscription
         """The category that was selected."""
 
-    def __init__(self, db: TypeDAL, id: str | None = None, classes: str | None = None):
+    def __init__(self, id: str | None = None, classes: str | None = None):
         """Initialise the navigation object.
 
         Args:
-            db: The database/
             id: The ID of the navigation widget in the DOM.
             classes: The CSS classes of the navigation widget.
         """
         super().__init__(id=id, classes=classes)
-        self._db = db
-        """The database."""
         self._expanded = get_navigation_state()
         """The IDs of the folders that are expanded."""
 
