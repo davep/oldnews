@@ -228,7 +228,7 @@ class Navigation(EnhancedOptionList):
     @work(thread=True)
     def _save_state(self) -> None:
         """Save the folder expanded/collapsed state."""
-        save_navigation_state(self._db, self._expanded)
+        save_navigation_state(self._expanded)
 
     @on(EnhancedOptionList.OptionSelected)
     def _handle_selection(self, message: EnhancedOptionList.OptionSelected) -> None:

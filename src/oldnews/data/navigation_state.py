@@ -27,15 +27,16 @@ def get_navigation_state() -> set[str]:
 
 
 ##############################################################################
-def save_navigation_state(db: TypeDAL, state: set[str]) -> None:
+def save_navigation_state(state: set[str]) -> None:
     """Save the navigation state.
 
     Args:
         state: The state to save.
     """
+    assert NavigationState._db is not None
     NavigationState.truncate()
     NavigationState.bulk_insert([{"expanded_folder_id": folder} for folder in state])
-    db.commit()
+    NavigationState._db.commit()
 
 
 ### navigation_state.py ends here
