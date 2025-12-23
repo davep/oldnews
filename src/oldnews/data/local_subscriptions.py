@@ -6,7 +6,8 @@ from datetime import datetime
 
 ##############################################################################
 # OldAS subscriptions.
-from oldas import Subscriptions
+from oldas import Subscription, Subscriptions
+from oldas.subscriptions import Categories, Category
 
 ##############################################################################
 # TypeDAL imports.
@@ -41,6 +42,37 @@ class LocalSubscriptionCategory(TypedTable):
     """The ID for the category."""
     label: str
     """The label for the category."""
+
+
+##############################################################################
+def get_local_subscriptions() -> Subscriptions:
+    """Gets the local cache of known subscriptions.
+
+    Return:
+        The locally-known `Subscriptions`.
+    """
+    return Subscriptions(
+        Subscription(
+            {},
+            id=subscription.subscription_id,
+            title=subscription.title,
+            sort_id=subscription.sort_id,
+            first_item_time=subscription.first_item_time,
+            url=subscription.url,
+            html_url=subscription.html_url,
+            categories=Categories(
+                Category(
+                    {},
+                    category.category_id,
+                    category.label,
+                )
+                for category in LocalSubscriptionCategory.where(
+                    subscription=subscription.subscription_id
+                )
+            ),
+        )
+        for subscription in LocalSubscription.select(LocalSubscription.ALL)
+    )
 
 
 ##############################################################################

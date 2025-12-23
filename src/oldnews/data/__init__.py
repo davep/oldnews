@@ -12,7 +12,7 @@ from .config import (
 from .db import initialise_database
 from .local_articles import save_local_articles
 from .local_folders import get_local_folders, save_local_folders
-from .local_subscriptions import save_local_subscriptions
+from .local_subscriptions import get_local_subscriptions, save_local_subscriptions
 from .navigation_state import get_navigation_state, save_navigation_state
 
 ##############################################################################
@@ -31,6 +31,7 @@ __all__ = [
     "get_local_folders",
     "save_local_articles",
     "save_local_subscriptions",
+    "get_local_subscriptions",
 ]
 
 ### __init__.py ends here

@@ -36,6 +36,7 @@ from textual_enhanced.screen import EnhancedScreen
 from .. import __version__
 from ..data import (
     get_local_folders,
+    get_local_subscriptions,
     save_local_articles,
     save_local_folders,
     save_local_subscriptions,
@@ -123,6 +124,13 @@ class Main(EnhancedScreen[None]):
         folders: Folders
         """The new folders."""
 
+    @dataclass
+    class NewSubscriptions(Message):
+        """Message sent when new subscriptions are acquired."""
+
+        subscriptions: Subscriptions
+        """The new subscriptions."""
+
     class ReloadFromToR(Message):
         """Message that requests that we reload from TheOldReader."""
 
@@ -156,11 +164,22 @@ class Main(EnhancedScreen[None]):
         """
         self.folders = message.folders
 
+    @on(NewSubscriptions)
+    def _new_subscriptions(self, message: NewSubscriptions) -> None:
+        """Handle new subscriptions being found.
+
+        Args:
+            message: The message with the new subscriptions.
+        """
+        self.subscriptions = message.subscriptions
+
     @work(thread=True, exclusive=True)
     def _load_locally(self) -> None:
         """Load up any locally-held data."""
         if folders := get_local_folders():
             self.post_message(self.NewFolders(folders))
+        if subscriptions := get_local_subscriptions():
+            self.post_message(self.NewSubscriptions(subscriptions))
         # Now that we've loaded everything that we have locally, kick off a
         # refresh from TheOldReader.
         #
@@ -171,11 +190,16 @@ class Main(EnhancedScreen[None]):
     @work(exclusive=True)
     async def load_from_tor(self) -> None:
         """Load the main data from TheOldReader."""
+        # TODO: This is just for testing purposes, do the saving in the
+        # background and have it trigger the redraw in a more sensible way.
         self.post_message(
             self.NewFolders(save_local_folders(await Folders.load(self._session)))
         )
-        self.subscriptions = await Subscriptions.load(self._session)
-        save_local_subscriptions(self.subscriptions)  # TODO: In thread?
+        self.post_message(
+            self.NewSubscriptions(
+                save_local_subscriptions(await Subscriptions.load(self._session))
+            )
+        )
         self.unread = await Unread.load(self._session)
 
     @work(exclusive=True)
