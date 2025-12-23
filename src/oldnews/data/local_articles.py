@@ -61,7 +61,7 @@ def save_local_articles(articles: Articles) -> Articles:
     """
     assert LocalArticle._db is not None
     for article in articles:
-        LocalArticleCategory.select(article=article.id).delete()
+        LocalArticleCategory.where(article=article.id).delete()
         LocalArticleCategory.bulk_insert(
             [
                 {"article": article.id, "category": str(category)}
