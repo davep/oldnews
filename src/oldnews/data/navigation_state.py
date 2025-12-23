@@ -2,14 +2,14 @@
 
 ##############################################################################
 # TypeDAL imports.
-from typedal import TypedField, TypedTable
+from typedal import TypedTable
 
 
 ##############################################################################
 class NavigationState(TypedTable):
     """Table that holds state of the navigation table."""
 
-    expanded_folder_id: TypedField[str]
+    expanded_folder_id: str
     """The ID of a folder that is in the expanded state."""
 
 
