@@ -34,7 +34,12 @@ from textual_enhanced.screen import EnhancedScreen
 ##############################################################################
 # Local imports.
 from .. import __version__
-from ..data import get_local_folders, save_local_articles, save_local_folders
+from ..data import (
+    get_local_folders,
+    save_local_articles,
+    save_local_folders,
+    save_local_subscriptions,
+)
 from ..providers import MainCommands
 from ..widgets import ArticleContent, ArticleList, Navigation
 
@@ -170,6 +175,7 @@ class Main(EnhancedScreen[None]):
             self.NewFolders(save_local_folders(await Folders.load(self._session)))
         )
         self.subscriptions = await Subscriptions.load(self._session)
+        save_local_subscriptions(self.subscriptions)  # TODO: In thread?
         self.unread = await Unread.load(self._session)
 
     @work(exclusive=True)

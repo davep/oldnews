@@ -13,6 +13,7 @@ from typedal.config import TypeDALConfig
 # Local imports.
 from .local_articles import LocalArticle, LocalArticleCategory
 from .local_folders import LocalFolder
+from .local_subscriptions import LocalSubscription, LocalSubscriptionCategory
 from .locations import data_dir
 from .navigation_state import NavigationState
 
@@ -44,6 +45,8 @@ def initialise_database() -> TypeDAL:
     dal.define(LocalArticleCategory)
     dal.define(LocalArticle)
     dal.define(LocalFolder)
+    dal.define(LocalSubscription)
+    dal.define(LocalSubscriptionCategory)
     dal.define(NavigationState)
     return dal
 
