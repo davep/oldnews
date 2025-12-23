@@ -53,7 +53,6 @@ def get_local_subscriptions() -> Subscriptions:
     """
     return Subscriptions(
         Subscription(
-            {},
             id=subscription.subscription_id,
             title=subscription.title,
             sort_id=subscription.sort_id,
@@ -62,9 +61,8 @@ def get_local_subscriptions() -> Subscriptions:
             html_url=subscription.html_url,
             categories=Categories(
                 Category(
-                    {},
-                    category.category_id,
-                    category.label,
+                    id=category.category_id,
+                    label=category.label,
                 )
                 for category in LocalSubscriptionCategory.where(
                     subscription=subscription.subscription_id

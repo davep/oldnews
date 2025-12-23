@@ -27,7 +27,7 @@ def get_local_folders() -> Folders:
         The locally-known `Folders`.
     """
     return Folders(
-        Folder({}, folder.folder_id, folder.sort_id)
+        Folder(id=folder.folder_id, sort_id=folder.sort_id)
         for folder in LocalFolder.select(LocalFolder.ALL)
     )
 
