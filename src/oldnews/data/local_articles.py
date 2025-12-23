@@ -6,7 +6,7 @@ from datetime import datetime
 
 ##############################################################################
 # OldAS imports.
-from oldas import Article, Articles
+from oldas import Articles
 
 ##############################################################################
 # TypeDAL imports.
