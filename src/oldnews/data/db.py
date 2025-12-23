@@ -11,6 +11,7 @@ from typedal.config import TypeDALConfig
 
 ##############################################################################
 # Local imports.
+from .local_articles import LocalArticle, LocalArticleCategory
 from .local_folders import LocalFolders
 from .locations import data_dir
 from .navigation_state import NavigationState
@@ -40,6 +41,8 @@ def initialise_database() -> TypeDAL:
     #
     # warning to stdout, otherwise.
     dal = TypeDAL(f"sqlite://{db_file()}", folder=data_dir(), config=TypeDALConfig())
+    dal.define(LocalArticleCategory)
+    dal.define(LocalArticle)
     dal.define(LocalFolders)
     dal.define(NavigationState)
     return dal

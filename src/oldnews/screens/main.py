@@ -31,12 +31,10 @@ from textual.widgets import Footer, Header
 from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
 from textual_enhanced.screen import EnhancedScreen
 
-from oldnews.data.local_folders import get_local_folders
-
 ##############################################################################
 # Local imports.
 from .. import __version__
-from ..data import save_local_folders
+from ..data import get_local_folders, save_local_articles, save_local_folders
 from ..providers import MainCommands
 from ..widgets import ArticleContent, ArticleList, Navigation
 
@@ -185,6 +183,7 @@ class Main(EnhancedScreen[None]):
         """
         with self.busy_looking(ArticleList):
             self.articles = await Articles.load_unread(self._session, category)
+            save_local_articles(self.articles)  # TODO: In thread?
 
     @on(Navigation.CategorySelected)
     def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:

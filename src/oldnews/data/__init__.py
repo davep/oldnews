@@ -10,6 +10,7 @@ from .config import (
     update_configuration,
 )
 from .db import initialise_database
+from .local_articles import save_local_articles
 from .local_folders import get_local_folders, save_local_folders
 from .navigation_state import get_navigation_state, save_navigation_state
 
@@ -27,6 +28,7 @@ __all__ = [
     "update_configuration",
     "save_local_folders",
     "get_local_folders",
+    "save_local_articles",
 ]
 
 ### __init__.py ends here
