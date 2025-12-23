@@ -1,0 +1,34 @@
+"""Code relating to remembering when we last grabbed data."""
+
+##############################################################################
+# Python imports.
+from datetime import datetime
+
+##############################################################################
+# TypeDAL imports.
+from typedal import TypedTable
+
+
+##############################################################################
+class LastGrabbed(TypedTable):
+    """Table that holds details of when data was last grabbed."""
+
+    at_time: datetime
+    """The time at which data was last grabbed."""
+
+
+##############################################################################
+def last_grabbed_data_at() -> datetime | None:
+    """The time at which data was last grabbed.
+
+    Returns:
+        The time at which we last grabbed data, or `None` if we never have.
+    """
+    if (row := LastGrabbed.select(LastGrabbed.ALL).first()) is not None:
+        return row.at_time
+    return None
+
+
+# TODO: Add saver.
+
+### last_grab.py ends here
