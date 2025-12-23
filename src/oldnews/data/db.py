@@ -6,7 +6,7 @@ from pathlib import Path
 
 ##############################################################################
 # TypeDAL imports.
-from typedal import TypeDAL
+from typedal import TypeDAL, TypedTable
 from typedal.config import TypeDALConfig
 
 ##############################################################################
@@ -29,6 +29,27 @@ def db_file() -> Path:
 
 
 ##############################################################################
+def _safely_index(table: type[TypedTable], name: str, field: str) -> None:
+    """Create an index on a type, but handle errors.
+
+    Args:
+        table: The table to create the index against.
+        name: The name of the index.
+        field: The field to index.
+
+    Notes:
+        From what I can gather TypeDAL *should* only create the index if it
+        doesn't exist. Instead it throws an error if it exists. So here I
+        swallow the `RuntimeError`. Hopefully there is a better way and I've
+        just missed it.
+    """
+    try:
+        table.create_index(name, field)
+    except RuntimeError:
+        pass
+
+
+##############################################################################
 def initialise_database() -> TypeDAL:
     """Create the database.
 
@@ -43,64 +64,46 @@ def initialise_database() -> TypeDAL:
     # warning to stdout, otherwise.
     dal = TypeDAL(f"sqlite://{db_file()}", folder=data_dir(), config=TypeDALConfig())
 
-    # This need to try/except/pass seems massively unnecessary. Everything
-    # I'm reading seems to suggest that the migration system should handle
-    # this, not try and create the index if it exists, but it does and it
-    # gives an error. So, for now, this...
-
     dal.define(LocalArticleCategory)
-    try:
-        LocalArticleCategory.create_index(
-            "idx_local_article_category_article", LocalArticleCategory.article
-        )
-    except RuntimeError:
-        pass
-    try:
-        LocalArticleCategory.create_index(
-            "idx_local_article_category_category", LocalArticleCategory.category
-        )
-    except RuntimeError:
-        pass
+    _safely_index(
+        LocalArticleCategory,
+        "idx_local_article_category_article",
+        LocalArticleCategory.article,
+    )
+    _safely_index(
+        LocalArticleCategory,
+        "idx_local_article_category_category",
+        LocalArticleCategory.category,
+    )
 
     dal.define(LocalArticle)
-    try:
-        LocalArticle.create_index(
-            "idx_local_article_article_id", LocalArticle.article_id
-        )
-    except RuntimeError:
-        pass
-    try:
-        LocalArticle.create_index(
-            "idx_local_article_origin_stream_id", LocalArticle.origin_stream_id
-        )
-    except RuntimeError:
-        pass
+    _safely_index(LocalArticle, "idx_local_article_article_id", LocalArticle.article_id)
+    _safely_index(
+        LocalArticle,
+        "idx_local_article_origin_stream_id",
+        LocalArticle.origin_stream_id,
+    )
 
     dal.define(LocalFolder)
 
     dal.define(LocalSubscription)
-    try:
-        LocalSubscription.create_index(
-            "idx_local_subscription_subscription_id", LocalSubscription.subscription_id
-        )
-    except RuntimeError:
-        pass
+    _safely_index(
+        LocalSubscription,
+        "idx_local_subscription_subscription_id",
+        LocalSubscription.subscription_id,
+    )
 
     dal.define(LocalSubscriptionCategory)
-    try:
-        LocalSubscriptionCategory.create_index(
-            "idx_local_subscription_category_subscription",
-            LocalSubscriptionCategory.subscription,
-        )
-    except RuntimeError:
-        pass
-    try:
-        LocalSubscriptionCategory.create_index(
-            "idx_local_subscription_category_category_id",
-            LocalSubscriptionCategory.category_id,
-        )
-    except RuntimeError:
-        pass
+    _safely_index(
+        LocalSubscriptionCategory,
+        "idx_local_subscription_category_subscription",
+        LocalSubscriptionCategory.subscription,
+    )
+    _safely_index(
+        LocalSubscriptionCategory,
+        "idx_local_subscription_category_category_id",
+        LocalSubscriptionCategory.category_id,
+    )
 
     dal.define(NavigationState)
 
