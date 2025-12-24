@@ -3,6 +3,7 @@
 ##############################################################################
 # Python imports.
 from datetime import datetime
+from typing import cast
 
 ##############################################################################
 # OldAS imports.
@@ -39,7 +40,8 @@ class LocalArticle(TypedTable):
     """The URL of the HTML of the origin of the article."""
     categories = relationship(
         list["LocalArticleCategory"],
-        condition=lambda article, category: article.id == category.article,
+        condition=lambda article, category: cast(LocalArticle, article).id
+        == cast(LocalArticleCategory, category).article,
         join="left",
     )
 
