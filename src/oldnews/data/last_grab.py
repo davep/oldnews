@@ -2,7 +2,7 @@
 
 ##############################################################################
 # Python imports.
-from datetime import datetime
+from datetime import datetime, timezone
 
 ##############################################################################
 # TypeDAL imports.
@@ -29,6 +29,20 @@ def last_grabbed_data_at() -> datetime | None:
     return None
 
 
-# TODO: Add saver.
+##############################################################################
+def remember_we_last_grabbed_at(grab_time: datetime | None = None) -> None:
+    """Remember the time we last grabbed data.
+
+    Args:
+        grab_time: The time the grab was done.
+
+    Note:
+        If `grab_time` isn't supplied then it is recorded as now.
+    """
+    assert LastGrabbed._db is not None
+    LastGrabbed.truncate()
+    LastGrabbed.insert(at_time=grab_time or datetime.now(timezone.utc))
+    LastGrabbed._db.commit()
+
 
 ### last_grab.py ends here

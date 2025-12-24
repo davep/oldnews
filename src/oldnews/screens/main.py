@@ -37,6 +37,7 @@ from .. import __version__
 from ..data import (
     get_local_folders,
     get_local_subscriptions,
+    remember_we_last_grabbed_at,
     save_local_articles,
     save_local_folders,
     save_local_subscriptions,
@@ -201,6 +202,7 @@ class Main(EnhancedScreen[None]):
             )
         )
         self.unread = await Unread.load(self._session)
+        remember_we_last_grabbed_at()
 
     @work(exclusive=True)
     async def _get_related_unread_articles(
