@@ -65,24 +65,24 @@ def initialise_database() -> TypeDAL:
     # warning to stdout, otherwise.
     dal = TypeDAL(f"sqlite://{db_file()}", folder=data_dir(), config=TypeDALConfig())
 
-    dal.define(LocalArticleCategory)
-    _safely_index(
-        LocalArticleCategory,
-        "idx_local_article_category_article",
-        LocalArticleCategory.article,
-    )
-    _safely_index(
-        LocalArticleCategory,
-        "idx_local_article_category_category",
-        LocalArticleCategory.category,
-    )
-
     dal.define(LocalArticle)
     _safely_index(LocalArticle, "idx_local_article_article_id", LocalArticle.article_id)
     _safely_index(
         LocalArticle,
         "idx_local_article_origin_stream_id",
         LocalArticle.origin_stream_id,
+    )
+
+    dal.define(LocalArticleCategory)
+    # _safely_index(
+    #     LocalArticleCategory,
+    #     "idx_local_article_category_article",
+    #     LocalArticleCategory.article,
+    # )
+    _safely_index(
+        LocalArticleCategory,
+        "idx_local_article_category_category",
+        LocalArticleCategory.category,
     )
 
     dal.define(LocalFolder)

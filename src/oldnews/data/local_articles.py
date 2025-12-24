@@ -10,7 +10,7 @@ from oldas import Articles
 
 ##############################################################################
 # TypeDAL imports.
-from typedal import TypedField, TypedTable
+from typedal import TypedField, TypedTable, relationship
 
 
 ##############################################################################
@@ -37,13 +37,18 @@ class LocalArticle(TypedTable):
     """The title of the origin of the article."""
     origin_html_url: str
     """The URL of the HTML of the origin of the article."""
+    categories = relationship(
+        list["LocalArticleCategory"],
+        condition=lambda article, category: article.id == category.article,
+        join="left",
+    )
 
 
 ##############################################################################
 class LocalArticleCategory(TypedTable):
     """A local copy of the categories associated with an article."""
 
-    article: str
+    article: LocalArticle
     """The article that this category belongs to."""
     category: str
     """The category."""
@@ -61,14 +66,7 @@ def save_local_articles(articles: Articles) -> Articles:
     """
     assert LocalArticle._db is not None
     for article in articles:
-        LocalArticleCategory.where(article=article.id).delete()
-        LocalArticleCategory.bulk_insert(
-            [
-                {"article": article.id, "category": str(category)}
-                for category in article.categories
-            ]
-        )
-        LocalArticle.update_or_insert(
+        local_article = LocalArticle.update_or_insert(
             LocalArticle.article_id == article.id,
             article_id=article.id,
             title=article.title,
@@ -80,6 +78,13 @@ def save_local_articles(articles: Articles) -> Articles:
             origin_stream_id=article.origin.stream_id,
             origin_title=article.origin.title,
             origin_html_url=article.origin.html_url,
+        )
+        LocalArticleCategory.where(article=local_article.id).delete()
+        LocalArticleCategory.bulk_insert(
+            [
+                {"article": local_article.id, "category": str(category)}
+                for category in article.categories
+            ]
         )
     LocalArticle._db.commit()
     return articles
