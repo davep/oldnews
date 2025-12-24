@@ -7,10 +7,12 @@ from typing import cast
 
 ##############################################################################
 # OldAS imports.
-from oldas import Articles
+from oldas import Article, Articles, State
+from oldas.articles import Direction, Origin, Summary
 
 ##############################################################################
 # TypeDAL imports.
+from pydal import QueryBuilder
 from typedal import TypedField, TypedTable, relationship
 
 
@@ -90,6 +92,47 @@ def save_local_articles(articles: Articles) -> Articles:
         )
     LocalArticle._db.commit()
     return articles
+
+
+##############################################################################
+def get_local_unread_articles() -> Articles:
+    """Get all available unread articles.
+
+    Returns:
+        The unread articles.
+
+    Notes:
+        TODO: This isn't the final form of this function, this is just an
+        experiment to get the loading of unread articles going. Eventually I
+        will be narrowing things down.
+    """
+    read = LocalArticleCategory.where(
+        LocalArticleCategory.category == State.READ
+    ).select(LocalArticleCategory.article)
+    articles: list[Article] = []
+    for article in LocalArticle.where(~LocalArticle.id.belongs(read)).join():
+        articles.append(
+            Article(
+                id=article.article_id,
+                title=article.title,
+                published=article.published,
+                updated=article.updated,
+                author=article.author,
+                categories=Article.clean_categories(
+                    category.category for category in article.categories
+                ),
+                origin=Origin(
+                    stream_id=article.origin_stream_id,
+                    title=article.origin_title,
+                    html_url=article.origin_html_url,
+                ),
+                summary=Summary(
+                    direction=cast(Direction, article.summary_direction),
+                    content=article.summary_content,
+                ),
+            )
+        )
+    return Articles(articles)
 
 
 ### local_articles.py ends here
