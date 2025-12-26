@@ -119,6 +119,13 @@ class Main(EnhancedScreen[None]):
     """The currently-viewed article."""
 
     @dataclass
+    class BusyWith(Message):
+        """Message sent to indicate we're busy with something."""
+
+        operation: str
+        """The operation we're busy with."""
+
+    @dataclass
     class NewFolders(Message):
         """Message sent when new folders are acquired."""
 
@@ -155,6 +162,11 @@ class Main(EnhancedScreen[None]):
     def on_mount(self) -> None:
         """Configure the application once the DOM is mounted."""
         self._load_locally()
+
+    @on(BusyWith)
+    def _indicate_busy_with(self, message: BusyWith) -> None:
+        """Indicate we're busy with something."""
+        self.sub_title = message.operation
 
     @on(NewFolders)
     def _new_folders(self, message: NewFolders) -> None:
@@ -193,15 +205,19 @@ class Main(EnhancedScreen[None]):
         """Load the main data from TheOldReader."""
         # TODO: This is just for testing purposes, do the saving in the
         # background and have it trigger the redraw in a more sensible way.
+        self.post_message(self.BusyWith("Getting folder list"))
         self.post_message(
             self.NewFolders(save_local_folders(await Folders.load(self._session)))
         )
+        self.post_message(self.BusyWith("Getting subscriptions list"))
         self.post_message(
             self.NewSubscriptions(
                 save_local_subscriptions(await Subscriptions.load(self._session))
             )
         )
+        self.post_message(self.BusyWith("Getting unread counts"))
         self.unread = await Unread.load(self._session)
+        self.post_message(self.BusyWith(""))
         remember_we_last_grabbed_at()
 
     @work(exclusive=True)
