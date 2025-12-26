@@ -39,6 +39,7 @@ from ..data import (
     get_local_folders,
     get_local_subscriptions,
     get_local_unread,
+    get_local_unread_articles,
     last_grabbed_data_at,
     remember_we_last_grabbed_at,
     save_local_articles,
@@ -272,10 +273,10 @@ class Main(EnhancedScreen[None]):
         Args:
             category: The category to get the unread articles for.
         """
-        with self.busy_looking(ArticleList):
-            # TODO: Load from local articles instead.
-            self.articles = await Articles.load_unread(self._session, category)
-            save_local_articles(self.articles)  # TODO: In thread?
+        self.articles = get_local_unread_articles(category)
+        # with self.busy_looking(ArticleList):
+        #     # TODO: Load from local articles instead.
+        #     self.articles = await Articles.load_unread(self._session, category)
 
     @on(Navigation.CategorySelected)
     def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:
@@ -285,7 +286,9 @@ class Main(EnhancedScreen[None]):
             message: The message to react to.
         """
         self.article = None
-        self._get_related_unread_articles(message.category)
+        self.articles = get_local_unread_articles(message.category)
+
+    #        self._get_related_unread_articles(message.category)
 
     @on(ArticleList.ViewArticle)
     def _view_article(self, message: ArticleList.ViewArticle) -> None:

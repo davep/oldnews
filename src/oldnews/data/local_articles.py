@@ -3,11 +3,11 @@
 ##############################################################################
 # Python imports.
 from datetime import datetime
-from typing import cast
+from typing import Iterator, cast
 
 ##############################################################################
 # OldAS imports.
-from oldas import Article, Articles, State
+from oldas import Article, Articles, Folder, State, Subscription
 from oldas.articles import Direction, Origin, Summary
 
 ##############################################################################
@@ -93,9 +93,41 @@ def save_local_articles(articles: Articles) -> Articles:
     return articles
 
 
+def _for_subscription(subscription: Subscription) -> Iterator[LocalArticle]:
+    read = LocalArticleCategory.where(
+        LocalArticleCategory.category == State.READ
+    ).select(LocalArticleCategory.article)
+    for article in (
+        LocalArticle.where(~LocalArticle.id.belongs(read))
+        .where(origin_stream_id=subscription.id)
+        .join()
+    ):
+        yield article
+
+
+def _for_folder(folder: Folder) -> Iterator[LocalArticle]:
+    read = LocalArticleCategory.where(
+        LocalArticleCategory.category == State.READ
+    ).select(LocalArticleCategory.article)
+    in_folder = LocalArticleCategory.where(
+        LocalArticleCategory.category == folder.id
+    ).select(LocalArticleCategory.article)
+    for article in (
+        LocalArticle.where(
+            (~LocalArticle.id.belongs(read)) & (LocalArticle.id.belongs(in_folder))
+        )
+        .select()
+        .join()
+    ):
+        yield article
+
+
 ##############################################################################
-def get_local_unread_articles() -> Articles:
+def get_local_unread_articles(related_to: Folder | Subscription) -> Articles:
     """Get all available unread articles.
+
+    Args:
+        related_to: The folder or feed the articles should relate to.
 
     Returns:
         The unread articles.
@@ -105,11 +137,12 @@ def get_local_unread_articles() -> Articles:
         experiment to get the loading of unread articles going. Eventually I
         will be narrowing things down.
     """
-    read = LocalArticleCategory.where(
-        LocalArticleCategory.category == State.READ
-    ).select(LocalArticleCategory.article)
     articles: list[Article] = []
-    for article in LocalArticle.where(~LocalArticle.id.belongs(read)).join():
+    for article in (
+        _for_folder(related_to)
+        if isinstance(related_to, Folder)
+        else _for_subscription(related_to)
+    ):
         articles.append(
             Article(
                 id=article.article_id,

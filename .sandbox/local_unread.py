@@ -6,7 +6,7 @@ from oldnews.data.local_articles import get_local_unread_articles
 
 def main() -> None:
     initialise_database()
-    for x in get_local_unread_articles():
+    for x in get_local_unread_articles("feed/5dadfeae0914526fe40000d2"):
         print(f"{x.categories} - {x.title}")
 
 
