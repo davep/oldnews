@@ -3,6 +3,7 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 ##############################################################################
 # OldAs imports.
@@ -37,6 +38,7 @@ from .. import __version__
 from ..data import (
     get_local_folders,
     get_local_subscriptions,
+    last_grabbed_data_at,
     remember_we_last_grabbed_at,
     save_local_articles,
     save_local_folders,
@@ -199,6 +201,19 @@ class Main(EnhancedScreen[None]):
         # TODO: I might want to delay this a moment, or not. Have a think.
         self.post_message(self.ReloadFromToR())
 
+    async def _download_newest_articles(self) -> None:
+        """Download the latest articles available."""
+        last_grabbed = last_grabbed_data_at()
+        new_grab = datetime.now(timezone.utc)
+        save_local_articles(
+            await (
+                Articles.load_unread(self._session, "")
+                if last_grabbed is None
+                else Articles.load_new_since(self._session, "", last_grabbed)
+            )
+        )
+        remember_we_last_grabbed_at(new_grab)
+
     @on(ReloadFromToR)
     @work(exclusive=True)
     async def load_from_tor(self) -> None:
@@ -217,8 +232,14 @@ class Main(EnhancedScreen[None]):
         )
         self.post_message(self.BusyWith("Getting unread counts"))
         self.unread = await Unread.load(self._session)
+        if last_grabbed_data_at() is None:
+            self.post_message(self.BusyWith("Getting available articles"))
+        else:
+            self.post_message(
+                self.BusyWith(f"Getting articles new since {last_grabbed_data_at()}")
+            )
+        await self._download_newest_articles()
         self.post_message(self.BusyWith(""))
-        remember_we_last_grabbed_at()
 
     @work(exclusive=True)
     async def _get_related_unread_articles(
@@ -230,6 +251,7 @@ class Main(EnhancedScreen[None]):
             category: The category to get the unread articles for.
         """
         with self.busy_looking(ArticleList):
+            # TODO: Load from local articles instead.
             self.articles = await Articles.load_unread(self._session, category)
             save_local_articles(self.articles)  # TODO: In thread?
 
