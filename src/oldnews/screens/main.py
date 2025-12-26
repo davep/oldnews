@@ -38,11 +38,13 @@ from .. import __version__
 from ..data import (
     get_local_folders,
     get_local_subscriptions,
+    get_local_unread,
     last_grabbed_data_at,
     remember_we_last_grabbed_at,
     save_local_articles,
     save_local_folders,
     save_local_subscriptions,
+    save_local_unread,
 )
 from ..providers import MainCommands
 from ..widgets import ArticleContent, ArticleList, Navigation
@@ -141,6 +143,13 @@ class Main(EnhancedScreen[None]):
         subscriptions: Subscriptions
         """The new subscriptions."""
 
+    @dataclass
+    class NewUnread(Message):
+        """Message sent when new unread counts are acquired."""
+
+        counts: Unread
+        """The new unread counts."""
+
     class ReloadFromToR(Message):
         """Message that requests that we reload from TheOldReader."""
 
@@ -188,6 +197,15 @@ class Main(EnhancedScreen[None]):
         """
         self.subscriptions = message.subscriptions
 
+    @on(NewUnread)
+    def _new_unread(self, message: NewUnread) -> None:
+        """Handle new unread counts being found.
+
+        Args:
+            message: The message with the new unread counts.
+        """
+        self.unread = message.counts
+
     @work(thread=True, exclusive=True)
     def _load_locally(self) -> None:
         """Load up any locally-held data."""
@@ -195,6 +213,8 @@ class Main(EnhancedScreen[None]):
             self.post_message(self.NewFolders(folders))
         if subscriptions := get_local_subscriptions():
             self.post_message(self.NewSubscriptions(subscriptions))
+        if unread := get_local_unread():
+            self.post_message(self.NewUnread(unread))
         # Now that we've loaded everything that we have locally, kick off a
         # refresh from TheOldReader.
         #
@@ -231,7 +251,9 @@ class Main(EnhancedScreen[None]):
             )
         )
         self.post_message(self.BusyWith("Getting unread counts"))
-        self.unread = await Unread.load(self._session)
+        self.post_message(
+            self.NewUnread(save_local_unread(await Unread.load(self._session)))
+        )
         if last_grabbed_data_at() is None:
             self.post_message(self.BusyWith("Getting available articles"))
         else:

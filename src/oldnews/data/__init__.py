@@ -14,6 +14,7 @@ from .last_grab import last_grabbed_data_at, remember_we_last_grabbed_at
 from .local_articles import save_local_articles
 from .local_folders import get_local_folders, save_local_folders
 from .local_subscriptions import get_local_subscriptions, save_local_subscriptions
+from .local_unread import get_local_unread, save_local_unread
 from .navigation_state import get_navigation_state, save_navigation_state
 
 ##############################################################################
@@ -23,6 +24,7 @@ __all__ = [
     "get_auth_token",
     "get_local_folders",
     "get_local_subscriptions",
+    "get_local_unread",
     "get_navigation_state",
     "initialise_database",
     "last_grabbed_data_at",
@@ -32,6 +34,7 @@ __all__ = [
     "save_local_articles",
     "save_local_folders",
     "save_local_subscriptions",
+    "save_local_unread",
     "save_navigation_state",
     "set_auth_token",
     "update_configuration",

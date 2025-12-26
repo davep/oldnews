@@ -15,6 +15,7 @@ from .last_grab import LastGrabbed
 from .local_articles import LocalArticle, LocalArticleCategory
 from .local_folders import LocalFolder
 from .local_subscriptions import LocalSubscription, LocalSubscriptionCategory
+from .local_unread import LocalUnread
 from .locations import data_dir
 from .navigation_state import NavigationState
 
@@ -104,6 +105,13 @@ def initialise_database() -> TypeDAL:
         LocalSubscriptionCategory,
         "idx_local_subscription_category_category_id",
         LocalSubscriptionCategory.category_id,
+    )
+
+    dal.define(LocalUnread)
+    _safely_index(
+        LocalUnread,
+        "idx_local_unread_unread_id",
+        LocalUnread.unread_id,
     )
 
     dal.define(NavigationState)
