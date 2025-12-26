@@ -12,7 +12,6 @@ from oldas.articles import Direction, Origin, Summary
 
 ##############################################################################
 # TypeDAL imports.
-from pydal import QueryBuilder
 from typedal import TypedField, TypedTable, relationship
 
 
