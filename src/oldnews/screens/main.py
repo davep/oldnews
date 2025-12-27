@@ -32,6 +32,8 @@ from textual.widgets import Footer, Header
 from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
 from textual_enhanced.screen import EnhancedScreen
 
+from oldnews.widgets.article_list import ArticleView
+
 ##############################################################################
 # Local imports.
 from .. import __version__
@@ -283,6 +285,7 @@ class Main(EnhancedScreen[None]):
         """
         self.article = None
         self.articles = get_local_unread_articles(message.category)
+        self.query_one(ArticleList).focus()
 
     @on(ArticleList.ViewArticle)
     def _view_article(self, message: ArticleList.ViewArticle) -> None:
@@ -292,6 +295,7 @@ class Main(EnhancedScreen[None]):
             message: The message requesting an article be viewed.
         """
         self.article = message.article
+        self.query_one(ArticleContent).focus()
 
 
 ### main.py ends here

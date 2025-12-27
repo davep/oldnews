@@ -1,6 +1,10 @@
 """Provides a widget that shows an article's content."""
 
 ##############################################################################
+# Python imports.
+from typing import Self
+
+##############################################################################
 # html-to-markdown imports.
 from html_to_markdown import convert
 
@@ -43,6 +47,10 @@ class ArticleContent(Vertical):
         self.set_class(self.article is not None, "--has-article")
         if self.article is not None:
             self.query_one(Markdown).update(convert(self.article.summary.content))
+
+    def focus(self, scroll_visible: bool = True) -> Self:
+        self.query_one(VerticalScroll).focus(scroll_visible)
+        return self
 
 
 ### article_content.py ends here
