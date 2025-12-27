@@ -22,36 +22,6 @@ class Configuration:
     theme: str | None = None
     """The theme for the application."""
 
-    guides_directory_visible: bool = True
-    """Is the guides directory visible?"""
-
-    guides_directory_on_right: bool = False
-    """Should the guide directory be docked to the right?"""
-
-    current_guide: str | None = None
-    """The guide the user is currently viewing."""
-
-    current_entry: int | None = None
-    """The entry the user is currently viewing."""
-
-    classic_view: bool = False
-    """Should the entry view use a classic Norton Guide colour scheme?"""
-
-    last_added_guides_from: str = "."
-    """The location the user last added guides from."""
-
-    last_opened_guide_from: str = "."
-    """The location the user last browsed for an individual guide from."""
-
-    global_search_text: str = ""
-    """The text that was last searched for in global search."""
-
-    global_search_all_guides: bool = True
-    """The last state of the all guides checkbox in global search."""
-
-    global_search_ignore_case: bool = True
-    """The last state of the ignore case setting."""
-
     bindings: dict[str, str] = field(default_factory=dict)
     """Command keyboard binding overrides."""
 
