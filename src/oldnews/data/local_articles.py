@@ -93,10 +93,20 @@ def save_local_articles(articles: Articles) -> Articles:
     return articles
 
 
+##############################################################################
 def _for_subscription(subscription: Subscription) -> Iterator[LocalArticle]:
-    read = LocalArticleCategory.where(
+    """Get all unread articles for a given subscription.
+
+    Args:
+        subscription: The subscription to get the articles for.
+
+    Yields:
+        The unread articles.
+    """
+    assert LocalArticleCategory._db is not None
+    read = LocalArticleCategory._db(
         LocalArticleCategory.category == State.READ
-    ).select(LocalArticleCategory.article)
+    )._select(LocalArticleCategory.article)
     for article in (
         LocalArticle.where(~LocalArticle.id.belongs(read))
         .where(origin_stream_id=subscription.id)
@@ -105,20 +115,27 @@ def _for_subscription(subscription: Subscription) -> Iterator[LocalArticle]:
         yield article
 
 
+##############################################################################
 def _for_folder(folder: Folder) -> Iterator[LocalArticle]:
-    read = LocalArticleCategory.where(
-        LocalArticleCategory.category == State.READ
-    ).select(LocalArticleCategory.article)
-    in_folder = LocalArticleCategory.where(
+    """Get all unread articles for a given folder.
+
+    Args:
+        folder: The folder to get the articles for.
+
+    Yields:
+        The unread articles.
+    """
+    assert LocalArticleCategory._db is not None
+    in_folder = LocalArticleCategory._db(
         LocalArticleCategory.category == folder.id
-    ).select(LocalArticleCategory.article)
-    for article in (
-        LocalArticle.where(
-            (~LocalArticle.id.belongs(read)) & (LocalArticle.id.belongs(in_folder))
-        )
-        .select()
-        .join()
-    ):
+    )._select(LocalArticleCategory.article)
+    read = LocalArticleCategory._db(
+        LocalArticleCategory.category == State.READ
+    )._select(LocalArticleCategory.article)
+    unread_in_folder = (~LocalArticle.id.belongs(read)) & (
+        LocalArticle.id.belongs(in_folder)
+    )
+    for article in LocalArticle.where(unread_in_folder).select().join():
         yield article
 
 
