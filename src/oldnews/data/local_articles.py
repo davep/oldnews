@@ -154,11 +154,6 @@ def get_local_unread_articles(related_to: Folder | Subscription) -> Articles:
 
     Returns:
         The unread articles.
-
-    Notes:
-        TODO: This isn't the final form of this function, this is just an
-        experiment to get the loading of unread articles going. Eventually I
-        will be narrowing things down.
     """
     articles: list[Article] = []
     for article in (
