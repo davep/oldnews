@@ -239,22 +239,30 @@ class Main(EnhancedScreen[None]):
     @work(exclusive=True)
     async def load_from_tor(self) -> None:
         """Load the main data from TheOldReader."""
-        # TODO: This is just for testing purposes, do the saving in the
-        # background and have it trigger the redraw in a more sensible way.
+
+        # Get the folder list.
         self.post_message(self.BusyWith("Getting folder list"))
         self.post_message(
             self.NewFolders(save_local_folders(await Folders.load(self._session)))
         )
+
+        # Get the subscriptions list.
         self.post_message(self.BusyWith("Getting subscriptions list"))
         self.post_message(
             self.NewSubscriptions(
                 save_local_subscriptions(await Subscriptions.load(self._session))
             )
         )
+
+        # Get the unread counts.
         self.post_message(self.BusyWith("Getting unread counts"))
         self.post_message(
             self.NewUnread(save_local_unread(await Unread.load(self._session)))
         )
+
+        # Get unread articles. Get all available unread articles if we've
+        # never grabbed any before, otherwise get all those new since we
+        # last grabbed sone.
         if last_grabbed_data_at() is None:
             self.post_message(self.BusyWith("Getting available articles"))
         else:
@@ -262,21 +270,9 @@ class Main(EnhancedScreen[None]):
                 self.BusyWith(f"Getting articles new since {last_grabbed_data_at()}")
             )
         await self._download_newest_articles()
+
+        # Finally we're all done.
         self.post_message(self.BusyWith(""))
-
-    @work(exclusive=True)
-    async def _get_related_unread_articles(
-        self, category: Folder | Subscription
-    ) -> None:
-        """Get the unread articles related to the given category.
-
-        Args:
-            category: The category to get the unread articles for.
-        """
-        self.articles = get_local_unread_articles(category)
-        # with self.busy_looking(ArticleList):
-        #     # TODO: Load from local articles instead.
-        #     self.articles = await Articles.load_unread(self._session, category)
 
     @on(Navigation.CategorySelected)
     def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:
@@ -287,8 +283,6 @@ class Main(EnhancedScreen[None]):
         """
         self.article = None
         self.articles = get_local_unread_articles(message.category)
-
-    #        self._get_related_unread_articles(message.category)
 
     @on(ArticleList.ViewArticle)
     def _view_article(self, message: ArticleList.ViewArticle) -> None:
