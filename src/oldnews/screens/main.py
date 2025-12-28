@@ -30,8 +30,6 @@ from textual.widgets import Footer, Header
 from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
 from textual_enhanced.screen import EnhancedScreen
 
-from oldnews.widgets.article_list import ArticleView
-
 ##############################################################################
 # Local imports.
 from .. import __version__
