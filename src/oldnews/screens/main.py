@@ -10,10 +10,8 @@ from datetime import datetime, timezone
 from oldas import (
     Article,
     Articles,
-    Folder,
     Folders,
     Session,
-    Subscription,
     Subscriptions,
     Unread,
 )
