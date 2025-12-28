@@ -235,12 +235,14 @@ class Main(EnhancedScreen[None]):
         last_grabbed = last_grabbed_data_at()
         new_grab = datetime.now(timezone.utc)
         save_local_articles(
-            await (
+            loaded := await (
                 Articles.load_unread(self._session, "")
                 if last_grabbed is None
                 else Articles.load_new_since(self._session, "", last_grabbed)
             )
         )
+        if loaded:
+            self.notify(f"New articles downloaded: {len(loaded)}")
         remember_we_last_grabbed_at(new_grab)
 
     @on(ReloadFromToR)
