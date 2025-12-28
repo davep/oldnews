@@ -23,9 +23,9 @@ class LocalArticle(TypedTable):
     """The ID of the article."""
     title: str
     """The title of the article."""
-    published: datetime
+    published: TypedField = TypedField(datetime)
     """The time when the article was published."""
-    updated: datetime
+    updated: TypedField = TypedField(datetime)
     """The time when the article was updated."""
     author: str
     """The author of the article."""
