@@ -41,7 +41,9 @@ class ArticleView(Option):
         header = Table.grid(expand=True)
         header.add_column(width=2)
         header.add_column(ratio=1)
-        header.add_row("!" if article.is_unread else "", escape(article.title))
+        header.add_row(
+            "[green]●[/]" if article.is_unread else "", escape(article.title)
+        )
         provenance = (
             f"{article.origin.title}, {article.author}"
             if article.author and article.author != article.origin.title
