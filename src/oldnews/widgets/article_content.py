@@ -16,8 +16,13 @@ from oldas import Article
 # Textual imports.
 from textual.app import ComposeResult
 from textual.containers import Vertical, VerticalScroll
+from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Label, Markdown
+
+##############################################################################
+# Textual enhanced imports.
+from textual_enhanced.binding import HelpfulBinding
 
 
 ##############################################################################
@@ -50,8 +55,21 @@ class ArticleContent(Vertical):
     }
     """
 
+    BINDINGS = [
+        HelpfulBinding(
+            "escape, q",
+            "close_article",
+            "Close",
+            show=False,
+            tooltip="Close the view of the current article",
+        )
+    ]
+
     article: var[Article | None] = var(None)
     """The article being viewed."""
+
+    class Close(Message):
+        """Message sent when the user wants to close the current article."""
 
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
@@ -72,6 +90,10 @@ class ArticleContent(Vertical):
     def focus(self, scroll_visible: bool = True) -> Self:
         self.query_one(VerticalScroll).focus(scroll_visible)
         return self
+
+    def action_close_article(self) -> None:
+        """Close the current article."""
+        self.post_message(self.Close())
 
 
 ### article_content.py ends here

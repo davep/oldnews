@@ -297,5 +297,11 @@ class Main(EnhancedScreen[None]):
         self.article = message.article
         self.query_one(ArticleContent).focus()
 
+    @on(ArticleContent.Close)
+    def _close_article(self) -> None:
+        """Close the current article."""
+        self.query_one(ArticleList).focus()
+        self.article = None
+
 
 ### main.py ends here
