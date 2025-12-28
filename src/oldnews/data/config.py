@@ -25,6 +25,9 @@ class Configuration:
     bindings: dict[str, str] = field(default_factory=dict)
     """Command keyboard binding overrides."""
 
+    local_history: int = 180
+    """The number of days to keep a local copy of an article."""
+
 
 ##############################################################################
 def configuration_file() -> Path:
