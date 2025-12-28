@@ -67,22 +67,27 @@ class Main(EnhancedScreen[None]):
         layout: horizontal;
         hatch: right $surface;
 
+        * {
+            scrollbar-background: $surface;
+            scrollbar-background-hover: $surface;
+            scrollbar-background-active: $surface;
+            &:focus, &:focus-within {
+                scrollbar-background: $panel;
+                scrollbar-background-hover: $panel;
+                scrollbar-background-active: $panel;
+            }
+        }
+
         .panel {
             padding-right: 0;
             border: none;
             border-left: round $border 50%;
             background: $surface;
             scrollbar-gutter: stable;
-            scrollbar-background: $surface;
-            scrollbar-background-hover: $surface;
-            scrollbar-background-active: $surface;
             &:focus, &:focus-within {
                 border: none;
                 border-left: round $border;
                 background: $panel 80%;
-                scrollbar-background: $panel;
-                scrollbar-background-hover: $panel;
-                scrollbar-background-active: $panel;
             }
             &> .option-list--option {
                 padding: 0 1;
