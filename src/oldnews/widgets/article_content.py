@@ -17,7 +17,7 @@ from oldas import Article
 from textual.app import ComposeResult
 from textual.containers import Vertical, VerticalScroll
 from textual.reactive import var
-from textual.widgets import Markdown
+from textual.widgets import Label, Markdown
 
 
 ##############################################################################
@@ -31,6 +31,22 @@ class ArticleContent(Vertical):
         &.--has-article {
             display: block;
         }
+
+        #header {
+            height: auto;
+            padding: 0 1 0 1;
+
+            #title {
+                color: $text-accent;
+            }
+            #published {
+                color: $text-muted;
+            }
+        }
+
+        Markdown {
+            padding: 0 1 0 1;
+        }
     }
     """
 
@@ -39,6 +55,9 @@ class ArticleContent(Vertical):
 
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
+        with Vertical(id="header"):
+            yield Label(id="title")
+            yield Label(id="published")
         with VerticalScroll():
             yield Markdown()
 
@@ -46,6 +65,8 @@ class ArticleContent(Vertical):
         """React to the article being updated."""
         self.set_class(self.article is not None, "--has-article")
         if self.article is not None:
+            self.query_one("#title", Label).update(self.article.title)
+            self.query_one("#published", Label).update(str(self.article.published))
             self.query_one(Markdown).update(convert(self.article.summary.content))
 
     def focus(self, scroll_visible: bool = True) -> Self:
