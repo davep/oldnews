@@ -3,7 +3,7 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 ##############################################################################
 # OldAs imports.
@@ -39,6 +39,7 @@ from ..data import (
     get_local_unread,
     get_local_unread_articles,
     last_grabbed_data_at,
+    load_configuration,
     remember_we_last_grabbed_at,
     save_local_articles,
     save_local_folders,
@@ -228,17 +229,27 @@ class Main(EnhancedScreen[None]):
 
     async def _download_newest_articles(self) -> None:
         """Download the latest articles available."""
-        last_grabbed = last_grabbed_data_at()
-        new_grab = datetime.now(timezone.utc)
-        save_local_articles(
-            loaded := await (
-                Articles.load_unread(self._session, "")
-                if last_grabbed is None
-                else Articles.load_new_since(self._session, "", last_grabbed)
-            )
+        last_grabbed = last_grabbed_data_at() or (
+            datetime.now() - timedelta(days=load_configuration().local_history)
         )
+        new_grab = datetime.now(timezone.utc)
+        loaded = 0
+        async for article in Articles.stream_new_since(
+            self._session, last_grabbed, n=10
+        ):
+            # I've encountered articles that don't have am origin stream ID,
+            # which means that I can't relate them back to a stream, which
+            # means I'll never see them anyway...
+            if not article.origin.stream_id:
+                continue
+            save_local_articles(Articles([article]))
+            loaded += 1
+            if (loaded % 10) == 0:
+                self.post_message(
+                    self.BusyWith(f"Downloading articles from TheOldReader: {loaded}")
+                )
         if loaded:
-            self.notify(f"New articles downloaded: {len(loaded)}")
+            self.notify(f"Articles downloaded: {loaded}")
         remember_we_last_grabbed_at(new_grab)
 
     @on(ReloadFromToR)
