@@ -80,6 +80,8 @@ class ArticleList(EnhancedOptionList):
 
     @dataclass
     class ViewArticle(Message):
+        """Message that requests that we view a specific article."""
+
         article: Article
         """The article to view."""
 
