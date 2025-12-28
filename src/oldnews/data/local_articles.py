@@ -113,7 +113,7 @@ def _for_subscription(subscription: Subscription) -> Iterator[LocalArticle]:
         LocalArticle.where(~LocalArticle.id.belongs(read))
         .where(origin_stream_id=subscription.id)
         .join()
-        .select(orderby=~LocalArticle.published)
+        .orderby(~LocalArticle.published)
     ):
         yield article
 
@@ -144,7 +144,7 @@ def _for_folder(folder: Folder) -> Iterator[LocalArticle]:
         LocalArticle.where(LocalArticle.id.belongs(in_folder - read))
         .select()
         .join()
-        .select(orderby=~LocalArticle.published)
+        .orderby(~LocalArticle.published)
     ):
         yield article
 
