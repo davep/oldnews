@@ -94,6 +94,9 @@ class ArticleList(EnhancedOptionList):
         )
         if self.option_count:
             self.highlighted = 0
+            self.can_focus = True
+        else:
+            self.can_focus = False
 
     @on(EnhancedOptionList.OptionSelected)
     def _select_article(self, message: EnhancedOptionList.OptionSelected) -> None:
