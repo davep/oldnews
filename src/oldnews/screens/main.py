@@ -59,6 +59,12 @@ class Main(EnhancedScreen[None]):
 
     TITLE = f"OldNews v{__version__}"
 
+    HELP = """
+    ## Main application keys and commands
+
+    The following keys and commands can be used anywhere here on the main screen.
+    """
+
     CSS = """
     Main {
         layout: horizontal;

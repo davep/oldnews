@@ -68,6 +68,13 @@ class ArticleView(Option):
 class ArticleList(EnhancedOptionList):
     """Widget for showing a list of articles."""
 
+    HELP = """
+    ## The articles
+
+    This panel shows the available articles for the folder or subscription
+    that is highlighted in the navigation panel.
+    """
+
     articles: var[Articles] = var(Articles)
     """The list of articles to show."""
 

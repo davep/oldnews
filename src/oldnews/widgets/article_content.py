@@ -55,6 +55,13 @@ class ArticleContent(Vertical):
     }
     """
 
+    HELP = """
+    ## The article
+
+    This panel is the view of the summary of the current article; here you
+    can read the text of the article as is provided in the feed.
+    """
+
     BINDINGS = [
         HelpfulBinding(
             "escape, q",
