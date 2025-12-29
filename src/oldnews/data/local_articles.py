@@ -3,6 +3,7 @@
 ##############################################################################
 # Python imports.
 from datetime import datetime
+from html import unescape
 from typing import Iterator, cast
 
 ##############################################################################
@@ -183,7 +184,7 @@ def get_local_articles(
         articles.append(
             Article(
                 id=article.article_id,
-                title=article.title,
+                title=unescape(article.title),
                 published=article.published,
                 updated=article.updated,
                 author=article.author,
@@ -192,7 +193,7 @@ def get_local_articles(
                 ),
                 origin=Origin(
                     stream_id=article.origin_stream_id,
-                    title=article.origin_title,
+                    title=unescape(article.origin_title),
                     html_url=article.origin_html_url,
                 ),
                 summary=Summary(
