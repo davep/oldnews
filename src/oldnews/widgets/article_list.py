@@ -109,10 +109,7 @@ class ArticleList(EnhancedOptionList):
         )
         if current_id is not None and current_id != new_id:
             self.highlighted = 0
-        if self.option_count:
-            self.can_focus = True
-        else:
-            self.can_focus = False
+        self.can_focus = bool(self.option_count)
 
     @on(EnhancedOptionList.OptionSelected)
     def _select_article(self, message: EnhancedOptionList.OptionSelected) -> None:
