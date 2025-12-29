@@ -94,21 +94,28 @@ def save_local_articles(articles: Articles) -> Articles:
 
 
 ##############################################################################
-def _for_subscription(subscription: Subscription) -> Iterator[LocalArticle]:
+def _for_subscription(
+    subscription: Subscription, unread_only: bool
+) -> Iterator[LocalArticle]:
     """Get all unread articles for a given subscription.
 
     Args:
         subscription: The subscription to get the articles for.
+        unread_only: Only load up the unread articles?
 
     Yields:
-        The unread articles.
+        The articles.
     """
-    read = {
-        category.article.id
-        for category in LocalArticleCategory.where(
-            LocalArticleCategory.category == State.READ
-        ).collect()
-    }
+    read = (
+        {
+            category.article.id
+            for category in LocalArticleCategory.where(
+                LocalArticleCategory.category == State.READ
+            ).collect()
+        }
+        if unread_only
+        else set()
+    )
     for article in (
         LocalArticle.where(~LocalArticle.id.belongs(read))
         .where(origin_stream_id=subscription.id)
@@ -119,11 +126,12 @@ def _for_subscription(subscription: Subscription) -> Iterator[LocalArticle]:
 
 
 ##############################################################################
-def _for_folder(folder: Folder) -> Iterator[LocalArticle]:
+def _for_folder(folder: Folder, unread_only: bool) -> Iterator[LocalArticle]:
     """Get all unread articles for a given folder.
 
     Args:
         folder: The folder to get the articles for.
+        unread_only: Only load up the unread articles?
 
     Yields:
         The unread articles.
@@ -134,12 +142,16 @@ def _for_folder(folder: Folder) -> Iterator[LocalArticle]:
             LocalArticleCategory.category == folder.id
         ).collect()
     }
-    read = {
-        category.article.id
-        for category in LocalArticleCategory.where(
-            LocalArticleCategory.category == State.READ
-        ).collect()
-    }
+    read = (
+        {
+            category.article.id
+            for category in LocalArticleCategory.where(
+                LocalArticleCategory.category == State.READ
+            ).collect()
+        }
+        if unread_only
+        else set()
+    )
     for article in (
         LocalArticle.where(LocalArticle.id.belongs(in_folder - read))
         .select()
@@ -150,20 +162,23 @@ def _for_folder(folder: Folder) -> Iterator[LocalArticle]:
 
 
 ##############################################################################
-def get_local_unread_articles(related_to: Folder | Subscription) -> Articles:
+def get_local_articles(
+    related_to: Folder | Subscription, unread_only: bool
+) -> Articles:
     """Get all available unread articles.
 
     Args:
         related_to: The folder or feed the articles should relate to.
+        unread_only: Only load up the unread articles?
 
     Returns:
         The unread articles.
     """
     articles: list[Article] = []
     for article in (
-        _for_folder(related_to)
+        _for_folder(related_to, unread_only)
         if isinstance(related_to, Folder)
-        else _for_subscription(related_to)
+        else _for_subscription(related_to, unread_only)
     ):
         articles.append(
             Article(

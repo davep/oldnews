@@ -58,7 +58,7 @@ class ArticleView(Option):
             f"[dim italic]{escape(provenance)}[/]",
             f"[dim]{article.published.astimezone().strftime('%Y-%m-%d %H:%M:%S')}[/]",
         )
-        super().__init__(Group(header, details))
+        super().__init__(Group(header, details), id=article.id)
 
     @property
     def article(self) -> Article:
@@ -89,11 +89,28 @@ class ArticleList(EnhancedOptionList):
 
     def _watch_articles(self) -> None:
         """React to the article list being changed."""
-        self.clear_options().add_options(
-            [ArticleView(article) for article in self.articles]
+        # Normally preserved_highlight is good enough; but here I want to
+        # preserve the highlight but only if the article we end up on was
+        # the one we started on; so this time we do a little bit of extra
+        # work to undo preserved_highlight being helpful.
+        current_id = (
+            self.get_option_at_index(self.highlighted).id
+            if self.highlighted is not None
+            else None
         )
-        if self.option_count:
+        with self.preserved_highlight:
+            self.clear_options().add_options(
+                [ArticleView(article) for article in self.articles]
+            )
+        new_id = (
+            self.get_option_at_index(self.highlighted).id
+            if self.highlighted is not None
+            else None
+        )
+        self.notify(f"{current_id} vs {new_id}")
+        if current_id is not None and current_id != new_id:
             self.highlighted = 0
+        if self.option_count:
             self.can_focus = True
         else:
             self.can_focus = False

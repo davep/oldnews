@@ -14,4 +14,11 @@ class RefreshFromTheOldReader(Command):
     FOOTER_TEXT = "Refresh"
 
 
+##############################################################################
+class ToggleShowAll(Command):
+    """Toggle between showing all and showing only unread"""
+
+    BINDING_KEY = "f2"
+
+
 ### main.py ends here

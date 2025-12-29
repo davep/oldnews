@@ -236,5 +236,17 @@ class Navigation(EnhancedOptionList):
         elif isinstance(message.option, SubscriptionView):
             self.post_message(self.CategorySelected(message.option.subscription))
 
+    @property
+    def current_category(self) -> Folder | Subscription | None:
+        """The current category that is highlighted, if any."""
+        if self.highlighted is None:
+            return None
+        selected = self.get_option_at_index(self.highlighted)
+        if isinstance(selected, FolderView):
+            return selected.folder
+        if isinstance(selected, SubscriptionView):
+            return selected.subscription
+        raise ValueError("Unknown category")
+
 
 ### navigation.py ends here

@@ -33,12 +33,12 @@ from textual_enhanced.screen import EnhancedScreen
 ##############################################################################
 # Local imports.
 from .. import __version__
-from ..commands import RefreshFromTheOldReader
+from ..commands import RefreshFromTheOldReader, ToggleShowAll
 from ..data import (
+    get_local_articles,
     get_local_folders,
     get_local_subscriptions,
     get_local_unread,
-    get_local_unread_articles,
     last_grabbed_data_at,
     load_configuration,
     remember_we_last_grabbed_at,
@@ -114,6 +114,7 @@ class Main(EnhancedScreen[None]):
         # Keep these together as they're bound to function keys and destined
         # for the footer.
         Help,
+        ToggleShowAll,
         Quit,
         RefreshFromTheOldReader,
         # Everything else.
@@ -134,6 +135,8 @@ class Main(EnhancedScreen[None]):
     """The currently-viewed list of articles."""
     article: var[Article | None] = var(None)
     """The currently-viewed article."""
+    show_all: var[bool] = var(False)
+    """Should we show all articles or only new?"""
 
     @dataclass
     class BusyWith(Message):
@@ -303,8 +306,13 @@ class Main(EnhancedScreen[None]):
             message: The message to react to.
         """
         self.article = None
-        self.articles = get_local_unread_articles(message.category)
+        self.articles = get_local_articles(message.category, not self.show_all)
         self.query_one(ArticleList).focus()
+
+    def _watch_show_all(self) -> None:
+        """Handle changes to the show all flag."""
+        if category := self.query_one(Navigation).current_category:
+            self.articles = get_local_articles(category, not self.show_all)
 
     @on(ArticleList.ViewArticle)
     def _view_article(self, message: ArticleList.ViewArticle) -> None:
@@ -321,6 +329,13 @@ class Main(EnhancedScreen[None]):
         """Close the current article."""
         self.query_one(ArticleList).focus()
         self.article = None
+
+    def action_toggle_show_all_command(self) -> None:
+        """Toggle showing all/unread."""
+        self.show_all = not self.show_all
+        self.notify(
+            f"Showing {'all available' if self.show_all else 'only unread'} articles"
+        )
 
 
 ### main.py ends here
