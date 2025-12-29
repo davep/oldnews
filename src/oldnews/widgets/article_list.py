@@ -107,7 +107,6 @@ class ArticleList(EnhancedOptionList):
             if self.highlighted is not None
             else None
         )
-        self.notify(f"{current_id} vs {new_id}")
         if current_id is not None and current_id != new_id:
             self.highlighted = 0
         if self.option_count:
