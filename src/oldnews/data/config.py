@@ -28,6 +28,9 @@ class Configuration:
     local_history: int = 28
     """The number of days to keep a local copy of an article."""
 
+    show_all: bool = False
+    """Should we show all articles, or just unread articles?"""
+
 
 ##############################################################################
 def configuration_file() -> Path:

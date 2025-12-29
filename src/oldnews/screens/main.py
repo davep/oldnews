@@ -46,6 +46,7 @@ from ..data import (
     save_local_folders,
     save_local_subscriptions,
     save_local_unread,
+    update_configuration,
 )
 from ..providers import MainCommands
 from ..widgets import ArticleContent, ArticleList, Navigation
@@ -185,6 +186,7 @@ class Main(EnhancedScreen[None]):
 
     def on_mount(self) -> None:
         """Configure the application once the DOM is mounted."""
+        self.show_all = load_configuration().show_all
         self._load_locally()
 
     @on(BusyWith)
@@ -333,6 +335,8 @@ class Main(EnhancedScreen[None]):
     def action_toggle_show_all_command(self) -> None:
         """Toggle showing all/unread."""
         self.show_all = not self.show_all
+        with update_configuration() as config:
+            config.show_all = self.show_all
         self.notify(
             f"Showing {'all available' if self.show_all else 'only unread'} articles"
         )
