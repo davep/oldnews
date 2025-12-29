@@ -33,6 +33,7 @@ from textual_enhanced.screen import EnhancedScreen
 ##############################################################################
 # Local imports.
 from .. import __version__
+from ..commands import RefreshFromTheOldReader
 from ..data import (
     get_local_folders,
     get_local_subscriptions,
@@ -114,6 +115,7 @@ class Main(EnhancedScreen[None]):
         # for the footer.
         Help,
         Quit,
+        RefreshFromTheOldReader,
         # Everything else.
         ChangeTheme,
     ]
@@ -160,9 +162,6 @@ class Main(EnhancedScreen[None]):
 
         counts: Unread
         """The new unread counts."""
-
-    class ReloadFromToR(Message):
-        """Message that requests that we reload from TheOldReader."""
 
     def __init__(self, session: Session) -> None:
         """Initialise the main screen."""
@@ -228,9 +227,7 @@ class Main(EnhancedScreen[None]):
             self.post_message(self.NewUnread(unread))
         # Now that we've loaded everything that we have locally, kick off a
         # refresh from TheOldReader.
-        #
-        # TODO: I might want to delay this a moment, or not. Have a think.
-        self.post_message(self.ReloadFromToR())
+        self.post_message(RefreshFromTheOldReader())
 
     async def _download_newest_articles(self) -> None:
         """Download the latest articles available."""
@@ -255,11 +252,13 @@ class Main(EnhancedScreen[None]):
                 )
         if loaded:
             self.notify(f"Articles downloaded: {loaded}")
+        else:
+            self.notify("No new articles found on TheOldReader")
         remember_we_last_grabbed_at(new_grab)
 
-    @on(ReloadFromToR)
+    @on(RefreshFromTheOldReader)
     @work(exclusive=True)
-    async def load_from_tor(self) -> None:
+    async def action_refresh_from_the_old_reader_command(self) -> None:
         """Load the main data from TheOldReader."""
 
         # Get the folder list.
