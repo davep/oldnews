@@ -100,9 +100,7 @@ class ArticleList(EnhancedOptionList):
             else None
         )
         with self.preserved_highlight:
-            self.clear_options().add_options(
-                [ArticleView(article) for article in self.articles]
-            )
+            self.set_options([ArticleView(article) for article in self.articles])
         new_id = (
             self.get_option_at_index(self.highlighted).id
             if self.highlighted is not None
