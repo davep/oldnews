@@ -333,7 +333,7 @@ class Main(EnhancedScreen[None]):
         await article.mark_read(self._session)
 
     @on(ArticleList.ViewArticle)
-    async def _view_article(self, message: ArticleList.ViewArticle) -> None:
+    def _view_article(self, message: ArticleList.ViewArticle) -> None:
         """Handle a request to view an article.
 
         Args:
