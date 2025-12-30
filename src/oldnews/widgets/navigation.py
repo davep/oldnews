@@ -29,6 +29,7 @@ from textual.widgets.option_list import Option
 
 ##############################################################################
 # Textual enhanced imports.
+from textual_enhanced.binding import HelpfulBinding
 from textual_enhanced.widgets import EnhancedOptionList
 
 ##############################################################################
@@ -134,7 +135,15 @@ class SubscriptionView(Option):
 class Navigation(EnhancedOptionList):
     """The main navigation widget."""
 
-    BINDINGS = [("ctrl+enter", "toggle_folder")]
+    HELP = """
+    ## Navigation
+
+    This panel shows the folders and subscriptions.
+    """
+
+    BINDINGS = [
+        HelpfulBinding("ctrl+enter", "toggle_folder", tooltip="Expand/collapse folder")
+    ]
 
     folders: var[Folders] = var(Folders)
     """The folders that subscriptions are assigned to."""
