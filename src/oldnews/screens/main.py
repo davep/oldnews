@@ -41,6 +41,7 @@ from ..data import (
     get_local_unread,
     last_grabbed_data_at,
     load_configuration,
+    mark_read,
     remember_we_last_grabbed_at,
     save_local_articles,
     save_local_folders,
@@ -316,8 +317,21 @@ class Main(EnhancedScreen[None]):
         if category := self.query_one(Navigation).current_category:
             self.articles = get_local_articles(category, not self.show_all)
 
+    @work
+    async def _mark_read(self, article: Article) -> None:
+        """Mark the given article as read.
+
+        Args:
+            article: The article to mark as read.
+        """
+        mark_read(article)
+        # TODO: This refresh is really heavy-handed. Improve this.
+        if category := self.query_one(Navigation).current_category:
+            self.articles = get_local_articles(category, not self.show_all)
+        await article.mark_read(self._session)
+
     @on(ArticleList.ViewArticle)
-    def _view_article(self, message: ArticleList.ViewArticle) -> None:
+    async def _view_article(self, message: ArticleList.ViewArticle) -> None:
         """Handle a request to view an article.
 
         Args:
@@ -325,6 +339,7 @@ class Main(EnhancedScreen[None]):
         """
         self.article = message.article
         self.query_one(ArticleContent).focus()
+        self._mark_read(self.article)
 
     @on(ArticleContent.Close)
     def _close_article(self) -> None:

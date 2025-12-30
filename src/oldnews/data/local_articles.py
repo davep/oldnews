@@ -47,6 +47,31 @@ class LocalArticle(TypedTable):
         join="left",
     )
 
+    def add_category(self, category: str | State) -> None:
+        """Add a given category to the local article.
+
+        Args:
+            category: The category to add.
+        """
+        if not str(category) in self.categories:
+            assert LocalArticleCategory._db is not None
+            LocalArticleCategory.insert(article=self.id, category=str(category))
+            LocalArticleCategory._db.commit()
+
+    def remove_category(self, category: str | State) -> None:
+        """Remove a given category from the local article.
+
+        Args:
+            category: The category to add.
+        """
+        if str(category) in self.categories:
+            assert LocalArticleCategory._db is not None
+            LocalArticleCategory.where(
+                (LocalArticleCategory.article == self.id)
+                & (LocalArticleCategory.category == str(category))
+            ).delete()
+            LocalArticleCategory._db.commit()
+
 
 ##############################################################################
 class LocalArticleCategory(TypedTable):
@@ -203,6 +228,19 @@ def get_local_articles(
             )
         )
     return Articles(articles)
+
+
+##############################################################################
+def mark_read(article: Article) -> None:
+    """Mark the given article as read.
+
+    Args:
+        article: The article to locally mark as read.
+    """
+    if local_article := LocalArticle.where(
+        LocalArticle.article_id == article.id
+    ).first():
+        local_article.add_category(State.READ)
 
 
 ### local_articles.py ends here
