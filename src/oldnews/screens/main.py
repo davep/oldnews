@@ -292,9 +292,7 @@ class Main(EnhancedScreen[None]):
             self.NewUnread(save_local_unread(await Unread.load(self._session)))
         )
 
-        # Get unread articles. Get all available unread articles if we've
-        # never grabbed any before, otherwise get all those new since we
-        # last grabbed sone.
+        # Download the latest articles we don't know about.
         if last_grabbed_data_at() is None:
             self.post_message(self.BusyWith("Getting available articles"))
         else:
