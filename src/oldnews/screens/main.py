@@ -250,6 +250,11 @@ class Main(EnhancedScreen[None]):
             # means I'll never see them anyway...
             if not article.origin.stream_id:
                 continue
+            # TODO: Right now I'm saving articles one at a time; perhaps I
+            # should save them in small batches? This would be simple enough
+            # -- perhaps same them in batches the same size as the buffer
+            # window I'm using right now (currently 10 articles per trip to
+            # ToR).
             save_local_articles(Articles([article]))
             loaded += 1
             if (loaded % 10) == 0:
