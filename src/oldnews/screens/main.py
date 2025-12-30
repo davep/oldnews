@@ -41,7 +41,7 @@ from ..data import (
     get_local_unread,
     last_grabbed_data_at,
     load_configuration,
-    mark_read,
+    locally_mark_read,
     remember_we_last_grabbed_at,
     save_local_articles,
     save_local_folders,
@@ -312,10 +312,14 @@ class Main(EnhancedScreen[None]):
         self.articles = get_local_articles(message.category, not self.show_all)
         self.query_one(ArticleList).focus()
 
-    def _watch_show_all(self) -> None:
-        """Handle changes to the show all flag."""
+    def _refresh_article_list(self) -> None:
+        """Refresh the content of the article list."""
         if category := self.query_one(Navigation).current_category:
             self.articles = get_local_articles(category, not self.show_all)
+
+    def _watch_show_all(self) -> None:
+        """Handle changes to the show all flag."""
+        self._refresh_article_list()
 
     @work
     async def _mark_read(self, article: Article) -> None:
@@ -324,10 +328,8 @@ class Main(EnhancedScreen[None]):
         Args:
             article: The article to mark as read.
         """
-        mark_read(article)
-        # TODO: This refresh is really heavy-handed. Improve this.
-        if category := self.query_one(Navigation).current_category:
-            self.articles = get_local_articles(category, not self.show_all)
+        locally_mark_read(article)
+        self._refresh_article_list()
         await article.mark_read(self._session)
 
     @on(ArticleList.ViewArticle)

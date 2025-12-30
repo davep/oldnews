@@ -11,7 +11,7 @@ from .config import (
 )
 from .db import initialise_database
 from .last_grab import last_grabbed_data_at, remember_we_last_grabbed_at
-from .local_articles import get_local_articles, mark_read, save_local_articles
+from .local_articles import get_local_articles, locally_mark_read, save_local_articles
 from .local_folders import get_local_folders, save_local_folders
 from .local_subscriptions import get_local_subscriptions, save_local_subscriptions
 from .local_unread import get_local_unread, save_local_unread
@@ -30,7 +30,7 @@ __all__ = [
     "initialise_database",
     "last_grabbed_data_at",
     "load_configuration",
-    "mark_read",
+    "locally_mark_read",
     "remember_we_last_grabbed_at",
     "save_configuration",
     "save_local_articles",

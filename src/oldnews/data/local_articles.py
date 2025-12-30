@@ -231,7 +231,7 @@ def get_local_articles(
 
 
 ##############################################################################
-def mark_read(article: Article) -> None:
+def locally_mark_read(article: Article) -> None:
     """Mark the given article as read.
 
     Args:
