@@ -338,6 +338,9 @@ class Main(EnhancedScreen[None]):
             article: The article to mark as read.
         """
         locally_mark_read(article)
+        self.post_message(
+            self.NewUnread(get_local_unread(self.folders, self.subscriptions))
+        )
         self._refresh_article_list()
         await article.mark_read(self._session)
 
