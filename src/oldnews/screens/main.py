@@ -10,8 +10,10 @@ from datetime import datetime, timedelta, timezone
 from oldas import (
     Article,
     Articles,
+    Folder,
     Folders,
     Session,
+    Subscription,
     Subscriptions,
     Unread,
 )
@@ -131,6 +133,8 @@ class Main(EnhancedScreen[None]):
     """The folders that subscriptions are assigned to."""
     subscriptions: var[Subscriptions] = var(Subscriptions)
     """The list of subscriptions."""
+    current_category: var[Folder | Subscription | None] = var(None)
+    """The navigation category that is currently selected."""
     unread: var[Unread | None] = var(None)
     """The unread counts."""
     articles: var[Articles] = var(Articles)
@@ -181,7 +185,9 @@ class Main(EnhancedScreen[None]):
             Main.folders, Main.subscriptions, Main.unread
         )
         with Vertical():
-            yield ArticleList(classes="panel").data_bind(Main.articles)
+            yield ArticleList(classes="panel").data_bind(
+                Main.articles, Main.current_category
+            )
             yield ArticleContent(classes="panel").data_bind(Main.article)
         yield Footer()
 
@@ -311,6 +317,7 @@ class Main(EnhancedScreen[None]):
         Args:
             message: The message to react to.
         """
+        self.current_category = message.category
         self.article = None
         self.articles = get_local_articles(message.category, not self.show_all)
         self.query_one(ArticleList).focus()

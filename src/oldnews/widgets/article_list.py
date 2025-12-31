@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 ##############################################################################
 # OldAs imports.
-from oldas import Article, Articles
+from oldas import Article, Articles, Folder, Subscription
 
 ##############################################################################
 # Rich imports.
@@ -30,11 +30,12 @@ from textual_enhanced.widgets import EnhancedOptionList
 class ArticleView(Option):
     """The view of an article in the article list."""
 
-    def __init__(self, article: Article) -> None:
+    def __init__(self, article: Article, showing_subscription: bool) -> None:
         """Initialise the article object.
 
         Args:
             article: The article to view.
+            showing_subscription: Is the article list showing a subscription?
         """
         self._article = article
         """The article to view."""
@@ -46,7 +47,11 @@ class ArticleView(Option):
         else:
             header.add_row("", f"[dim bold]{escape(article.title)}[/]")
         provenance = escape(
-            f"{article.origin.title}, {article.author}"
+            (
+                article.author
+                if showing_subscription
+                else f"{article.origin.title}, {article.author}"
+            )
             if article.author and article.author != article.origin.title
             else article.origin.title
         )
@@ -78,6 +83,8 @@ class ArticleList(EnhancedOptionList):
     that is highlighted in the navigation panel.
     """
 
+    current_category: var[Folder | Subscription | None] = var(None)
+    """The category of articles being shown."""
     articles: var[Articles] = var(Articles)
     """The list of articles to show."""
 
@@ -99,8 +106,14 @@ class ArticleList(EnhancedOptionList):
             if self.highlighted is not None
             else None
         )
+        showing_subscription = isinstance(self.current_category, Subscription)
         with self.preserved_highlight:
-            self.set_options([ArticleView(article) for article in self.articles])
+            self.set_options(
+                [
+                    ArticleView(article, showing_subscription)
+                    for article in self.articles
+                ]
+            )
         new_id = (
             self.get_option_at_index(self.highlighted).id
             if self.highlighted is not None
