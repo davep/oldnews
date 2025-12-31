@@ -15,7 +15,6 @@ from oldas import (
     Session,
     Subscription,
     Subscriptions,
-    Unread,
 )
 
 ##############################################################################
@@ -37,6 +36,7 @@ from textual_enhanced.screen import EnhancedScreen
 from .. import __version__
 from ..commands import RefreshFromTheOldReader, ToggleShowAll
 from ..data import (
+    LocalUnread,
     get_local_articles,
     get_local_folders,
     get_local_subscriptions,
@@ -48,7 +48,6 @@ from ..data import (
     save_local_articles,
     save_local_folders,
     save_local_subscriptions,
-    save_local_unread,
     update_configuration,
 )
 from ..providers import MainCommands
@@ -135,7 +134,7 @@ class Main(EnhancedScreen[None]):
     """The list of subscriptions."""
     current_category: var[Folder | Subscription | None] = var(None)
     """The navigation category that is currently selected."""
-    unread: var[Unread | None] = var(None)
+    unread: var[LocalUnread] = var(dict)
     """The unread counts."""
     articles: var[Articles] = var(Articles)
     """The currently-viewed list of articles."""
@@ -169,7 +168,7 @@ class Main(EnhancedScreen[None]):
     class NewUnread(Message):
         """Message sent when new unread counts are acquired."""
 
-        counts: Unread
+        counts: LocalUnread
         """The new unread counts."""
 
     def __init__(self, session: Session) -> None:
@@ -235,7 +234,7 @@ class Main(EnhancedScreen[None]):
             self.post_message(self.NewFolders(folders))
         if subscriptions := get_local_subscriptions():
             self.post_message(self.NewSubscriptions(subscriptions))
-        if unread := get_local_unread():
+        if unread := get_local_unread(folders, subscriptions):
             self.post_message(self.NewUnread(unread))
         # Now that we've loaded everything that we have locally, kick off a
         # refresh from TheOldReader.
@@ -292,12 +291,6 @@ class Main(EnhancedScreen[None]):
             )
         )
 
-        # Get the unread counts.
-        self.post_message(self.BusyWith("Getting unread counts"))
-        self.post_message(
-            self.NewUnread(save_local_unread(await Unread.load(self._session)))
-        )
-
         # Download the latest articles we don't know about.
         if last_grabbed_data_at() is None:
             self.post_message(self.BusyWith("Getting available articles"))
@@ -306,6 +299,12 @@ class Main(EnhancedScreen[None]):
                 self.BusyWith(f"Getting articles new since {last_grabbed_data_at()}")
             )
         await self._download_newest_articles()
+
+        # Recalculate the unread counts.
+        self.post_message(self.BusyWith("Calculating unread counts"))
+        self.post_message(
+            self.NewUnread(get_local_unread(self.folders, self.subscriptions))
+        )
 
         # Finally we're all done.
         self.post_message(self.BusyWith(""))

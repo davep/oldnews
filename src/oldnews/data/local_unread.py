@@ -2,83 +2,31 @@
 
 ##############################################################################
 # OldAS imports.
-from oldas import Count, Counts, Prefix, Unread, id_is_a_feed, id_is_a_folder
+from oldas import Folders, Subscriptions
 
 ##############################################################################
-# TypeDAL imports.
-from typedal import TypedTable
-
+# Local imports.
+from .local_articles import unread_count_in
 
 ##############################################################################
-class LocalUnread(TypedTable):
-    """A local copy of the unread counts."""
-
-    unread_id: str
-    """The ID of the unread count."""
-    count: int
-    """The unread count."""
+LocalUnread = dict[str, int]
+"""Type of the local unread data."""
 
 
 ##############################################################################
-def get_local_unread() -> Unread:
-    """Get the local copy of the unread counts.
+def get_local_unread(folders: Folders, subscriptions: Subscriptions) -> LocalUnread:
+    """Get the local unread counts.
+
+    Args:
+        folders: The folders we know about.
+        subscriptions: The subscriptions we know about.
 
     Returns:
         The local unread counts.
     """
-    local_unread = LocalUnread.select(LocalUnread.ALL).collect()
-    total = sum(unread.count for unread in local_unread)
-    return Unread(
-        total,
-        folders=Counts(
-            Count.from_json(
-                {
-                    "id": count.unread_id,
-                    "count": count.count,
-                    "newestItemTimestampUsec": "0",
-                },
-                Prefix.FOLDER,
-            )
-            for count in local_unread
-            if id_is_a_folder(count.unread_id)
-        ),
-        feeds=Counts(
-            Count.from_json(
-                {
-                    "id": count.unread_id,
-                    "count": count.count,
-                    "newestItemTimestampUsec": "0",
-                },
-                Prefix.FEED,
-            )
-            for count in local_unread
-            if id_is_a_feed(count.unread_id)
-        ),
-    )
-
-
-##############################################################################
-def save_local_unread(unread: Unread) -> Unread:
-    """Locally save the given unread counts.
-
-    Args:
-        unread: The unread counts to save.
-
-    Returns:
-        The unread counts.
-    """
-    assert LocalUnread._db is not None
-    LocalUnread.truncate()
-    LocalUnread.bulk_insert(
-        [
-            {
-                "unread_id": count.id,
-                "count": count.unread,
-            }
-            for count in (*unread.folders, *unread.feeds)
-        ]
-    )
-    LocalUnread._db.commit()
+    unread: LocalUnread = {}
+    for category in [*folders, *subscriptions]:
+        unread[category.id] = unread_count_in(category)
     return unread
 
 

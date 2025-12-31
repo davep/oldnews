@@ -7,11 +7,10 @@ from __future__ import annotations
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from operator import attrgetter
 
 ##############################################################################
 # OldAs imports.
-from oldas import Count, Folder, Folders, Subscription, Subscriptions, Unread
+from oldas import Folder, Folders, Subscription, Subscriptions
 
 ##############################################################################
 # Rich imports.
@@ -34,34 +33,14 @@ from textual_enhanced.widgets import EnhancedOptionList
 
 ##############################################################################
 # Local imports.
-from ..data import get_navigation_state, save_navigation_state
-
-
-##############################################################################
-def _unread(
-    item_id: str, type_getter: attrgetter[list[Count]], counts: Unread | None
-) -> int:
-    """Get the given unread count for a given item.
-
-    Args:
-        item_id: The ID of the item to get the count for.
-        type_getter: The getter for the type of unread item.
-        counts: The unread counts.
-
-    Returns:
-        The unread count.
-    """
-    if counts is None:
-        return 0
-    count = [item for item in type_getter(counts) if item.id == item_id and item.unread]
-    return count[0].unread if count else 0
+from ..data import LocalUnread, get_navigation_state, save_navigation_state
 
 
 ##############################################################################
 class FolderView(Option):
     """The view of a folder within the navigation widget."""
 
-    def __init__(self, folder: Folder, expanded: bool, counts: Unread | None) -> None:
+    def __init__(self, folder: Folder, expanded: bool, counts: LocalUnread) -> None:
         """Initialise the folder view object.
 
         Args:
@@ -72,7 +51,7 @@ class FolderView(Option):
         self._folder = folder
         """The folder we're viewing."""
         style = "bold dim"
-        if unread := _unread(folder.id, attrgetter("folders"), counts):
+        if unread := counts.get(folder.id, 0):
             style = "bold"
         prompt = Table.grid(expand=True)
         prompt.add_column(width=2)
@@ -100,7 +79,7 @@ class FolderView(Option):
 class SubscriptionView(Option):
     """The view of a subscription within the navigation widget."""
 
-    def __init__(self, subscription: Subscription, counts: Unread | None) -> None:
+    def __init__(self, subscription: Subscription, counts: LocalUnread) -> None:
         """Initialise the subscription view object.
 
         Args:
@@ -110,7 +89,7 @@ class SubscriptionView(Option):
         self._subscription = subscription
         """The subscription we're viewing."""
         style = "dim"
-        if unread := _unread(subscription.id, attrgetter("feeds"), counts):
+        if unread := counts.get(subscription.id, 0):
             style = f"not {style}"
         prompt = Table.grid(expand=True)
         prompt.add_column(width=2)
@@ -149,7 +128,7 @@ class Navigation(EnhancedOptionList):
     """The folders that subscriptions are assigned to."""
     subscriptions: var[Subscriptions] = var(Subscriptions)
     """The list of subscriptions."""
-    unread: var[Unread | None] = var(None)
+    unread: var[LocalUnread] = var(dict)
     """The unread counts."""
 
     @dataclass
