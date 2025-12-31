@@ -134,7 +134,7 @@ class Main(EnhancedScreen[None]):
     """The list of subscriptions."""
     current_category: var[Folder | Subscription | None] = var(None)
     """The navigation category that is currently selected."""
-    unread: var[LocalUnread] = var(dict)
+    unread: var[LocalUnread] = var(LocalUnread)
     """The unread counts."""
     articles: var[Articles] = var(Articles)
     """The currently-viewed list of articles."""

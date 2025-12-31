@@ -128,7 +128,7 @@ class Navigation(EnhancedOptionList):
     """The folders that subscriptions are assigned to."""
     subscriptions: var[Subscriptions] = var(Subscriptions)
     """The list of subscriptions."""
-    unread: var[LocalUnread] = var(dict)
+    unread: var[LocalUnread] = var(LocalUnread)
     """The unread counts."""
 
     @dataclass
