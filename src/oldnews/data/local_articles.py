@@ -243,4 +243,35 @@ def locally_mark_read(article: Article) -> None:
         local_article.add_category(State.READ)
 
 
+##############################################################################
+def unread_count_in(category: Folder | Subscription) -> int:
+    """Get the count of unread articles in a given category.
+
+    Args:
+        category: The category to get the unread count for.
+
+    Returns:
+        The count of unread articles in that category.
+    """
+    read = {
+        category.article.id
+        for category in LocalArticleCategory.where(
+            LocalArticleCategory.category == State.READ
+        ).collect()
+    }
+    if isinstance(category, Folder):
+        in_folder = {
+            category.article.id
+            for category in LocalArticleCategory.where(
+                LocalArticleCategory.category == category.id
+            ).collect()
+        }
+        return LocalArticle.where(LocalArticle.id.belongs(in_folder - read)).count()
+    return (
+        LocalArticle.where(~LocalArticle.id.belongs(read))
+        .where(origin_stream_id=category.id)
+        .count()
+    )
+
+
 ### local_articles.py ends here
