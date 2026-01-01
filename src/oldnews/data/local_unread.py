@@ -25,7 +25,7 @@ def get_local_unread(folders: Folders, subscriptions: Subscriptions) -> LocalUnr
         The local unread counts.
     """
     read = get_local_read_article_ids()
-    unread: LocalUnread = {}
+    unread = LocalUnread()
     for category in [*folders, *subscriptions]:
         unread[category.id] = unread_count_in(category, read)
     return unread
