@@ -248,9 +248,15 @@ def unread_count_in(
 
     Args:
         category: The category to get the unread count for.
+        read: The set of IDs of read articles.
 
     Returns:
         The count of unread articles in that category.
+
+    Notes:
+        Note that `read` is optional and will be worked out of not passed,
+        but if this function is being called in a tight loop it's more
+        efficient to provide this externally.
     """
     read = get_local_read_article_ids() if read is None else read
     if isinstance(category, Folder):
