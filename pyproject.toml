@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "html-to-markdown>=2.15.0",
+    "oldas>=0.1.0",
     "textual>=6.3.0",
     "textual-enhanced>=1.2.0",
     "typedal>=4.2.2",
