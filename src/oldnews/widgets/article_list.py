@@ -3,6 +3,7 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
+from typing import cast
 
 ##############################################################################
 # OldAs imports.
@@ -132,6 +133,26 @@ class ArticleList(EnhancedOptionList):
         """
         assert isinstance(message.option, ArticleView)
         self.post_message(self.ViewArticle(message.option.article))
+
+    def select_next_unread(self) -> None:
+        """Select the next unread article in the list."""
+        if self.highlighted is None:
+            return
+        articles: list[ArticleView] = cast(
+            list[ArticleView],
+            [
+                *self.options[self.highlighted + 1 : -1],
+                *self.options[0 : self.highlighted - 1],
+            ],
+        )
+        if next_hit := next(
+            (article for article in articles if article.article.is_unread), None
+        ):
+            if next_hit.id is not None:
+                self.highlighted = self.get_option_index(next_hit.id)
+                self.call_later(self.run_action, "select")
+        else:
+            self.notify("No more unread articles")
 
 
 ### article_list.py ends here

@@ -28,4 +28,11 @@ class Escape(Command):
     BINDING_KEY = "escape"
 
 
+##############################################################################
+class NextUnread(Command):
+    """Navigate to the next unread article in the currently-selected category"""
+
+    BINDING_KEY = "n"
+
+
 ### main.py ends here

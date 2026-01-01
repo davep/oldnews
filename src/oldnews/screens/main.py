@@ -34,7 +34,7 @@ from textual_enhanced.screen import EnhancedScreen
 ##############################################################################
 # Local imports.
 from .. import __version__
-from ..commands import Escape, RefreshFromTheOldReader, ToggleShowAll
+from ..commands import Escape, NextUnread, RefreshFromTheOldReader, ToggleShowAll
 from ..data import (
     LocalUnread,
     get_local_articles,
@@ -122,6 +122,7 @@ class Main(EnhancedScreen[None]):
         RefreshFromTheOldReader,
         # Everything else.
         Escape,
+        NextUnread,
         ChangeTheme,
     ]
 
@@ -195,6 +196,31 @@ class Main(EnhancedScreen[None]):
         """Configure the application once the DOM is mounted."""
         self.show_all = load_configuration().show_all
         self._load_locally()
+
+    def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
+        """Check if an action is possible to perform right now.
+
+        Args:
+            action: The action to perform.
+            parameters: The parameters of the action.
+
+        Returns:
+            `True` if it can perform, `False` or `None` if not.
+        """
+        if not self.is_mounted:
+            # Surprisingly it seems that Textual's "dynamic bindings" can
+            # cause this method to be called before the DOM is up and
+            # running. This breaks the rule of least astonishment, I'd say,
+            # but okay let's be defensive... (when I can come up with a nice
+            # little MRE I'll report it).
+            return True
+        if action == NextUnread.action_name():
+            return (
+                self.article is not None
+                and self.articles is not None
+                and any(article.is_unread for article in self.articles)
+            )
+        return True
 
     @on(BusyWith)
     def _indicate_busy_with(self, message: BusyWith) -> None:
@@ -384,6 +410,10 @@ class Main(EnhancedScreen[None]):
             self.query_one(Navigation).focus()
         elif self.focused is self.query_one(Navigation):
             self.app.exit()
+
+    def action_next_unread_command(self) -> None:
+        """Go to the next unread article in the currently-viewed category."""
+        self.query_one(ArticleList).select_next_unread()
 
 
 ### main.py ends here
