@@ -31,6 +31,9 @@ class Configuration:
     show_all: bool = False
     """Should we show all articles, or just unread articles?"""
 
+    mark_read_on_read_timeout: float = 0.25
+    """How long to wait before marking an article as read, upon reading it."""
+
 
 ##############################################################################
 def configuration_file() -> Path:
