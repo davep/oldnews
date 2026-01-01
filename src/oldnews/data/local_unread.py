@@ -1,4 +1,4 @@
-"""Code relating to persisting unread counts."""
+"""Code relating to unread counts."""
 
 ##############################################################################
 # OldAS imports.
