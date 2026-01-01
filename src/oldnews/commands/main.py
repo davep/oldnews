@@ -7,7 +7,7 @@ from textual_enhanced.commands import Command
 
 ##############################################################################
 class RefreshFromTheOldReader(Command):
-    """Connect to TheOldReader and refresh the local articles."""
+    """Connect to TheOldReader and refresh the local articles"""
 
     BINDING_KEY = "ctrl+r"
     SHOW_IN_FOOTER = True
