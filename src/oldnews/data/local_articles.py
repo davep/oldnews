@@ -120,6 +120,21 @@ def save_local_articles(articles: Articles) -> Articles:
 
 
 ##############################################################################
+def get_local_read_article_ids() -> set[int]:
+    """Get the set of local articles that have been read.
+
+    Returns:
+        A `set` of IDs of articles that have been read.
+    """
+    return {
+        category.article.id
+        for category in LocalArticleCategory.where(
+            LocalArticleCategory.category == State.READ
+        ).collect()
+    }
+
+
+##############################################################################
 def _for_subscription(
     subscription: Subscription, unread_only: bool
 ) -> Iterator[LocalArticle]:
@@ -132,16 +147,7 @@ def _for_subscription(
     Yields:
         The articles.
     """
-    read = (
-        {
-            category.article.id
-            for category in LocalArticleCategory.where(
-                LocalArticleCategory.category == State.READ
-            ).collect()
-        }
-        if unread_only
-        else set()
-    )
+    read = get_local_read_article_ids() if unread_only else set()
     for article in (
         LocalArticle.where(~LocalArticle.id.belongs(read))
         .where(origin_stream_id=subscription.id)
@@ -168,16 +174,7 @@ def _for_folder(folder: Folder, unread_only: bool) -> Iterator[LocalArticle]:
             LocalArticleCategory.category == folder.id
         ).collect()
     }
-    read = (
-        {
-            category.article.id
-            for category in LocalArticleCategory.where(
-                LocalArticleCategory.category == State.READ
-            ).collect()
-        }
-        if unread_only
-        else set()
-    )
+    read = get_local_read_article_ids() if unread_only else set()
     for article in (
         LocalArticle.where(LocalArticle.id.belongs(in_folder - read))
         .select()
@@ -244,7 +241,9 @@ def locally_mark_read(article: Article) -> None:
 
 
 ##############################################################################
-def unread_count_in(category: Folder | Subscription) -> int:
+def unread_count_in(
+    category: Folder | Subscription, read: set[int] | None = None
+) -> int:
     """Get the count of unread articles in a given category.
 
     Args:
@@ -253,12 +252,7 @@ def unread_count_in(category: Folder | Subscription) -> int:
     Returns:
         The count of unread articles in that category.
     """
-    read = {
-        category.article.id
-        for category in LocalArticleCategory.where(
-            LocalArticleCategory.category == State.READ
-        ).collect()
-    }
+    read = get_local_read_article_ids() if read is None else read
     if isinstance(category, Folder):
         in_folder = {
             category.article.id

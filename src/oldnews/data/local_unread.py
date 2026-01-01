@@ -6,7 +6,7 @@ from oldas import Folders, Subscriptions
 
 ##############################################################################
 # Local imports.
-from .local_articles import unread_count_in
+from .local_articles import get_local_read_article_ids, unread_count_in
 
 ##############################################################################
 LocalUnread = dict[str, int]
@@ -24,9 +24,10 @@ def get_local_unread(folders: Folders, subscriptions: Subscriptions) -> LocalUnr
     Returns:
         The local unread counts.
     """
+    read = get_local_read_article_ids()
     unread: LocalUnread = {}
     for category in [*folders, *subscriptions]:
-        unread[category.id] = unread_count_in(category)
+        unread[category.id] = unread_count_in(category, read)
     return unread
 
 
