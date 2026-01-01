@@ -353,7 +353,7 @@ class Main(EnhancedScreen[None]):
         """
         self.article = message.article
         self.query_one(ArticleContent).focus()
-        self._mark_read(self.article)
+        self.set_timer(1, lambda: self._mark_read(message.article))
 
     @on(ArticleContent.Close)
     def _close_article(self) -> None:
