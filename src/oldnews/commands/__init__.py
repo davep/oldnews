@@ -2,10 +2,10 @@
 
 ##############################################################################
 # Local imports.
-from .main import RefreshFromTheOldReader, ToggleShowAll
+from .main import Escape, RefreshFromTheOldReader, ToggleShowAll
 
 ##############################################################################
 # Exports.
-__all__ = ["RefreshFromTheOldReader", "ToggleShowAll"]
+__all__ = ["Escape", "RefreshFromTheOldReader", "ToggleShowAll"]
 
 ### __init__.py ends here

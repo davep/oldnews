@@ -34,7 +34,7 @@ from textual_enhanced.screen import EnhancedScreen
 ##############################################################################
 # Local imports.
 from .. import __version__
-from ..commands import RefreshFromTheOldReader, ToggleShowAll
+from ..commands import Escape, RefreshFromTheOldReader, ToggleShowAll
 from ..data import (
     LocalUnread,
     get_local_articles,
@@ -121,6 +121,7 @@ class Main(EnhancedScreen[None]):
         Quit,
         RefreshFromTheOldReader,
         # Everything else.
+        Escape,
         ChangeTheme,
     ]
 
@@ -358,12 +359,6 @@ class Main(EnhancedScreen[None]):
             lambda: self._mark_read(message.article),
         )
 
-    @on(ArticleContent.Close)
-    def _close_article(self) -> None:
-        """Close the current article."""
-        self.query_one(ArticleList).focus()
-        self.article = None
-
     def action_toggle_show_all_command(self) -> None:
         """Toggle showing all/unread."""
         self.show_all = not self.show_all
@@ -372,6 +367,23 @@ class Main(EnhancedScreen[None]):
         self.notify(
             f"Showing {'all available' if self.show_all else 'only unread'} articles"
         )
+
+    def action_escape_command(self) -> None:
+        """Handle escaping.
+
+        The action's approach is to step-by-step back out from the 'deepest'
+        level to the topmost, and if we're at the topmost then exit the
+        application.
+        """
+        if self.focused is not None and self.focused.parent is self.query_one(
+            ArticleContent
+        ):
+            self.query_one(ArticleList).focus()
+            self.article = None
+        elif self.focused is self.query_one(ArticleList):
+            self.query_one(Navigation).focus()
+        elif self.focused is self.query_one(Navigation):
+            self.app.exit()
 
 
 ### main.py ends here

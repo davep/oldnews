@@ -12,7 +12,7 @@ from textual_enhanced.commands import (
 
 ##############################################################################
 # Local imports.
-from ..commands import RefreshFromTheOldReader, ToggleShowAll
+from ..commands import Escape, RefreshFromTheOldReader, ToggleShowAll
 
 
 ##############################################################################
@@ -25,6 +25,7 @@ class MainCommands(CommandsProvider):
         Yields:
             The commands for the command palette.
         """
+        yield Escape()
         yield ToggleShowAll()
         yield RefreshFromTheOldReader()
         yield ChangeTheme()

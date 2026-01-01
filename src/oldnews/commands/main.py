@@ -21,4 +21,11 @@ class ToggleShowAll(Command):
     BINDING_KEY = "f2"
 
 
+##############################################################################
+class Escape(Command):
+    """Back out through the panes, or exit the app if the navigation pane has focus"""
+
+    BINDING_KEY = "escape"
+
+
 ### main.py ends here

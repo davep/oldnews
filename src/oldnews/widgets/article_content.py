@@ -62,21 +62,8 @@ class ArticleContent(Vertical):
     can read the text of the article as is provided in the feed.
     """
 
-    BINDINGS = [
-        HelpfulBinding(
-            "escape, q",
-            "close_article",
-            "Close",
-            show=False,
-            tooltip="Close the view of the current article",
-        )
-    ]
-
     article: var[Article | None] = var(None)
     """The article being viewed."""
-
-    class Close(Message):
-        """Message sent when the user wants to close the current article."""
 
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
@@ -97,10 +84,6 @@ class ArticleContent(Vertical):
     def focus(self, scroll_visible: bool = True) -> Self:
         self.query_one(VerticalScroll).focus(scroll_visible)
         return self
-
-    def action_close_article(self) -> None:
-        """Close the current article."""
-        self.post_message(self.Close())
 
 
 ### article_content.py ends here
