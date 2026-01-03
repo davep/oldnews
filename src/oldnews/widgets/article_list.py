@@ -138,15 +138,19 @@ class ArticleList(EnhancedOptionList):
         """Select the next unread article in the list."""
         if self.highlighted is None:
             return
-        articles = cast(
-            list[ArticleView],
-            [
-                *self.options[self.highlighted + 1 : -1],
-                *self.options[0 : self.highlighted - 1],
-            ],
-        )
         if next_hit := next(
-            (article for article in articles if article.article.is_unread), None
+            (
+                article
+                for article in cast(
+                    list[ArticleView],
+                    [
+                        *self.options[self.highlighted + 1 : -1],
+                        *self.options[0 : self.highlighted - 1],
+                    ],
+                )
+                if article.article.is_unread
+            ),
+            None,
         ):
             if next_hit.id is not None:
                 self.highlighted = self.get_option_index(next_hit.id)
