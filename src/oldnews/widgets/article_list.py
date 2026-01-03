@@ -138,7 +138,7 @@ class ArticleList(EnhancedOptionList):
         """Select the next unread article in the list."""
         if self.highlighted is None:
             return
-        articles: list[ArticleView] = cast(
+        articles = cast(
             list[ArticleView],
             [
                 *self.options[self.highlighted + 1 : -1],
