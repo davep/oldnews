@@ -271,9 +271,13 @@ class Main(EnhancedScreen[None]):
             self.post_message(self.NewSubscriptions(subscriptions))
         if unread := get_local_unread(folders, subscriptions):
             self.post_message(self.NewUnread(unread))
-        # Now that we've loaded everything that we have locally, kick off a
-        # refresh from TheOldReader.
-        self.post_message(RefreshFromTheOldReader())
+        # If we've never grabbed data from ToR before, or if it's been long enough...
+        if (last_grabbed := last_grabbed_data_at()) is None or (
+            (datetime.now() - last_grabbed).seconds
+            >= load_configuration().startup_refresh_holdoff_period
+        ):
+            # ...kick off a refresh from TheOldReader.
+            self.post_message(RefreshFromTheOldReader())
 
     async def _download_newest_articles(self) -> None:
         """Download the latest articles available."""
