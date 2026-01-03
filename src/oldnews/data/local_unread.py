@@ -2,7 +2,7 @@
 
 ##############################################################################
 # OldAS imports.
-from oldas import Folders, Subscriptions
+from oldas import Folders, Subscriptions, id_is_a_folder
 
 ##############################################################################
 # Local imports.
@@ -29,6 +29,19 @@ def get_local_unread(folders: Folders, subscriptions: Subscriptions) -> LocalUnr
     for category in [*folders, *subscriptions]:
         unread[category.id] = unread_count_in(category, read)
     return unread
+
+
+##############################################################################
+def total_unread(unread: LocalUnread) -> int:
+    """Calculate the total unread.
+
+    Args:
+        unread: The unread counts.
+
+    Returns:
+        The total unread.
+    """
+    return sum(count for category, count in unread.items() if id_is_a_folder(category))
 
 
 ### local_unread.py ends here
