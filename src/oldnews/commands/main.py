@@ -25,7 +25,7 @@ class ToggleShowAll(Command):
 class Escape(Command):
     """Back out through the panes, or exit the app if the navigation pane has focus"""
 
-    BINDING_KEY = "escape"
+    BINDING_KEY = "escape, q"
 
 
 ##############################################################################
