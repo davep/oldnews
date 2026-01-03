@@ -48,6 +48,7 @@ from ..data import (
     save_local_articles,
     save_local_folders,
     save_local_subscriptions,
+    total_unread,
     update_configuration,
 )
 from ..providers import MainCommands
@@ -146,11 +147,11 @@ class Main(EnhancedScreen[None]):
     """Should we show all articles or only new?"""
 
     @dataclass
-    class BusyWith(Message):
-        """Message sent to indicate we're busy with something."""
+    class SubTitle(Message):
+        """Message sent to set the sub-title to something."""
 
-        operation: str
-        """The operation we're busy with."""
+        title: str | None = None
+        """The title to set."""
 
     @dataclass
     class NewFolders(Message):
@@ -222,10 +223,16 @@ class Main(EnhancedScreen[None]):
             )
         return True
 
-    @on(BusyWith)
-    def _indicate_busy_with(self, message: BusyWith) -> None:
-        """Indicate we're busy with something."""
-        self.sub_title = message.operation
+    @on(SubTitle)
+    def _update_sub_title(self, message: SubTitle) -> None:
+        """Handle a request to set the sub-title to something.
+
+        Args:
+            message: The message requesting the sub-title be updated.
+        """
+        self.sub_title = (
+            message.title if message.title else f"{total_unread(self.unread)} unread"
+        )
 
     @on(NewFolders)
     def _new_folders(self, message: NewFolders) -> None:
@@ -253,6 +260,7 @@ class Main(EnhancedScreen[None]):
             message: The message with the new unread counts.
         """
         self.unread = message.counts
+        self.post_message(self.SubTitle(""))
 
     @work(thread=True, exclusive=True)
     def _load_locally(self) -> None:
@@ -291,7 +299,7 @@ class Main(EnhancedScreen[None]):
             loaded += 1
             if (loaded % 10) == 0:
                 self.post_message(
-                    self.BusyWith(f"Downloading articles from TheOldReader: {loaded}")
+                    self.SubTitle(f"Downloading articles from TheOldReader: {loaded}")
                 )
         if loaded:
             self.notify(f"Articles downloaded: {loaded}")
@@ -305,13 +313,13 @@ class Main(EnhancedScreen[None]):
         """Load the main data from TheOldReader."""
 
         # Get the folder list.
-        self.post_message(self.BusyWith("Getting folder list"))
+        self.post_message(self.SubTitle("Getting folder list"))
         self.post_message(
             self.NewFolders(save_local_folders(await Folders.load(self._session)))
         )
 
         # Get the subscriptions list.
-        self.post_message(self.BusyWith("Getting subscriptions list"))
+        self.post_message(self.SubTitle("Getting subscriptions list"))
         self.post_message(
             self.NewSubscriptions(
                 save_local_subscriptions(await Subscriptions.load(self._session))
@@ -320,21 +328,21 @@ class Main(EnhancedScreen[None]):
 
         # Download the latest articles we don't know about.
         if last_grabbed_data_at() is None:
-            self.post_message(self.BusyWith("Getting available articles"))
+            self.post_message(self.SubTitle("Getting available articles"))
         else:
             self.post_message(
-                self.BusyWith(f"Getting articles new since {last_grabbed_data_at()}")
+                self.SubTitle(f"Getting articles new since {last_grabbed_data_at()}")
             )
         await self._download_newest_articles()
 
         # Recalculate the unread counts.
-        self.post_message(self.BusyWith("Calculating unread counts"))
+        self.post_message(self.SubTitle("Calculating unread counts"))
         self.post_message(
             self.NewUnread(get_local_unread(self.folders, self.subscriptions))
         )
 
         # Finally we're all done.
-        self.post_message(self.BusyWith(""))
+        self.post_message(self.SubTitle(""))
 
     @on(Navigation.CategorySelected)
     def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:
