@@ -35,4 +35,11 @@ class NextUnread(Command):
     BINDING_KEY = "n"
 
 
+##############################################################################
+class OpenArticle(Command):
+    """Open the current article in the web browser"""
+
+    BINDING_KEY = "o"
+
+
 ### main.py ends here

@@ -12,7 +12,13 @@ from textual_enhanced.commands import (
 
 ##############################################################################
 # Local imports.
-from ..commands import Escape, NextUnread, RefreshFromTheOldReader, ToggleShowAll
+from ..commands import (
+    Escape,
+    NextUnread,
+    OpenArticle,
+    RefreshFromTheOldReader,
+    ToggleShowAll,
+)
 
 
 ##############################################################################
@@ -27,6 +33,7 @@ class MainCommands(CommandsProvider):
         """
         yield Escape()
         yield from self.maybe(NextUnread)
+        yield from self.maybe(OpenArticle)
         yield ToggleShowAll()
         yield RefreshFromTheOldReader()
         yield ChangeTheme()

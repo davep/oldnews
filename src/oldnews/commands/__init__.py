@@ -2,10 +2,22 @@
 
 ##############################################################################
 # Local imports.
-from .main import Escape, NextUnread, RefreshFromTheOldReader, ToggleShowAll
+from .main import (
+    Escape,
+    NextUnread,
+    OpenArticle,
+    RefreshFromTheOldReader,
+    ToggleShowAll,
+)
 
 ##############################################################################
 # Exports.
-__all__ = ["Escape", "NextUnread", "RefreshFromTheOldReader", "ToggleShowAll"]
+__all__ = [
+    "Escape",
+    "NextUnread",
+    "OpenArticle",
+    "RefreshFromTheOldReader",
+    "ToggleShowAll",
+]
 
 ### __init__.py ends here

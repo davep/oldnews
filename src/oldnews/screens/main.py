@@ -4,6 +4,7 @@
 # Python imports.
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from webbrowser import open as open_url
 
 ##############################################################################
 # OldAs imports.
@@ -34,7 +35,13 @@ from textual_enhanced.screen import EnhancedScreen
 ##############################################################################
 # Local imports.
 from .. import __version__
-from ..commands import Escape, NextUnread, RefreshFromTheOldReader, ToggleShowAll
+from ..commands import (
+    Escape,
+    NextUnread,
+    OpenArticle,
+    RefreshFromTheOldReader,
+    ToggleShowAll,
+)
 from ..data import (
     LocalUnread,
     get_local_articles,
@@ -124,6 +131,7 @@ class Main(EnhancedScreen[None]):
         # Everything else.
         Escape,
         NextUnread,
+        OpenArticle,
         ChangeTheme,
     ]
 
@@ -215,6 +223,8 @@ class Main(EnhancedScreen[None]):
             # but okay let's be defensive... (when I can come up with a nice
             # little MRE I'll report it).
             return True
+        if action == OpenArticle.action_name():
+            return self.article is not None
         if action == NextUnread.action_name():
             return (
                 self.article is not None
@@ -426,6 +436,18 @@ class Main(EnhancedScreen[None]):
     def action_next_unread_command(self) -> None:
         """Go to the next unread article in the currently-viewed category."""
         self.query_one(ArticleList).select_next_unread()
+
+    def action_open_article_command(self) -> None:
+        """Open the current article in a web browser."""
+        if self.article is not None:
+            if self.article.html_url:
+                open_url(self.article.html_url)
+            else:
+                self.notify(
+                    "No URL available for this article",
+                    severity="error",
+                    title="Can't visit",
+                )
 
 
 ### main.py ends here
