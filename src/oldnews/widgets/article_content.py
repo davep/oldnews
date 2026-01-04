@@ -39,7 +39,7 @@ class ArticleContent(Vertical):
             #title {
                 color: $text-accent;
             }
-            #published {
+            #published, #link {
                 color: $text-muted;
             }
         }
@@ -63,8 +63,9 @@ class ArticleContent(Vertical):
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
         with Vertical(id="header"):
-            yield Label(id="title")
+            yield Label(id="title", markup=False)
             yield Label(id="published")
+            yield Label(id="link", markup=False)
         with VerticalScroll():
             yield Markdown()
 
@@ -74,6 +75,12 @@ class ArticleContent(Vertical):
         if self.article is not None:
             self.query_one("#title", Label).update(self.article.title)
             self.query_one("#published", Label).update(str(self.article.published))
+            link = self.query_one("#link", Label)
+            if self.article.html_url is None:
+                link.visible = False
+            else:
+                link.visible = True
+                link.update(self.article.html_url)
             self.query_one(Markdown).update(convert(self.article.summary.content))
 
     def focus(self, scroll_visible: bool = True) -> Self:
