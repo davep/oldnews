@@ -7,6 +7,7 @@ authors = [
     { name = "Dave Pearson", email = "davep@davep.org" }
 ]
 requires-python = ">=3.11"
+license = "GPL-3.0-or-later"
 dependencies = [
     "html-to-markdown>=2.15.0",
     "oldas>=0.1.0",
