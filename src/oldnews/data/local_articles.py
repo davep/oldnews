@@ -9,7 +9,7 @@ from typing import Iterator, cast
 ##############################################################################
 # OldAS imports.
 from oldas import Article, Articles, Folder, State, Subscription
-from oldas.articles import Direction, Origin, Summary
+from oldas.articles import Alternate, Alternates, Direction, Origin, Summary
 
 ##############################################################################
 # TypeDAL imports.
@@ -46,6 +46,14 @@ class LocalArticle(TypedTable):
         == cast(LocalArticleCategory, category).article,
         join="left",
     )
+    """The categories associated with this article."""
+    alternate = relationship(
+        list["LocalArticleAlternate"],
+        condition=lambda article, alternate: cast(LocalArticle, article).id
+        == cast(LocalArticleAlternate, alternate).article,
+        join="left",
+    )
+    """The alternates for the article."""
 
     def add_category(self, category: str | State) -> None:
         """Add a given category to the local article.
@@ -84,6 +92,18 @@ class LocalArticleCategory(TypedTable):
 
 
 ##############################################################################
+class LocalArticleAlternate(TypedTable):
+    """A local copy of the alternate URLs associated with an article."""
+
+    article: LocalArticle
+    """The article that this alternate belongs to."""
+    href: str
+    """The URL of the alternate."""
+    mime_type: str
+    """The MIME type of the alternate."""
+
+
+##############################################################################
 def save_local_articles(articles: Articles) -> Articles:
     """Locally save the given articles.
 
@@ -113,6 +133,17 @@ def save_local_articles(articles: Articles) -> Articles:
             [
                 {"article": local_article.id, "category": str(category)}
                 for category in article.categories
+            ]
+        )
+        LocalArticleAlternate.where(article=local_article.id).delete()
+        LocalArticleAlternate.bulk_insert(
+            [
+                {
+                    "article": local_article.id,
+                    "href": alternate.href,
+                    "mime_type": alternate.mime_type,
+                }
+                for alternate in article.alternate
             ]
         )
     LocalArticle._db.commit()
@@ -194,8 +225,7 @@ def get_local_articles(
         related_to: The folder or feed the articles should relate to.
         unread_only: Only load up the unread articles?
 
-    Returns:
-        The unread articles.
+    Returns: The unread articles.
     """
     articles: list[Article] = []
     for article in (
@@ -212,6 +242,10 @@ def get_local_articles(
                 author=article.author,
                 categories=Article.clean_categories(
                     category.category for category in article.categories
+                ),
+                alternate=Alternates(
+                    Alternate(href=alternate.href, mime_type=alternate.mime_type)
+                    for alternate in article.alternate
                 ),
                 origin=Origin(
                     stream_id=article.origin_stream_id,

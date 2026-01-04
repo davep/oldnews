@@ -12,7 +12,7 @@ from typedal.config import TypeDALConfig
 ##############################################################################
 # Local imports.
 from .last_grab import LastGrabbed
-from .local_articles import LocalArticle, LocalArticleCategory
+from .local_articles import LocalArticle, LocalArticleAlternate, LocalArticleCategory
 from .local_folders import LocalFolder
 from .local_subscriptions import LocalSubscription, LocalSubscriptionCategory
 from .locations import data_dir
@@ -84,6 +84,8 @@ def initialise_database() -> TypeDAL:
         "idx_local_article_category_category",
         LocalArticleCategory.category,
     )
+
+    dal.define(LocalArticleAlternate)
 
     dal.define(LocalFolder)
 
