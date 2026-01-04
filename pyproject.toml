@@ -10,7 +10,7 @@ requires-python = ">=3.11"
 license = "GPL-3.0-or-later"
 dependencies = [
     "html-to-markdown>=2.15.0",
-    "oldas>=0.1.0",
+    "oldas>=0.2.0",
     "textual>=6.3.0",
     "textual-enhanced>=1.2.0",
     "typedal>=4.2.2",
