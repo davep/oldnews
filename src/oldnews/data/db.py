@@ -74,6 +74,7 @@ def initialise_database() -> TypeDAL:
     )
 
     dal.define(LocalArticleCategory)
+    # TODO: Need to make `field` more open.
     # _safely_index(
     #     LocalArticleCategory,
     #     "idx_local_article_category_article",
