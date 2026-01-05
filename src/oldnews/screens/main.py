@@ -299,7 +299,7 @@ class Main(EnhancedScreen[None]):
         async for article in Articles.stream_new_since(
             self._session, last_grabbed, n=10
         ):
-            # I've encountered articles that don't have am origin stream ID,
+            # I've encountered articles that don't have an origin stream ID,
             # which means that I can't relate them back to a stream, which
             # means I'll never see them anyway...
             if not article.origin.stream_id:
