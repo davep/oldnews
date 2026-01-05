@@ -39,6 +39,7 @@ from ..commands import (
     Escape,
     NextUnread,
     OpenArticle,
+    PreviousUnread,
     RefreshFromTheOldReader,
     ToggleShowAll,
 )
@@ -131,6 +132,7 @@ class Main(EnhancedScreen[None]):
         # Everything else.
         Escape,
         NextUnread,
+        PreviousUnread,
         OpenArticle,
         ChangeTheme,
     ]
@@ -225,7 +227,7 @@ class Main(EnhancedScreen[None]):
             return True
         if action == OpenArticle.action_name():
             return self.article is not None
-        if action == NextUnread.action_name():
+        if action in (NextUnread.action_name(), PreviousUnread.action_name()):
             return self.articles is not None and any(
                 article.is_unread for article in self.articles
             )
@@ -437,6 +439,13 @@ class Main(EnhancedScreen[None]):
             self.query_one(ArticleList).highlight_next_unread()
         else:
             self.query_one(ArticleList).select_next_unread()
+
+    def action_previous_unread_command(self) -> None:
+        """Go to the previous unread article in the currently-viewed category"""
+        if self.article is None:
+            self.query_one(ArticleList).highlight_previous_unread()
+        else:
+            self.query_one(ArticleList).select_previous_unread()
 
     def action_open_article_command(self) -> None:
         """Open the current article in a web browser."""

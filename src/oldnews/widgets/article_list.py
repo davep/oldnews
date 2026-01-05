@@ -3,7 +3,7 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from typing import cast
+from typing import Literal, cast
 
 ##############################################################################
 # OldAs imports.
@@ -134,8 +134,11 @@ class ArticleList(EnhancedOptionList):
         assert isinstance(message.option, ArticleView)
         self.post_message(self.ViewArticle(message.option.article))
 
-    def _highlight_next_unread(self) -> bool:
+    def _highlight_unread(self, direction: Literal["next", "previous"]) -> bool:
         """Highlight the next unread article, if there is one.
+
+        Args:
+            direction: The direction to search.
 
         Returns:
             `True` if an unread article was found and highlighted, `False`
@@ -147,28 +150,37 @@ class ArticleList(EnhancedOptionList):
             if self.highlighted is None
             else [
                 *self.options[self.highlighted + 1 : -1],
-                *self.options[0 : self.highlighted - 1],
+                *self.options[0 : self.highlighted + 1],
             ],
         )
+        if direction == "previous":
+            articles = list(reversed(articles))[1:]
         if next_hit := next(
             (article for article in articles if article.article.is_unread), None
         ):
             if next_hit.id is not None:
                 self.highlighted = self.get_option_index(next_hit.id)
                 return True
+        self.notify("No more unread articles")
         return False
 
     def highlight_next_unread(self) -> None:
         """Highlight the next unread article in the list."""
-        if not self._highlight_next_unread():
-            self.notify("No more unread articles")
+        self._highlight_unread("next")
+
+    def highlight_previous_unread(self) -> None:
+        """Highlight the previous unread article in the list."""
+        self._highlight_unread("previous")
 
     def select_next_unread(self) -> None:
         """Select the next unread article in the list."""
-        if self._highlight_next_unread():
+        if self._highlight_unread("next"):
             self.call_later(self.run_action, "select")
-        else:
-            self.notify("No more unread articles")
+
+    def select_previous_unread(self) -> None:
+        """Select the next unread article in the list."""
+        if self._highlight_unread("previous"):
+            self.call_later(self.run_action, "select")
 
 
 ### article_list.py ends here

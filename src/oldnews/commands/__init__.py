@@ -6,6 +6,7 @@ from .main import (
     Escape,
     NextUnread,
     OpenArticle,
+    PreviousUnread,
     RefreshFromTheOldReader,
     ToggleShowAll,
 )
@@ -16,6 +17,7 @@ __all__ = [
     "Escape",
     "NextUnread",
     "OpenArticle",
+    "PreviousUnread",
     "RefreshFromTheOldReader",
     "ToggleShowAll",
 ]

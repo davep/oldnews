@@ -16,6 +16,7 @@ from ..commands import (
     Escape,
     NextUnread,
     OpenArticle,
+    PreviousUnread,
     RefreshFromTheOldReader,
     ToggleShowAll,
 )
@@ -33,6 +34,7 @@ class MainCommands(CommandsProvider):
         """
         yield Escape()
         yield from self.maybe(NextUnread)
+        yield from self.maybe(PreviousUnread)
         yield from self.maybe(OpenArticle)
         yield ToggleShowAll()
         yield RefreshFromTheOldReader()

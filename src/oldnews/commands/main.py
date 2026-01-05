@@ -36,6 +36,13 @@ class NextUnread(Command):
 
 
 ##############################################################################
+class PreviousUnread(Command):
+    """Navigate to the previous unread article in the currently-selected category"""
+
+    BINDING_KEY = "p"
+
+
+##############################################################################
 class OpenArticle(Command):
     """Open the current article in the web browser"""
 
