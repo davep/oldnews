@@ -3,7 +3,7 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from typing import Literal, cast
+from typing import Iterator, Literal, cast
 
 ##############################################################################
 # OldAs imports.
@@ -134,6 +134,29 @@ class ArticleList(EnhancedOptionList):
         assert isinstance(message.option, ArticleView)
         self.post_message(self.ViewArticle(message.option.article))
 
+    def _unread_articles_after_highlight(self, reverse: bool) -> Iterator[ArticleView]:
+        """Return a list of all articles after the highlight.
+
+        Args:
+            reverse: Reverse the list.
+
+        Returns:
+            An iterator of `ArticleView` objects that show an unread article.
+
+        Notes:
+            If there is no highlight, we default at position 0.
+        """
+        highlight = self.highlighted or 0
+        options = list(reversed(self.options)) if reverse else self.options
+        highlight = (len(options) - highlight - 1) if reverse else highlight
+        return (
+            article_view
+            for article_view in cast(
+                list[ArticleView], [*options[highlight:], *options[0:highlight]]
+            )[1:]
+            if article_view.article.is_unread
+        )
+
     def _highlight_unread(self, direction: Literal["next", "previous"]) -> bool:
         """Highlight the next unread article, if there is one.
 
@@ -144,19 +167,8 @@ class ArticleList(EnhancedOptionList):
             `True` if an unread article was found and highlighted, `False`
             if not.
         """
-        articles = cast(
-            list[ArticleView],
-            self.options
-            if self.highlighted is None
-            else [
-                *self.options[self.highlighted + 1 : -1],
-                *self.options[0 : self.highlighted + 1],
-            ],
-        )
-        if direction == "previous":
-            articles = list(reversed(articles))[1:]
         if next_hit := next(
-            (article for article in articles if article.article.is_unread), None
+            self._unread_articles_after_highlight(direction == "previous"), None
         ):
             if next_hit.id is not None:
                 self.highlighted = self.get_option_index(next_hit.id)
