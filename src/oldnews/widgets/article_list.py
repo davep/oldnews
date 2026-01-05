@@ -134,27 +134,39 @@ class ArticleList(EnhancedOptionList):
         assert isinstance(message.option, ArticleView)
         self.post_message(self.ViewArticle(message.option.article))
 
-    def select_next_unread(self) -> None:
-        """Select the next unread article in the list."""
-        if self.highlighted is None:
-            return
+    def _highlight_next_unread(self) -> bool:
+        """Highlight the next unread article, if there is one.
+
+        Returns:
+            `True` if an unread article was found and highlighted, `False`
+            if not.
+        """
+        articles = cast(
+            list[ArticleView],
+            self.options
+            if self.highlighted is None
+            else [
+                *self.options[self.highlighted + 1 : -1],
+                *self.options[0 : self.highlighted - 1],
+            ],
+        )
         if next_hit := next(
-            (
-                article
-                for article in cast(
-                    list[ArticleView],
-                    [
-                        *self.options[self.highlighted + 1 : -1],
-                        *self.options[0 : self.highlighted - 1],
-                    ],
-                )
-                if article.article.is_unread
-            ),
-            None,
+            (article for article in articles if article.article.is_unread), None
         ):
             if next_hit.id is not None:
                 self.highlighted = self.get_option_index(next_hit.id)
-                self.call_later(self.run_action, "select")
+                return True
+        return False
+
+    def highlight_next_unread(self) -> None:
+        """Highlight the next unread article in the list."""
+        if not self._highlight_next_unread():
+            self.notify("No more unread articles")
+
+    def select_next_unread(self) -> None:
+        """Select the next unread article in the list."""
+        if self._highlight_next_unread():
+            self.call_later(self.run_action, "select")
         else:
             self.notify("No more unread articles")
 

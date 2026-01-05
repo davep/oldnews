@@ -226,10 +226,8 @@ class Main(EnhancedScreen[None]):
         if action == OpenArticle.action_name():
             return self.article is not None
         if action == NextUnread.action_name():
-            return (
-                self.article is not None
-                and self.articles is not None
-                and any(article.is_unread for article in self.articles)
+            return self.articles is not None and any(
+                article.is_unread for article in self.articles
             )
         return True
 
@@ -435,7 +433,10 @@ class Main(EnhancedScreen[None]):
 
     def action_next_unread_command(self) -> None:
         """Go to the next unread article in the currently-viewed category."""
-        self.query_one(ArticleList).select_next_unread()
+        if self.article is None:
+            self.query_one(ArticleList).highlight_next_unread()
+        else:
+            self.query_one(ArticleList).select_next_unread()
 
     def action_open_article_command(self) -> None:
         """Open the current article in a web browser."""
