@@ -10,6 +10,7 @@ from webbrowser import open as open_url
 # OldAs imports.
 from oldas import (
     Article,
+    ArticleIDs,
     Articles,
     Folder,
     Folders,
@@ -49,8 +50,10 @@ from ..data import (
     get_local_folders,
     get_local_subscriptions,
     get_local_unread,
+    get_unread_article_ids,
     last_grabbed_data_at,
     load_configuration,
+    locally_mark_article_ids_read,
     locally_mark_read,
     remember_we_last_grabbed_at,
     save_local_articles,
@@ -321,6 +324,25 @@ class Main(EnhancedScreen[None]):
             self.notify("No new articles found on TheOldReader")
         remember_we_last_grabbed_at(new_grab)
 
+    async def _refresh_read_status(self) -> None:
+        """Refresh the read status from the server."""
+        self.post_message(
+            self.SubTitle("Getting list of unread articles from TheOldReader")
+        )
+        remote_unread_articles = set(
+            article_id.full_id
+            for article_id in await ArticleIDs.load_unread(self._session)
+        )
+        self.post_message(self.SubTitle("Comparing against locally-read articles"))
+        local_unread_articles = set(get_unread_article_ids())
+        if mark_as_read := local_unread_articles - remote_unread_articles:
+            self.post_message(
+                self.SubTitle(
+                    f"Articles found read elsewhere on TheOldReader: {len(mark_as_read)}"
+                )
+            )
+            locally_mark_article_ids_read(mark_as_read)
+
     @on(RefreshFromTheOldReader)
     @work(exclusive=True)
     async def action_refresh_from_the_old_reader_command(self) -> None:
@@ -341,13 +363,17 @@ class Main(EnhancedScreen[None]):
         )
 
         # Download the latest articles we don't know about.
-        if last_grabbed_data_at() is None:
+        if never_grabbed_before := last_grabbed_data_at() is None:
             self.post_message(self.SubTitle("Getting available articles"))
         else:
             self.post_message(
                 self.SubTitle(f"Getting articles new since {last_grabbed_data_at()}")
             )
         await self._download_newest_articles()
+
+        # If we have grabbed data before, let's try and sync up what's been read.
+        if not never_grabbed_before:
+            await self._refresh_read_status()
 
         # Recalculate the unread counts.
         self.post_message(self.SubTitle("Calculating unread counts"))
