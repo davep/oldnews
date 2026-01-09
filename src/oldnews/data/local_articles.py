@@ -4,7 +4,7 @@
 # Python imports.
 from datetime import datetime
 from html import unescape
-from typing import Iterator, cast
+from typing import Iterable, Iterator, cast
 
 ##############################################################################
 # OldAS imports.
@@ -20,7 +20,7 @@ from typedal import TypedField, TypedTable, relationship
 class LocalArticle(TypedTable):
     """A local copy of an article."""
 
-    article_id: str
+    article_id: TypedField[str]
     """The ID of the article."""
     title: str
     """The title of the article."""
@@ -275,6 +275,17 @@ def locally_mark_read(article: Article) -> None:
 
 
 ##############################################################################
+def locally_mark_article_ids_read(articles: Iterable[str]) -> None:
+    """Locally mark a collection of article IDs as being read.
+
+    Args:
+        articles: The article IDs to mark as read.
+    """
+    for local_article in LocalArticle.where(LocalArticle.article_id.belongs(articles)):
+        local_article.add_category(State.READ)
+
+
+##############################################################################
 def unread_count_in(
     category: Folder | Subscription, read: set[int] | None = None
 ) -> int:
@@ -306,6 +317,20 @@ def unread_count_in(
         .where(origin_stream_id=category.id)
         .count()
     )
+
+
+##############################################################################
+def get_unread_article_ids() -> list[str]:
+    """Get a list of all the unread article IDs.
+
+    Returns:
+        The list of IDs of unread articles.
+    """
+    read = get_local_read_article_ids()
+    return [
+        article.article_id
+        for article in LocalArticle.where(~LocalArticle.id.belongs(read)).select()
+    ]
 
 
 ### local_articles.py ends here
