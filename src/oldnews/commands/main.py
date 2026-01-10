@@ -36,10 +36,24 @@ class NextUnread(Command):
 
 
 ##############################################################################
+class Next(Command):
+    """Navigate to the next article regardless of read status"""
+
+    BINDING_KEY = "N"
+
+
+##############################################################################
 class PreviousUnread(Command):
     """Navigate to the previous unread article in the currently-selected category"""
 
     BINDING_KEY = "p"
+
+
+##############################################################################
+class Previous(Command):
+    """Navigate to the next article regardless of read status"""
+
+    BINDING_KEY = "P"
 
 
 ##############################################################################

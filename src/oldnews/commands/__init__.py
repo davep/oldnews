@@ -4,8 +4,10 @@
 # Local imports.
 from .main import (
     Escape,
+    Next,
     NextUnread,
     OpenArticle,
+    Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
     ToggleShowAll,
@@ -15,8 +17,10 @@ from .main import (
 # Exports.
 __all__ = [
     "Escape",
+    "Next",
     "NextUnread",
     "OpenArticle",
+    "Previous",
     "PreviousUnread",
     "RefreshFromTheOldReader",
     "ToggleShowAll",

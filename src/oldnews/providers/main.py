@@ -14,8 +14,10 @@ from textual_enhanced.commands import (
 # Local imports.
 from ..commands import (
     Escape,
+    Next,
     NextUnread,
     OpenArticle,
+    Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
     ToggleShowAll,
@@ -33,7 +35,9 @@ class MainCommands(CommandsProvider):
             The commands for the command palette.
         """
         yield Escape()
+        yield from self.maybe(Next)
         yield from self.maybe(NextUnread)
+        yield from self.maybe(Previous)
         yield from self.maybe(PreviousUnread)
         yield from self.maybe(OpenArticle)
         yield ToggleShowAll()
