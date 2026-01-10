@@ -4,8 +4,10 @@
 # Local imports.
 from .main import (
     Escape,
+    Next,
     NextUnread,
     OpenArticle,
+    Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
     ToggleShowAll,

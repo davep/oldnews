@@ -1,5 +1,14 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: 2026-01-09**
+
+- Added the `Next` command, which moves to the next article regardless of
+  read status.
+- Added the `Previous` command, which moves to the previous article
+  regardless of read status.
+
 ## v0.0.2
 
 **Released: 2026-01-09**

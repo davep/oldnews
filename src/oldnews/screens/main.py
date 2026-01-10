@@ -38,8 +38,10 @@ from textual_enhanced.screen import EnhancedScreen
 from .. import __version__
 from ..commands import (
     Escape,
+    Next,
     NextUnread,
     OpenArticle,
+    Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
     ToggleShowAll,
@@ -134,7 +136,9 @@ class Main(EnhancedScreen[None]):
         RefreshFromTheOldReader,
         # Everything else.
         Escape,
+        Next,
         NextUnread,
+        Previous,
         PreviousUnread,
         OpenArticle,
         ChangeTheme,
@@ -230,6 +234,8 @@ class Main(EnhancedScreen[None]):
             return True
         if action == OpenArticle.action_name():
             return self.article is not None
+        if action in (Next.action_name(), Previous.action_name()):
+            return self.articles is not None
         if action in (NextUnread.action_name(), PreviousUnread.action_name()):
             return self.articles is not None and any(
                 article.is_unread for article in self.articles
@@ -457,19 +463,33 @@ class Main(EnhancedScreen[None]):
         elif self.focused is self.query_one(Navigation):
             self.app.exit()
 
+    def action_next_command(self) -> None:
+        """Go to the next article in the currently-viewed category."""
+        if self.article is None:
+            self.query_one(ArticleList).highlight_next_article()
+        else:
+            self.query_one(ArticleList).select_next_article()
+
+    def action_previous_command(self) -> None:
+        """Go to the previous article in the currently-viewed category."""
+        if self.article is None:
+            self.query_one(ArticleList).highlight_previous_article()
+        else:
+            self.query_one(ArticleList).select_previous_article()
+
     def action_next_unread_command(self) -> None:
         """Go to the next unread article in the currently-viewed category."""
         if self.article is None:
-            self.query_one(ArticleList).highlight_next_unread()
+            self.query_one(ArticleList).highlight_next_unread_article()
         else:
-            self.query_one(ArticleList).select_next_unread()
+            self.query_one(ArticleList).select_next_unread_article()
 
     def action_previous_unread_command(self) -> None:
         """Go to the previous unread article in the currently-viewed category"""
         if self.article is None:
-            self.query_one(ArticleList).highlight_previous_unread()
+            self.query_one(ArticleList).highlight_previous_unread_article()
         else:
-            self.query_one(ArticleList).select_previous_unread()
+            self.query_one(ArticleList).select_previous_unread_article()
 
     def action_open_article_command(self) -> None:
         """Open the current article in a web browser."""

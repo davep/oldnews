@@ -185,20 +185,38 @@ class ArticleList(EnhancedOptionList):
         self.notify("No more unread articles")
         return False
 
-    def highlight_next_unread(self) -> None:
+    def highlight_next_article(self) -> None:
+        """Highlight the next article in the list."""
+        self.call_later(self.run_action, "cursor_down")
+
+    def highlight_previous_article(self) -> None:
+        """Highlight the previous article in the list."""
+        self.call_later(self.run_action, "cursor_up")
+
+    def highlight_next_unread_article(self) -> None:
         """Highlight the next unread article in the list."""
         self._highlight_unread("next")
 
-    def highlight_previous_unread(self) -> None:
+    def highlight_previous_unread_article(self) -> None:
         """Highlight the previous unread article in the list."""
         self._highlight_unread("previous")
 
-    def select_next_unread(self) -> None:
+    def select_next_article(self) -> None:
+        """Select the next article in the list."""
+        self.call_later(self.run_action, "cursor_down")
+        self.call_later(self.run_action, "select")
+
+    def select_previous_article(self) -> None:
+        """Select the previous article in the list."""
+        self.call_later(self.run_action, "cursor_up")
+        self.call_later(self.run_action, "select")
+
+    def select_next_unread_article(self) -> None:
         """Select the next unread article in the list."""
         if self._highlight_unread("next"):
             self.call_later(self.run_action, "select")
 
-    def select_previous_unread(self) -> None:
+    def select_previous_unread_article(self) -> None:
         """Select the next unread article in the list."""
         if self._highlight_unread("previous"):
             self.call_later(self.run_action, "select")
