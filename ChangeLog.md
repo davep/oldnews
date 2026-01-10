@@ -5,9 +5,10 @@
 **Released: 2026-01-09**
 
 - Added the `Next` command, which moves to the next article regardless of
-  read status.
+  read status. ([#12](https://github.com/davep/oldnews/pull/12))
 - Added the `Previous` command, which moves to the previous article
   regardless of read status.
+  ([#12](https://github.com/davep/oldnews/pull/12))
 
 ## v0.0.2
 
