@@ -336,12 +336,10 @@ class Main(EnhancedScreen[None]):
         self.post_message(self.SubTitle("Comparing against locally-read articles"))
         local_unread_articles = set(get_unread_article_ids())
         if mark_as_read := local_unread_articles - remote_unread_articles:
-            self.post_message(
-                self.SubTitle(
-                    f"Articles found read elsewhere on TheOldReader: {len(mark_as_read)}"
-                )
-            )
             locally_mark_article_ids_read(mark_as_read)
+            self.notify(
+                f"Articles found read elsewhere on TheOldReader: {len(mark_as_read)}"
+            )
 
     @on(RefreshFromTheOldReader)
     @work(exclusive=True)
