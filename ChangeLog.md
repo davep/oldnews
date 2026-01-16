@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v0.1.0
 
-**Released: 2026-01-09**
+**Released: 2026-01-16**
 
 - Added the `Next` command, which moves to the next article regardless of
   read status. ([#12](https://github.com/davep/oldnews/pull/12))
