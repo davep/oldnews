@@ -542,7 +542,7 @@ class Main(EnhancedScreen[None]):
                 )
             else:
                 self.notify(
-                    "Failed to mark those articles as read on TheOldReader",
+                    "Failed to mark as read on TheOldReader",
                     severity="error",
                 )
 
