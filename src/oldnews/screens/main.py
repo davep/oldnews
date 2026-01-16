@@ -15,6 +15,7 @@ from oldas import (
     Folder,
     Folders,
     Session,
+    State,
     Subscription,
     Subscriptions,
 )
@@ -31,6 +32,7 @@ from textual.widgets import Footer, Header
 ##############################################################################
 # Textual enhanced imports.
 from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
+from textual_enhanced.dialogs import Confirm
 from textual_enhanced.screen import EnhancedScreen
 
 ##############################################################################
@@ -38,6 +40,7 @@ from textual_enhanced.screen import EnhancedScreen
 from .. import __version__
 from ..commands import (
     Escape,
+    MarkAllRead,
     Next,
     NextUnread,
     OpenArticle,
@@ -136,6 +139,7 @@ class Main(EnhancedScreen[None]):
         RefreshFromTheOldReader,
         # Everything else.
         Escape,
+        MarkAllRead,
         Next,
         NextUnread,
         Previous,
@@ -236,7 +240,11 @@ class Main(EnhancedScreen[None]):
             return self.article is not None
         if action in (Next.action_name(), Previous.action_name()):
             return self.articles is not None
-        if action in (NextUnread.action_name(), PreviousUnread.action_name()):
+        if action in (
+            NextUnread.action_name(),
+            PreviousUnread.action_name(),
+            MarkAllRead.action_name(),
+        ):
             return self.articles is not None and any(
                 article.is_unread for article in self.articles
             )
@@ -501,6 +509,41 @@ class Main(EnhancedScreen[None]):
                     "No URL available for this article",
                     severity="error",
                     title="Can't visit",
+                )
+
+    @work
+    async def action_mark_all_read_command(self) -> None:
+        """Mark all unread articles in the current category as read."""
+        if (current_category := self.query_one(Navigation).current_category) is None:
+            return
+        if not (
+            ids_to_mark_read := [
+                article.id for article in self.articles if article.is_unread
+            ]
+        ):
+            return
+        category_description = f"{current_category.__class__.__name__.lower()} '{current_category.name if isinstance(current_category, Folder) else current_category.title}'"
+        plural = "s" if len(ids_to_mark_read) > 1 else ""
+        if await self.app.push_screen_wait(
+            Confirm(
+                "Mark all read",
+                f"Are you sure you want to mark all unread articles in the {category_description} as read?\n\n"
+                f"This will mark {len(ids_to_mark_read)} article{plural} as read.",
+            )
+        ):
+            if await self._session.add_tag(ids_to_mark_read, State.READ):
+                locally_mark_article_ids_read(ids_to_mark_read)
+                self.post_message(
+                    self.NewUnread(get_local_unread(self.folders, self.subscriptions))
+                )
+                self._refresh_article_list()
+                self.notify(
+                    f"{len(ids_to_mark_read)} article{plural} marked read for {category_description}"
+                )
+            else:
+                self.notify(
+                    "Failed to mark as read on TheOldReader",
+                    severity="error",
                 )
 
 

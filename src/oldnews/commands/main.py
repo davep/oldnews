@@ -63,4 +63,11 @@ class OpenArticle(Command):
     BINDING_KEY = "o"
 
 
+##############################################################################
+class MarkAllRead(Command):
+    """Mark all unread articles in the current category as read"""
+
+    BINDING_KEY = "R"
+
+
 ### main.py ends here

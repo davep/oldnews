@@ -14,6 +14,7 @@ from textual_enhanced.commands import (
 # Local imports.
 from ..commands import (
     Escape,
+    MarkAllRead,
     Next,
     NextUnread,
     OpenArticle,
@@ -40,6 +41,7 @@ class MainCommands(CommandsProvider):
         yield from self.maybe(Previous)
         yield from self.maybe(PreviousUnread)
         yield from self.maybe(OpenArticle)
+        yield from self.maybe(MarkAllRead)
         yield ToggleShowAll()
         yield RefreshFromTheOldReader()
         yield ChangeTheme()

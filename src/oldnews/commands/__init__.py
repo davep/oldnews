@@ -4,6 +4,7 @@
 # Local imports.
 from .main import (
     Escape,
+    MarkAllRead,
     Next,
     NextUnread,
     OpenArticle,
@@ -17,6 +18,7 @@ from .main import (
 # Exports.
 __all__ = [
     "Escape",
+    "MarkAllRead",
     "Next",
     "NextUnread",
     "OpenArticle",
