@@ -102,7 +102,7 @@ class SubscriptionView(Option):
             "",
             str(unread) if unread else "",
         )
-        super().__init__(prompt)
+        super().__init__(prompt, id=subscription.id)
 
     @property
     def subscription(self) -> Subscription:
