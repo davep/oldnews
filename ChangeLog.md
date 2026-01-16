@@ -9,6 +9,8 @@
 - Added the `Previous` command, which moves to the previous article
   regardless of read status.
   ([#12](https://github.com/davep/oldnews/pull/12))
+- Added the `MarkAllRead` command, which marks all unread articles in the
+  current category as read.
 
 ## v0.0.2
 
