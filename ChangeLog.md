@@ -7,6 +7,8 @@
 - Using `NextUnread` and `PreviousUnread` while inside the navigation panel
   now moves the highlight to the next folder or subscription that has unread
   articles. ([#15](https://github.com/davep/oldnews/pull/15))
+- Added the `OpenOrigin` command, which opens the origin URL for the current
+  article. ([#16](https://github.com/davep/oldnews/pull/16))
 
 ## v0.1.0
 

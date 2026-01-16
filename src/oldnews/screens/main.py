@@ -44,6 +44,7 @@ from ..commands import (
     Next,
     NextUnread,
     OpenArticle,
+    OpenOrigin,
     Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
@@ -145,6 +146,7 @@ class Main(EnhancedScreen[None]):
         Previous,
         PreviousUnread,
         OpenArticle,
+        OpenOrigin,
         ChangeTheme,
     ]
 
@@ -236,7 +238,7 @@ class Main(EnhancedScreen[None]):
             # but okay let's be defensive... (when I can come up with a nice
             # little MRE I'll report it).
             return True
-        if action == OpenArticle.action_name():
+        if action in (OpenArticle.action_name(), OpenOrigin.action_name()):
             return self.article is not None
         if action in (Next.action_name(), Previous.action_name()):
             return self.articles is not None
@@ -554,6 +556,18 @@ class Main(EnhancedScreen[None]):
                 self.notify(
                     "Failed to mark as read on TheOldReader",
                     severity="error",
+                )
+
+    def action_open_origin_command(self) -> None:
+        """Open the origin of the current article in the web browser."""
+        if self.article is not None:
+            if self.article.origin.html_url:
+                open_url(self.article.origin.html_url)
+            else:
+                self.notify(
+                    "No URL available for the article's origin",
+                    severity="error",
+                    title="Can't visit",
                 )
 
 
