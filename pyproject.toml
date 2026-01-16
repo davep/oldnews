@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Dave Pearson", email = "davep@davep.org" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = "GPL-3.0-or-later"
 keywords = [
     "atom",
@@ -31,7 +31,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
