@@ -245,6 +245,12 @@ class Main(EnhancedScreen[None]):
             PreviousUnread.action_name(),
             MarkAllRead.action_name(),
         ):
+            # If we're inside the navigation panel...
+            if self.query_one(Navigation).has_focus:
+                # ...we just care if there's anything unread somewhere.
+                return any(total for total in self.unread.values())
+            # Otherwise we care if we can see a current list of articles and
+            # if there's something unread amongst them.
             return self.articles is not None and any(
                 article.is_unread for article in self.articles
             )
@@ -487,14 +493,18 @@ class Main(EnhancedScreen[None]):
 
     def action_next_unread_command(self) -> None:
         """Go to the next unread article in the currently-viewed category."""
-        if self.article is None:
+        if (navigation := self.query_one(Navigation)).has_focus:
+            navigation.highlight_next_unread_category()
+        elif self.article is None:
             self.query_one(ArticleList).highlight_next_unread_article()
         else:
             self.query_one(ArticleList).select_next_unread_article()
 
     def action_previous_unread_command(self) -> None:
         """Go to the previous unread article in the currently-viewed category"""
-        if self.article is None:
+        if (navigation := self.query_one(Navigation)).has_focus:
+            navigation.highlight_previous_unread_category()
+        elif self.article is None:
             self.query_one(ArticleList).highlight_previous_unread_article()
         else:
             self.query_one(ArticleList).select_previous_unread_article()

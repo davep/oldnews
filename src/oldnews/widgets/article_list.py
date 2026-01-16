@@ -1,9 +1,13 @@
 """Widget to show a list of articles."""
 
 ##############################################################################
+# Backward compatibility.
+from __future__ import annotations
+
+##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from typing import Iterator, Literal, cast
+from typing import cast
 
 ##############################################################################
 # OldAs imports.
@@ -25,6 +29,10 @@ from textual.widgets.option_list import Option
 ##############################################################################
 # Textual enhanced imports.
 from textual_enhanced.widgets import EnhancedOptionList
+
+##############################################################################
+# Local imports.
+from ._after_highlight import HighlightDirection, options_after_highlight
 
 
 ##############################################################################
@@ -71,11 +79,6 @@ class ArticleView(Option):
     def article(self) -> Article:
         """The article being viewed."""
         return self._article
-
-
-##############################################################################
-UnreadSearchDirection = Literal["next", "previous"]
-"""Type of a unread search direction."""
 
 
 ##############################################################################
@@ -139,36 +142,7 @@ class ArticleList(EnhancedOptionList):
         assert isinstance(message.option, ArticleView)
         self.post_message(self.ViewArticle(message.option.article))
 
-    def _unread_articles_after_highlight(
-        self, direction: UnreadSearchDirection
-    ) -> Iterator[ArticleView]:
-        """Return a list of all articles after the highlight.
-
-        Args:
-            direction: The direction to search in.
-
-        Returns:
-            An iterator of `ArticleView` objects that show an unread article.
-
-        Notes:
-            If there is no highlight, we default at position 0.
-        """
-        highlight = self.highlighted or 0
-        options = (
-            list(reversed(self.options)) if direction == "previous" else self.options
-        )
-        highlight = (
-            (len(options) - highlight - 1) if direction == "previous" else highlight
-        )
-        return (
-            article_view
-            for article_view in cast(
-                list[ArticleView], [*options[highlight:], *options[0:highlight]]
-            )[1:]
-            if article_view.article.is_unread
-        )
-
-    def _highlight_unread(self, direction: UnreadSearchDirection) -> bool:
+    def _highlight_unread(self, direction: HighlightDirection) -> bool:
         """Highlight the next unread article, if there is one.
 
         Args:
@@ -178,7 +152,15 @@ class ArticleList(EnhancedOptionList):
             `True` if an unread article was found and highlighted, `False`
             if not.
         """
-        if next_hit := next(self._unread_articles_after_highlight(direction), None):
+        if next_hit := next(
+            options_after_highlight(
+                self,
+                cast(list[ArticleView], self.options),
+                direction,
+                lambda article_view: article_view.article.is_unread,
+            ),
+            None,
+        ):
             if next_hit.id is not None:
                 self.highlighted = self.get_option_index(next_hit.id)
                 return True

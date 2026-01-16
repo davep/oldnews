@@ -7,6 +7,7 @@ from __future__ import annotations
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
+from typing import cast
 
 ##############################################################################
 # OldAs imports.
@@ -34,6 +35,7 @@ from textual_enhanced.widgets import EnhancedOptionList
 ##############################################################################
 # Local imports.
 from ..data import LocalUnread, get_navigation_state, save_navigation_state
+from ._after_highlight import HighlightDirection, options_after_highlight
 
 
 ##############################################################################
@@ -102,7 +104,7 @@ class SubscriptionView(Option):
             "",
             str(unread) if unread else "",
         )
-        super().__init__(prompt)
+        super().__init__(prompt, id=subscription.id)
 
     @property
     def subscription(self) -> Subscription:
@@ -235,6 +237,39 @@ class Navigation(EnhancedOptionList):
         if isinstance(selected, SubscriptionView):
             return selected.subscription
         raise ValueError("Unknown category")
+
+    def _highlight_unread(self, direction: HighlightDirection) -> bool:
+        """Highlight the next category with unread articles, if there is one.
+
+        Args:
+            direction: The direction to search.
+
+        Returns:
+            `True` if an unread category was found and highlighted, `False`
+            if not.
+        """
+        if next_hit := next(
+            options_after_highlight(
+                self,
+                cast(list[FolderView | SubscriptionView], self.options),
+                direction,
+                lambda category: bool(category.id and self.unread.get(category.id)),
+            ),
+            None,
+        ):
+            if next_hit.id is not None:
+                self.highlighted = self.get_option_index(next_hit.id)
+                return True
+        self.notify("No more folders or subscriptions with unread articles")
+        return False
+
+    def highlight_next_unread_category(self) -> None:
+        """Highlight the next unread category."""
+        self._highlight_unread("next")
+
+    def highlight_previous_unread_category(self) -> None:
+        """Highlight the previous unread category."""
+        self._highlight_unread("previous")
 
 
 ### navigation.py ends here
