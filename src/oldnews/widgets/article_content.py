@@ -15,7 +15,7 @@ from oldas import Article
 ##############################################################################
 # Textual imports.
 from textual.app import ComposeResult
-from textual.containers import Vertical, VerticalScroll
+from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.reactive import var
 from textual.widgets import Label, Markdown
 
@@ -36,8 +36,13 @@ class ArticleContent(Vertical):
             height: auto;
             padding: 0 1 0 1;
 
+            Horizontal {
+                height: auto;
+            }
+
             #title {
                 color: $text-accent;
+                width: 1fr;
             }
             #published, #link {
                 color: $text-muted;
@@ -63,15 +68,15 @@ class ArticleContent(Vertical):
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
         with Vertical(id="header"):
-            yield Label(id="title", markup=False)
-            yield Label(id="published")
+            with Horizontal():
+                yield Label(id="title", markup=False)
+                yield Label(id="published")
             yield Label(id="link", markup=False)
         with VerticalScroll():
             yield Markdown()
 
-    def _watch_article(self) -> None:
+    async def _watch_article(self) -> None:
         """React to the article being updated."""
-        self.set_class(self.article is not None, "--has-article")
         if self.article is not None:
             self.query_one("#title", Label).update(self.article.title)
             self.query_one("#published", Label).update(str(self.article.published))
@@ -81,7 +86,9 @@ class ArticleContent(Vertical):
             else:
                 link.visible = True
                 link.update(self.article.html_url)
-            self.query_one(Markdown).update(convert(self.article.summary.content))
+            await self.query_one(Markdown).update(convert(self.article.summary.content))
+            self.query_one(VerticalScroll).scroll_home()
+        self.set_class(self.article is not None, "--has-article")
 
     def focus(self, scroll_visible: bool = True) -> Self:
         self.query_one(VerticalScroll).focus(scroll_visible)

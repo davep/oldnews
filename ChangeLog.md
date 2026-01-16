@@ -9,6 +9,8 @@
   articles. ([#15](https://github.com/davep/oldnews/pull/15))
 - Added the `OpenOrigin` command, which opens the origin URL for the current
   article. ([#16](https://github.com/davep/oldnews/pull/16))
+- Small cosmetic tweaks to the way an article is shown.
+  ([#17](https://github.com/davep/oldnews/pull/17))
 
 ## v0.1.0
 
