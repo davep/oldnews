@@ -64,6 +64,13 @@ class OpenArticle(Command):
 
 
 ##############################################################################
+class OpenOrigin(Command):
+    """Open the origin for the current article in the web browser"""
+
+    BINDING_KEY = "O"
+
+
+##############################################################################
 class MarkAllRead(Command):
     """Mark all unread articles in the current category as read"""
 
