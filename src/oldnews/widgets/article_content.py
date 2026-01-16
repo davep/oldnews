@@ -15,7 +15,7 @@ from oldas import Article
 ##############################################################################
 # Textual imports.
 from textual.app import ComposeResult
-from textual.containers import Vertical, VerticalScroll
+from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.reactive import var
 from textual.widgets import Label, Markdown
 
@@ -36,8 +36,13 @@ class ArticleContent(Vertical):
             height: auto;
             padding: 0 1 0 1;
 
+            Horizontal {
+                height: auto;
+            }
+
             #title {
                 color: $text-accent;
+                width: 1fr;
             }
             #published, #link {
                 color: $text-muted;
@@ -63,8 +68,9 @@ class ArticleContent(Vertical):
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
         with Vertical(id="header"):
-            yield Label(id="title", markup=False)
-            yield Label(id="published")
+            with Horizontal():
+                yield Label(id="title", markup=False)
+                yield Label(id="published")
             yield Label(id="link", markup=False)
         with VerticalScroll():
             yield Markdown()
