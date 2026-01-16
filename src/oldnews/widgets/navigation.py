@@ -7,6 +7,7 @@ from __future__ import annotations
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
+from typing import Iterator, Literal, cast
 
 ##############################################################################
 # OldAs imports.
@@ -108,6 +109,11 @@ class SubscriptionView(Option):
     def subscription(self) -> Subscription:
         """The subscription we're viewing."""
         return self._subscription
+
+
+##############################################################################
+UnreadSearchDirection = Literal["next", "previous"]
+"""Type of a unread search direction."""
 
 
 ##############################################################################
@@ -235,6 +241,62 @@ class Navigation(EnhancedOptionList):
         if isinstance(selected, SubscriptionView):
             return selected.subscription
         raise ValueError("Unknown category")
+
+    def _unread_categories_after_highlight(
+        self, direction: UnreadSearchDirection
+    ) -> Iterator[FolderView | SubscriptionView]:
+        """Return a list of all unrad categories after the highlight.
+
+        Args:
+            direction: The direction to search in.
+
+        Returns:
+            An iterator of `FolderView` or `SubscriptionView` objects that contain
+            one or more unread articles.
+
+        Notes:
+            If there is no highlight, we default at position 0.
+        """
+        highlight = self.highlighted or 0
+        options = (
+            list(reversed(self.options)) if direction == "previous" else self.options
+        )
+        highlight = (
+            (len(options) - highlight - 1) if direction == "previous" else highlight
+        )
+        return (
+            category
+            for category in cast(
+                list[FolderView | SubscriptionView],
+                [*options[highlight:], *options[0:highlight]],
+            )[1:]
+            if category.id and self.unread.get(category.id)
+        )
+
+    def _highlight_unread(self, direction: UnreadSearchDirection) -> bool:
+        """Highlight the next category with unread articles, if there is one.
+
+        Args:
+            direction: The direction to search.
+
+        Returns:
+            `True` if an unread category was found and highlighted, `False`
+            if not.
+        """
+        if next_hit := next(self._unread_categories_after_highlight(direction), None):
+            if next_hit.id is not None:
+                self.highlighted = self.get_option_index(next_hit.id)
+                return True
+        self.notify("No more folders or subscriptions with unread articles")
+        return False
+
+    def highlight_next_unread_category(self) -> None:
+        """Highlight the next unread category."""
+        self._highlight_unread("next")
+
+    def highlight_previous_unread_category(self) -> None:
+        """Highlight the previous unread category."""
+        self._highlight_unread("previous")
 
 
 ### navigation.py ends here
