@@ -11,6 +11,7 @@
   ([#12](https://github.com/davep/oldnews/pull/12))
 - Added the `MarkAllRead` command, which marks all unread articles in the
   current category as read.
+  ([#13](https://github.com/davep/oldnews/pull/13))
 
 ## v0.0.2
 
