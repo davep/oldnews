@@ -69,7 +69,7 @@ class ArticleContent(Vertical):
         with VerticalScroll():
             yield Markdown()
 
-    def _watch_article(self) -> None:
+    async def _watch_article(self) -> None:
         """React to the article being updated."""
         self.set_class(self.article is not None, "--has-article")
         if self.article is not None:
@@ -81,7 +81,8 @@ class ArticleContent(Vertical):
             else:
                 link.visible = True
                 link.update(self.article.html_url)
-            self.query_one(Markdown).update(convert(self.article.summary.content))
+            await self.query_one(Markdown).update(convert(self.article.summary.content))
+            self.query_one(VerticalScroll).scroll_home()
 
     def focus(self, scroll_visible: bool = True) -> Self:
         self.query_one(VerticalScroll).focus(scroll_visible)
