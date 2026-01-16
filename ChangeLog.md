@@ -6,7 +6,7 @@
 
 - Using `NextUnread` and `PreviousUnread` while inside the navigation panel
   now moves the highlight to the next folder or subscription that has unread
-  articles.
+  articles. ([#15](https://github.com/davep/oldnews/pull/15))
 
 ## v0.1.0
 
