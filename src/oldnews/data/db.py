@@ -6,8 +6,10 @@ from pathlib import Path
 
 ##############################################################################
 # TypeDAL imports.
-from typedal import TypeDAL, TypedTable
+from typedal import TypeDAL, TypedField, TypedTable
 from typedal.config import TypeDALConfig
+from typedal.helpers import get_field
+from typedal.types import Field
 
 ##############################################################################
 # Local imports.
@@ -30,7 +32,9 @@ def db_file() -> Path:
 
 
 ##############################################################################
-def _safely_index(table: type[TypedTable], name: str, field: str) -> None:
+def _safely_index(
+    table: type[TypedTable], name: str, field: str | Field | TypedField
+) -> None:
     """Create an index on a type, but handle errors.
 
     Args:
@@ -45,7 +49,9 @@ def _safely_index(table: type[TypedTable], name: str, field: str) -> None:
         just missed it.
     """
     try:
-        table.create_index(name, field)
+        table.create_index(
+            name, get_field(field) if isinstance(field, TypedField) else field
+        )
     except RuntimeError:
         pass
 
