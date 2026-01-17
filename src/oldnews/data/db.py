@@ -3,6 +3,7 @@
 ##############################################################################
 # Python imports.
 from pathlib import Path
+from typing import Any
 
 ##############################################################################
 # TypeDAL imports.
@@ -33,7 +34,7 @@ def db_file() -> Path:
 
 ##############################################################################
 def _safely_index(
-    table: type[TypedTable], name: str, field: str | Field | TypedField
+    table: type[TypedTable], name: str, field: str | Field | TypedField[Any]
 ) -> None:
     """Create an index on a type, but handle errors.
 
