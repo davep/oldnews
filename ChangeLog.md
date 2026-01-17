@@ -13,6 +13,8 @@
   ([#17](https://github.com/davep/oldnews/pull/17))
 - Added automatic cleaning of locally-held old read articles.
   ([#18](https://github.com/davep/oldnews/pull/18))
+- Cleaned up some of the database declaration code.
+  ([#19](https://github.com/davep/oldnews/pull/19))
 
 ## v0.1.0
 

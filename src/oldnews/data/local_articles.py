@@ -85,7 +85,7 @@ class LocalArticle(TypedTable):
 class LocalArticleCategory(TypedTable):
     """A local copy of the categories associated with an article."""
 
-    article: LocalArticle
+    article: TypedField[LocalArticle]
     """The article that this category belongs to."""
     category: str
     """The category."""
@@ -95,7 +95,7 @@ class LocalArticleCategory(TypedTable):
 class LocalArticleAlternate(TypedTable):
     """A local copy of the alternate URLs associated with an article."""
 
-    article: LocalArticle
+    article: TypedField[LocalArticle]
     """The article that this alternate belongs to."""
     href: str
     """The URL of the alternate."""

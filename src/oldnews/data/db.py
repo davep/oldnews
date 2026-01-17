@@ -3,11 +3,14 @@
 ##############################################################################
 # Python imports.
 from pathlib import Path
+from typing import Any
 
 ##############################################################################
 # TypeDAL imports.
-from typedal import TypeDAL, TypedTable
+from typedal import TypeDAL, TypedField, TypedTable
 from typedal.config import TypeDALConfig
+from typedal.helpers import get_field
+from typedal.types import Field
 
 ##############################################################################
 # Local imports.
@@ -30,7 +33,9 @@ def db_file() -> Path:
 
 
 ##############################################################################
-def _safely_index(table: type[TypedTable], name: str, field: str) -> None:
+def _safely_index(
+    table: type[TypedTable], name: str, field: str | Field | TypedField[Any]
+) -> None:
     """Create an index on a type, but handle errors.
 
     Args:
@@ -45,7 +50,9 @@ def _safely_index(table: type[TypedTable], name: str, field: str) -> None:
         just missed it.
     """
     try:
-        table.create_index(name, field)
+        table.create_index(
+            name, get_field(field) if isinstance(field, TypedField) else field
+        )
     except RuntimeError:
         pass
 
@@ -74,12 +81,11 @@ def initialise_database() -> TypeDAL:
     )
 
     dal.define(LocalArticleCategory)
-    # TODO: Need to make `field` more open.
-    # _safely_index(
-    #     LocalArticleCategory,
-    #     "idx_local_article_category_article",
-    #     LocalArticleCategory.article,
-    # )
+    _safely_index(
+        LocalArticleCategory,
+        "idx_local_article_category_article",
+        LocalArticleCategory.article,
+    )
     _safely_index(
         LocalArticleCategory,
         "idx_local_article_category_category",
