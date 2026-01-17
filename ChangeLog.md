@@ -11,6 +11,8 @@
   article. ([#16](https://github.com/davep/oldnews/pull/16))
 - Small cosmetic tweaks to the way an article is shown.
   ([#17](https://github.com/davep/oldnews/pull/17))
+- Cleaned up some of the database declaration code.
+  ([#19](https://github.com/davep/oldnews/pull/19))
 
 ## v0.1.0
 
