@@ -12,6 +12,7 @@ from .config import (
 from .db import initialise_database
 from .last_grab import last_grabbed_data_at, remember_we_last_grabbed_at
 from .local_articles import (
+    clean_old_read_articles,
     get_local_articles,
     get_unread_article_ids,
     locally_mark_article_ids_read,
@@ -27,6 +28,7 @@ from .navigation_state import get_navigation_state, save_navigation_state
 # Exports.
 __all__ = [
     "Configuration",
+    "clean_old_read_articles",
     "get_auth_token",
     "get_local_articles",
     "get_local_folders",

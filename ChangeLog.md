@@ -11,6 +11,7 @@
   article. ([#16](https://github.com/davep/oldnews/pull/16))
 - Small cosmetic tweaks to the way an article is shown.
   ([#17](https://github.com/davep/oldnews/pull/17))
+- Added automatic cleaning of locally-held old read articles.
 
 ## v0.1.0
 
