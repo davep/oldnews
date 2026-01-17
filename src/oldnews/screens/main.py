@@ -52,6 +52,7 @@ from ..commands import (
 )
 from ..data import (
     LocalUnread,
+    clean_old_read_articles,
     get_local_articles,
     get_local_folders,
     get_local_subscriptions,
@@ -304,6 +305,10 @@ class Main(EnhancedScreen[None]):
             self.post_message(self.NewFolders(folders))
         if subscriptions := get_local_subscriptions():
             self.post_message(self.NewSubscriptions(subscriptions))
+        if cleaned := clean_old_read_articles(
+            timedelta(days=load_configuration().local_history)
+        ):
+            self.notify(f"Old read articles cleaned from local storage: {cleaned}")
         if unread := get_local_unread(folders, subscriptions):
             self.post_message(self.NewUnread(unread))
         # If we've never grabbed data from ToR before, or if it's been long enough...

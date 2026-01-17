@@ -2,7 +2,7 @@
 
 ##############################################################################
 # Python imports.
-from datetime import datetime
+from datetime import datetime, timedelta
 from html import unescape
 from typing import Iterable, Iterator, cast
 
@@ -331,6 +331,21 @@ def get_unread_article_ids() -> list[str]:
         article.article_id
         for article in LocalArticle.where(~LocalArticle.id.belongs(read)).select()
     ]
+
+
+##############################################################################
+def clean_old_read_articles(cutoff: timedelta) -> int:
+    """Clean up articles that are older than the given cutoff time."""
+    assert LocalArticle._db is not None
+    read = get_local_read_article_ids()
+    retire_time = datetime.now() - cutoff
+    cleaned = len(
+        LocalArticle.where(
+            (LocalArticle.published < retire_time) & LocalArticle.id.belongs(read)
+        ).delete()
+    )
+    LocalArticle._db.commit()
+    return cleaned
 
 
 ### local_articles.py ends here
