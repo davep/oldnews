@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v0.2.0
 
-**Released: WiP**
+**Released: 2026-01-17**
 
 - Using `NextUnread` and `PreviousUnread` while inside the navigation panel
   now moves the highlight to the next folder or subscription that has unread
