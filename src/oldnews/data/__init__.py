@@ -23,6 +23,7 @@ from .local_folders import get_local_folders, save_local_folders
 from .local_subscriptions import get_local_subscriptions, save_local_subscriptions
 from .local_unread import LocalUnread, get_local_unread, total_unread
 from .navigation_state import get_navigation_state, save_navigation_state
+from .reset import reset_data
 
 ##############################################################################
 # Exports.
@@ -43,6 +44,7 @@ __all__ = [
     "locally_mark_article_ids_read",
     "LocalUnread",
     "remember_we_last_grabbed_at",
+    "reset_data",
     "save_configuration",
     "save_local_articles",
     "save_local_folders",
