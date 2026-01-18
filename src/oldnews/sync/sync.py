@@ -42,7 +42,7 @@ class ToRSync:
     """Function to call when new subscriptions are acquired."""
     on_new_unread: Callable[[LocalUnread], Any] | None = None
     """Function to call when new unread counts are calculated."""
-    on_sync_funished: Callable[[], Any] | None = None
+    on_sync_finished: Callable[[], Any] | None = None
     """Function to call when the sync has finished."""
 
     def _step(self, step: str) -> None:
@@ -145,8 +145,8 @@ class ToRSync:
             self.on_new_unread(unread)
 
         # Finally we're all done.
-        if self.on_sync_funished:
-            self.on_sync_funished()
+        if self.on_sync_finished:
+            self.on_sync_finished()
 
 
 ### sync.py ends here
