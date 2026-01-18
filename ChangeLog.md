@@ -6,6 +6,7 @@
 
 - Made small improvements to article list refreshing.
   ([#21](https://github.com/davep/oldnews/pull/21))
+- Moved the sync code out into its own class.
 
 ## v0.2.0
 
