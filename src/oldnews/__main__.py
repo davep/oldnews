@@ -68,10 +68,17 @@ def get_args() -> Namespace:
     )
 
     # Add the 'reset' command.
-    sub_parser.add_parser(
+    reset = sub_parser.add_parser(
         "reset", help="Remove all data downloaded from TheOldReader"
-    ).add_argument(
+    )
+    reset.add_argument(
         "-l", "--logout", help="Force a logout from TheOldReader", action="store_true"
+    )
+    reset.add_argument(
+        "-y",
+        "--yes",
+        help="Perform the reset without confirming first",
+        action="store_true",
     )
 
     # Finally, parse the command line.
@@ -106,14 +113,30 @@ def show_themes() -> None:
 
 
 ##############################################################################
+def reset_news(args: Namespace) -> None:
+    """Perform a reset on the news data.
+
+    Args:
+        args: The command line arguments.
+    """
+    from rich.prompt import Confirm
+
+    logout = " and log you out" if args.logout else ""
+    if args.yes or Confirm().ask(
+        f"This will erase all the local news data{logout}; are you sure?", default=False
+    ):
+        reset_data(args.logout)
+        print("Local data erased")
+        if args.logout:
+            print("Login token removed")
+
+
+##############################################################################
 def main() -> None:
     """Main entry function."""
     match (args := get_args()).command:
         case "reset":
-            reset_data(args.logout)
-            print("Local data erased")
-            if args.logout:
-                print("Login token removed")
+            reset_news(args)
         case "license" | "licence":
             print(cleandoc(OldNews.HELP_LICENSE))
         case "bindings":
