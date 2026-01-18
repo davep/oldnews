@@ -10,6 +10,8 @@
   ([#22](https://github.com/davep/oldnews/pull/22))
 - Made some cosmetic tweaks to the article view.
   ([#23](https://github.com/davep/oldnews/pull/23))
+- Added a `reset` command line command that can be used to erase all local
+  data (and optionally force a logout).
 
 ## v0.2.0
 

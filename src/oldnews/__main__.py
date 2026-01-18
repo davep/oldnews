@@ -9,7 +9,7 @@ from operator import attrgetter
 ##############################################################################
 # Local imports.
 from . import __doc__, __version__
-from .data import initialise_database
+from .data import initialise_database, reset_data
 from .oldnews import OldNews
 
 
@@ -60,6 +60,18 @@ def get_args() -> Namespace:
         help="Set the theme for the application (set to ? to list available themes)",
     )
 
+    # Allow for commands on the command line.
+    sub_parser = parser.add_subparsers(
+        dest="command", help="Available commands", required=False
+    )
+
+    # Add the 'reset' command.
+    sub_parser.add_parser(
+        "reset", help="Remove all data downloaded from TheOldReader"
+    ).add_argument(
+        "-l", "--logout", help="Force a logout from TheOldReader", action="store_true"
+    )
+
     # Finally, parse the command line.
     return parser.parse_args()
 
@@ -94,7 +106,13 @@ def show_themes() -> None:
 ##############################################################################
 def main() -> None:
     """Main entry function."""
-    if (args := get_args()).license:
+    args = get_args()
+    if args.command == "reset":
+        reset_data(args.logout)
+        print("Local data erased")
+        if args.logout:
+            print("Login token removed")
+    elif args.license:
         print(cleandoc(OldNews.HELP_LICENSE))
     elif args.bindings:
         show_bindable_commands()
