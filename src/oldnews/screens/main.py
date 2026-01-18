@@ -3,14 +3,13 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from webbrowser import open as open_url
 
 ##############################################################################
 # OldAs imports.
 from oldas import (
     Article,
-    ArticleIDs,
     Articles,
     Folder,
     Folders,
@@ -57,19 +56,15 @@ from ..data import (
     get_local_folders,
     get_local_subscriptions,
     get_local_unread,
-    get_unread_article_ids,
     last_grabbed_data_at,
     load_configuration,
     locally_mark_article_ids_read,
     locally_mark_read,
-    remember_we_last_grabbed_at,
-    save_local_articles,
-    save_local_folders,
-    save_local_subscriptions,
     total_unread,
     update_configuration,
 )
 from ..providers import MainCommands
+from ..sync import ToRSync
 from ..widgets import ArticleContent, ArticleList, Navigation
 
 
@@ -198,6 +193,9 @@ class Main(EnhancedScreen[None]):
         counts: LocalUnread
         """The new unread counts."""
 
+    class SyncFinished(Message):
+        """Message sent when a sync from TheOldReader is finished."""
+
     def __init__(self, session: Session) -> None:
         """Initialise the main screen."""
         super().__init__()
@@ -298,6 +296,11 @@ class Main(EnhancedScreen[None]):
         self.unread = message.counts
         self.post_message(self.SubTitle(""))
 
+    def _refresh_article_list(self) -> None:
+        """Refresh the content of the article list."""
+        if self.current_category:
+            self.articles = get_local_articles(self.current_category, not self.show_all)
+
     @work(thread=True, exclusive=True)
     def _load_locally(self) -> None:
         """Load up any locally-held data."""
@@ -320,103 +323,27 @@ class Main(EnhancedScreen[None]):
             # ...kick off a refresh from TheOldReader.
             self.post_message(RefreshFromTheOldReader())
 
-    async def _download_newest_articles(self) -> None:
-        """Download the latest articles available."""
-        last_grabbed = last_grabbed_data_at() or (
-            datetime.now() - timedelta(days=load_configuration().local_history)
-        )
-        new_grab = datetime.now(timezone.utc)
-        loaded = 0
-        async for article in Articles.stream_new_since(
-            self._session, last_grabbed, n=10
-        ):
-            # I've encountered articles that don't have an origin stream ID,
-            # which means that I can't relate them back to a stream, which
-            # means I'll never see them anyway...
-            if not article.origin.stream_id:
-                continue
-            # TODO: Right now I'm saving articles one at a time; perhaps I
-            # should save them in small batches? This would be simple enough
-            # -- perhaps same them in batches the same size as the buffer
-            # window I'm using right now (currently 10 articles per trip to
-            # ToR).
-            save_local_articles(Articles([article]))
-            loaded += 1
-            if (loaded % 10) == 0:
-                self.post_message(
-                    self.SubTitle(f"Downloading articles from TheOldReader: {loaded}")
-                )
-        if loaded:
-            self.notify(f"Articles downloaded: {loaded}")
-        else:
-            self.notify("No new articles found on TheOldReader")
-        remember_we_last_grabbed_at(new_grab)
-
-    async def _refresh_read_status(self) -> None:
-        """Refresh the read status from the server."""
-        self.post_message(
-            self.SubTitle("Getting list of unread articles from TheOldReader")
-        )
-        remote_unread_articles = set(
-            article_id.full_id
-            for article_id in await ArticleIDs.load_unread(self._session)
-        )
-        self.post_message(self.SubTitle("Comparing against locally-read articles"))
-        local_unread_articles = set(get_unread_article_ids())
-        if mark_as_read := local_unread_articles - remote_unread_articles:
-            locally_mark_article_ids_read(mark_as_read)
-            self.notify(
-                f"Articles found read elsewhere on TheOldReader: {len(mark_as_read)}"
-            )
+    @on(SyncFinished)
+    def _sync_finished(self) -> None:
+        """Clean up after a sync from TheOldReader has finished."""
+        self._refresh_article_list()
+        self.post_message(self.SubTitle(""))
 
     @on(RefreshFromTheOldReader)
     @work(exclusive=True)
     async def action_refresh_from_the_old_reader_command(self) -> None:
         """Load the main data from TheOldReader."""
-
-        # Get the folder list.
-        self.post_message(self.SubTitle("Getting folder list"))
-        self.post_message(
-            self.NewFolders(save_local_folders(await Folders.load(self._session)))
-        )
-
-        # Get the subscriptions list.
-        self.post_message(self.SubTitle("Getting subscriptions list"))
-        self.post_message(
-            self.NewSubscriptions(
-                save_local_subscriptions(await Subscriptions.load(self._session))
-            )
-        )
-
-        # Download the latest articles we don't know about.
-        if never_grabbed_before := last_grabbed_data_at() is None:
-            self.post_message(self.SubTitle("Getting available articles"))
-        else:
-            self.post_message(
-                self.SubTitle(f"Getting articles new since {last_grabbed_data_at()}")
-            )
-        await self._download_newest_articles()
-
-        # If we have grabbed data before, let's try and sync up what's been read.
-        if not never_grabbed_before:
-            await self._refresh_read_status()
-
-        # Recalculate the unread counts.
-        self.post_message(self.SubTitle("Calculating unread counts"))
-        self.post_message(
-            self.NewUnread(get_local_unread(self.folders, self.subscriptions))
-        )
-
-        # In case the user was looking at some articles, refresh them.
-        self._refresh_article_list()
-
-        # Finally we're all done.
-        self.post_message(self.SubTitle(""))
-
-    def _refresh_article_list(self) -> None:
-        """Refresh the content of the article list."""
-        if self.current_category:
-            self.articles = get_local_articles(self.current_category, not self.show_all)
+        await ToRSync(
+            self._session,
+            on_new_step=lambda step: self.post_message(self.SubTitle(step)),
+            on_new_result=lambda result: self.notify(result),
+            on_new_folders=lambda folders: self.post_message(self.NewFolders(folders)),
+            on_new_subscriptions=lambda subscriptions: self.post_message(
+                self.NewSubscriptions(subscriptions)
+            ),
+            on_new_unread=lambda unread: self.post_message(self.NewUnread(unread)),
+            on_sync_funished=lambda: self.post_message(self.SyncFinished()),
+        ).refresh()
 
     @on(Navigation.CategorySelected)
     def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:
