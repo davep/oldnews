@@ -8,6 +8,7 @@
   ([#21](https://github.com/davep/oldnews/pull/21))
 - Moved the sync code out into its own class.
   ([#22](https://github.com/davep/oldnews/pull/22))
+- Made some cosmetic tweaks to the article view.
 
 ## v0.2.0
 
