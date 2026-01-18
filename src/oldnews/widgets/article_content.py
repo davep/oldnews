@@ -36,10 +36,6 @@ class ArticleContent(Vertical):
             margin: 0;
         }
 
-        &:focus-within Rule {
-            color: $border;
-        }
-
         #header {
             height: auto;
             padding: 0 1 0 1;
@@ -54,6 +50,15 @@ class ArticleContent(Vertical):
             }
             #published, #link {
                 color: $text-muted;
+            }
+        }
+
+        &:focus-within {
+            #header, Rule {
+                background: $boost;
+            }
+            Rule {
+                color: $border;
             }
         }
 
