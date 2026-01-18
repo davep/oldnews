@@ -102,7 +102,7 @@ class ArticleContent(Vertical):
                 link.visible = True
                 link.update(self.article.html_url)
             await self.query_one(Markdown).update(convert(self.article.summary.content))
-            self.query_one(VerticalScroll).scroll_home()
+            self.query_one(VerticalScroll).scroll_home(animate=False)
         self.set_class(self.article is not None, "--has-article")
 
     def focus(self, scroll_visible: bool = True) -> Self:
