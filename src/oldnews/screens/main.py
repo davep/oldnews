@@ -311,6 +311,7 @@ class Main(EnhancedScreen[None]):
             self.notify(f"Old read articles cleaned from local storage: {cleaned}")
         if unread := get_local_unread(folders, subscriptions):
             self.post_message(self.NewUnread(unread))
+        self._refresh_article_list()
         # If we've never grabbed data from ToR before, or if it's been long enough...
         if (last_grabbed := last_grabbed_data_at()) is None or (
             (datetime.now() - last_grabbed).seconds
@@ -406,8 +407,16 @@ class Main(EnhancedScreen[None]):
             self.NewUnread(get_local_unread(self.folders, self.subscriptions))
         )
 
+        # In case the user was looking at some articles, refresh them.
+        self._refresh_article_list()
+
         # Finally we're all done.
         self.post_message(self.SubTitle(""))
+
+    def _refresh_article_list(self) -> None:
+        """Refresh the content of the article list."""
+        if self.current_category:
+            self.articles = get_local_articles(self.current_category, not self.show_all)
 
     @on(Navigation.CategorySelected)
     def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:
@@ -418,13 +427,8 @@ class Main(EnhancedScreen[None]):
         """
         self.current_category = message.category
         self.article = None
-        self.articles = get_local_articles(message.category, not self.show_all)
+        self._refresh_article_list()
         self.query_one(ArticleList).focus()
-
-    def _refresh_article_list(self) -> None:
-        """Refresh the content of the article list."""
-        if category := self.query_one(Navigation).current_category:
-            self.articles = get_local_articles(category, not self.show_all)
 
     def _watch_show_all(self) -> None:
         """Handle changes to the show all flag."""

@@ -1,5 +1,11 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- Made small improvements to article list refreshing.
+
 ## v0.2.0
 
 **Released: 2026-01-17**
