@@ -24,6 +24,12 @@ from ..data import (
     save_local_subscriptions,
 )
 
+##############################################################################
+type Callback = Callable[[], Any] | None
+"""Type of a callback with no arguments."""
+type CallbackWith[T] = Callable[[T], Any] | None
+"""Type of callback with a single argument."""
+
 
 ##############################################################################
 @dataclass
@@ -32,17 +38,17 @@ class ToRSync:
 
     session: Session
     """The TheOldReader API session object."""
-    on_new_step: Callable[[str], Any] | None = None
+    on_new_step: CallbackWith[str] = None
     """Function to call when a new step starts."""
-    on_new_result: Callable[[str], Any] | None = None
+    on_new_result: CallbackWith[str] = None
     """Function to call when a result should be communicated."""
-    on_new_folders: Callable[[Folders], Any] | None = None
+    on_new_folders: CallbackWith[Folders] = None
     """Function to call when new folders are acquired."""
-    on_new_subscriptions: Callable[[Subscriptions], Any] | None = None
+    on_new_subscriptions: CallbackWith[Subscriptions] = None
     """Function to call when new subscriptions are acquired."""
-    on_new_unread: Callable[[LocalUnread], Any] | None = None
+    on_new_unread: CallbackWith[LocalUnread] = None
     """Function to call when new unread counts are calculated."""
-    on_sync_finished: Callable[[], Any] | None = None
+    on_sync_finished: Callback = None
     """Function to call when the sync has finished."""
 
     def _step(self, step: str) -> None:
