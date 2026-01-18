@@ -12,6 +12,7 @@
   ([#23](https://github.com/davep/oldnews/pull/23))
 - Added a `reset` command line command that can be used to erase all local
   data (and optionally force a logout).
+  ([#27](https://github.com/davep/oldnews/pull/27))
 
 ## v0.2.0
 
