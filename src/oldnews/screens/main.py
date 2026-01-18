@@ -342,7 +342,7 @@ class Main(EnhancedScreen[None]):
                 self.NewSubscriptions(subscriptions)
             ),
             on_new_unread=lambda unread: self.post_message(self.NewUnread(unread)),
-            on_sync_funished=lambda: self.post_message(self.SyncFinished()),
+            on_sync_finished=lambda: self.post_message(self.SyncFinished()),
         ).refresh()
 
     @on(Navigation.CategorySelected)
