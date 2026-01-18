@@ -17,7 +17,7 @@ from oldas import Article
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.reactive import var
-from textual.widgets import Label, Markdown
+from textual.widgets import Label, Markdown, Rule
 
 
 ##############################################################################
@@ -30,6 +30,14 @@ class ArticleContent(Vertical):
 
         &.--has-article {
             display: block;
+        }
+
+        Rule.-horizontal {
+            margin: 0;
+        }
+
+        &:focus-within Rule {
+            color: $border;
         }
 
         #header {
@@ -67,11 +75,13 @@ class ArticleContent(Vertical):
 
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
+        yield Rule()
         with Vertical(id="header"):
             with Horizontal():
                 yield Label(id="title", markup=False)
                 yield Label(id="published")
             yield Label(id="link", markup=False)
+        yield Rule()
         with VerticalScroll():
             yield Markdown()
 
