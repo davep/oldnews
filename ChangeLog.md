@@ -13,6 +13,15 @@
 - Added a `reset` command line command that can be used to erase all local
   data (and optionally force a logout).
   ([#27](https://github.com/davep/oldnews/pull/27))
+- Removed the `--licence` command line switch.
+- Removed the `--bindings` command line switch.
+- Removed the "?" parameter for the `--theme` command line switch.
+- Added a `licence`/`license` command line command that is used to show the
+  application's licence.
+- Added `bindings` command line command that is used to list all bindable
+  commands.
+- Added a `themes` command that is used to list all themes available to the
+  application.
 
 ## v0.2.0
 
