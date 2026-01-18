@@ -37,32 +37,34 @@ def get_args() -> Namespace:
         version=f"%(prog)s v{__version__}",
     )
 
-    # Add --license
-    parser.add_argument(
-        "--license",
-        "--licence",
-        help="Show license information",
-        action="store_true",
-    )
-
-    # Add --bindings
-    parser.add_argument(
-        "-b",
-        "--bindings",
-        help="List commands that can have their bindings changed",
-        action="store_true",
-    )
-
     # Add --theme
     parser.add_argument(
         "-t",
         "--theme",
-        help="Set the theme for the application (set to ? to list available themes)",
+        help="Set the theme for the application (see `themes` command for available themes)",
     )
 
     # Allow for commands on the command line.
     sub_parser = parser.add_subparsers(
         dest="command", help="Available commands", required=False
+    )
+
+    # Add the 'license' command.
+    sub_parser.add_parser(
+        "license",
+        aliases=["licence"],
+        help="Show license information",
+    )
+
+    # Add the 'bindings' command.
+    sub_parser.add_parser(
+        "bindings",
+        help="List commands that can have their bindings changed",
+    )
+
+    # Add the 'themes' command.
+    sub_parser.add_parser(
+        "themes", help="List the available themes that can be used with --theme"
     )
 
     # Add the 'reset' command.
@@ -106,21 +108,21 @@ def show_themes() -> None:
 ##############################################################################
 def main() -> None:
     """Main entry function."""
-    args = get_args()
-    if args.command == "reset":
-        reset_data(args.logout)
-        print("Local data erased")
-        if args.logout:
-            print("Login token removed")
-    elif args.license:
-        print(cleandoc(OldNews.HELP_LICENSE))
-    elif args.bindings:
-        show_bindable_commands()
-    elif args.theme == "?":
-        show_themes()
-    else:
-        initialise_database()
-        OldNews(args).run()
+    match (args := get_args()).command:
+        case "reset":
+            reset_data(args.logout)
+            print("Local data erased")
+            if args.logout:
+                print("Login token removed")
+        case "license" | "licence":
+            print(cleandoc(OldNews.HELP_LICENSE))
+        case "bindings":
+            show_bindable_commands()
+        case "themes":
+            show_themes()
+        case _:
+            initialise_database()
+            OldNews(args).run()
 
 
 ### __main__.py ends here
