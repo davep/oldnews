@@ -9,6 +9,17 @@
 - Changed `OpenOrigin` into `OpenHomePage` and built it around the URL of
   the current subscription rather than the origin URL of the current
   article. ([#33](https://github.com/davep/oldnews/pull/33))
+- Added the `CopyHomePageToClipboard` command for copying the current
+  subscription's homepage URL to the clipboard.
+  ([#43](https://github.com/davep/oldnews/pull/43))
+- Added the `CopyFeedToClipboard` command for copying the current
+  subscription's feed URL to the clipboard.
+  ([#43](https://github.com/davep/oldnews/pull/43))
+- Added the `CopyArticleToClipboard` command for copying the current
+  article's URL to the clipboard.
+  ([#43](https://github.com/davep/oldnews/pull/43))
+- Added the `Copy` command for copying a URL to the clipboard depending on
+  the current context. ([#43](https://github.com/davep/oldnews/pull/43))
 
 ## v0.3.0
 

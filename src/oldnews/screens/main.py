@@ -38,6 +38,10 @@ from textual_enhanced.screen import EnhancedScreen
 # Local imports.
 from .. import __version__
 from ..commands import (
+    Copy,
+    CopyArticleToClipboard,
+    CopyFeedToClipboard,
+    CopyHomePageToClipboard,
     Escape,
     MarkAllRead,
     Next,
@@ -151,6 +155,10 @@ class Main(EnhancedScreen[None]):
         OpenArticle,
         OpenHomePage,
         ChangeTheme,
+        CopyHomePageToClipboard,
+        CopyFeedToClipboard,
+        CopyArticleToClipboard,
+        Copy,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -244,10 +252,14 @@ class Main(EnhancedScreen[None]):
             # but okay let's be defensive... (when I can come up with a nice
             # little MRE I'll report it).
             return True
-        if action == OpenArticle.action_name():
+        if action in (OpenArticle.action_name(), CopyArticleToClipboard.action_name()):
             return self.article is not None
-        if action == OpenHomePage.action_name():
-            return isinstance(self.query_one(Navigation).current_category, Subscription)
+        if action in (
+            OpenHomePage.action_name(),
+            CopyFeedToClipboard.action_name(),
+            CopyHomePageToClipboard.action_name(),
+        ):
+            return self.query_one(Navigation).current_subscription is not None
         if action in (Next.action_name(), Previous.action_name()):
             return self.articles is not None
         if action in (
@@ -264,6 +276,11 @@ class Main(EnhancedScreen[None]):
             return self.articles is not None and any(
                 article.is_unread for article in self.articles
             )
+        if action == Copy.action_name():
+            return (
+                (navigation := self.query_one(Navigation)).has_focus
+                and navigation.current_subscription is not None
+            ) or self.query_one("#article-view").has_focus_within
         return True
 
     @on(SubTitle)
@@ -512,9 +529,7 @@ class Main(EnhancedScreen[None]):
 
     def action_open_home_page_command(self) -> None:
         """Open the home page of the current subscription in the web browser."""
-        if isinstance(
-            subscription := self.query_one(Navigation).current_category, Subscription
-        ):
+        if subscription := self.query_one(Navigation).current_subscription:
             if subscription.html_url:
                 open_url(subscription.html_url)
             else:
@@ -523,6 +538,51 @@ class Main(EnhancedScreen[None]):
                     severity="error",
                     title="Can't visit",
                 )
+
+    def _copy_to_clipboard(self, content: str | None, empty_error: str) -> None:
+        """Copy some content to the clipboard.
+
+        Args:
+            content: The content to copy to the clipboard.
+            empty_error: The message to show if there's no content.
+        """
+        if content:
+            self.app.copy_to_clipboard(content)
+            self.notify("Copied to clipboard")
+        else:
+            self.notify(empty_error, severity="error", title="Can't copy")
+
+    def action_copy_home_page_to_clipboard_command(self) -> None:
+        """Copy the URL of the current subscription's homepage to the clipboard."""
+        if subscription := self.query_one(Navigation).current_subscription:
+            self._copy_to_clipboard(
+                subscription.html_url, "No home page URL available for the subscription"
+            )
+
+    def action_copy_feed_to_clipboard_command(self) -> None:
+        """Copy the URL of the current subscription's feed to the clipboard."""
+        if subscription := self.query_one(Navigation).current_subscription:
+            self._copy_to_clipboard(
+                subscription.url, "No feed URL available for the subscription"
+            )
+
+    def action_copy_article_to_clipboard_command(self) -> None:
+        """Copy the URL of the current article to the clipboard."""
+        if self.article:
+            self._copy_to_clipboard(
+                self.article.html_url, "No URL available for the article"
+            )
+
+    def action_copy_command(self) -> None:
+        """Copy a URL to the clipboard depending on the current context."""
+        if (navigation := self.query_one(Navigation)).has_focus:
+            if navigation.current_subscription:
+                self.action_copy_home_page_to_clipboard_command()
+        elif self.query_one("#article-view").has_focus_within:
+            if self.article:
+                self.action_copy_article_to_clipboard_command()
+            else:
+                self.action_copy_home_page_to_clipboard_command()
 
 
 ### main.py ends here
