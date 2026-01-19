@@ -238,6 +238,13 @@ class Navigation(EnhancedOptionList):
             return selected.subscription
         raise ValueError("Unknown category")
 
+    @property
+    def current_folder(self) -> Folder | None:
+        """The current folder, if one is highlighted, or `None`"""
+        if isinstance(current := self.current_category, Folder):
+            return current
+        return None
+
     def _highlight_unread(self, direction: HighlightDirection) -> bool:
         """Highlight the next category with unread articles, if there is one.
 
