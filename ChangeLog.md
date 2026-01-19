@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v0.3.0
 
-**Released: WiP**
+**Released: 2026-01-19**
 
 - Made small improvements to article list refreshing.
   ([#21](https://github.com/davep/oldnews/pull/21))
