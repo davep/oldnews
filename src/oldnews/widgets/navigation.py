@@ -245,6 +245,13 @@ class Navigation(EnhancedOptionList):
             return current
         return None
 
+    @property
+    def current_subscription(self) -> Subscription | None:
+        """The current subscription, if one is highlighted, or `None`."""
+        if isinstance(current := self.current_category, Subscription):
+            return current
+        return None
+
     def _highlight_unread(self, direction: HighlightDirection) -> bool:
         """Highlight the next category with unread articles, if there is one.
 
