@@ -15,7 +15,7 @@
 - Added the `CopyFeedToClipboard` command for copying the current
   subscription's feed URL to the clipboard.
   ([#43](https://github.com/davep/oldnews/pull/43))
-- Added the `CopyArticleToClipboard` command for copyright the current
+- Added the `CopyArticleToClipboard` command for copying the current
   article's URL to the clipboard.
   ([#43](https://github.com/davep/oldnews/pull/43))
 
