@@ -38,6 +38,7 @@ from textual_enhanced.screen import EnhancedScreen
 # Local imports.
 from .. import __version__
 from ..commands import (
+    Copy,
     CopyArticleToClipboard,
     CopyFeedToClipboard,
     CopyHomePageToClipboard,
@@ -157,6 +158,7 @@ class Main(EnhancedScreen[None]):
         CopyHomePageToClipboard,
         CopyFeedToClipboard,
         CopyArticleToClipboard,
+        Copy,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -274,6 +276,11 @@ class Main(EnhancedScreen[None]):
             return self.articles is not None and any(
                 article.is_unread for article in self.articles
             )
+        if action == Copy.action_name():
+            return (
+                (navigation := self.query_one(Navigation)).has_focus
+                and navigation.current_subscription is not None
+            ) or self.query_one("#article-view").has_focus_within
         return True
 
     @on(SubTitle)
@@ -565,6 +572,17 @@ class Main(EnhancedScreen[None]):
             self._copy_to_clipboard(
                 self.article.html_url, "No URL available for the article"
             )
+
+    def action_copy_command(self) -> None:
+        """Copy a URL to the clipboard depending on the current context."""
+        if (navigation := self.query_one(Navigation)).has_focus:
+            if navigation.current_subscription:
+                self.action_copy_home_page_to_clipboard_command()
+        elif self.query_one("#article-view").has_focus_within:
+            if self.article:
+                self.action_copy_article_to_clipboard_command()
+            else:
+                self.action_copy_home_page_to_clipboard_command()
 
 
 ### main.py ends here

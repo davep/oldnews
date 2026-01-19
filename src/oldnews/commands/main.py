@@ -98,4 +98,11 @@ class CopyArticleToClipboard(Command):
     BINDING_KEY = "f5"
 
 
+##############################################################################
+class Copy(Command):
+    """Copy a URL to the clipboard depending on the context"""
+
+    BINDING_KEY = "ctrl+c"
+
+
 ### main.py ends here
