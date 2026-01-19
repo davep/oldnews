@@ -81,12 +81,14 @@ class MarkAllRead(Command):
 class CopyHomePageToClipboard(Command):
     """Copy the URL of the current subscription's home page to the clipboard"""
 
-    BINDING_KEY = "ctrl+shift+c"
+    BINDING_KEY = "f3"
 
 
 ##############################################################################
 class CopyFeedToClipboard(Command):
     """Copy the URL of the current subscription's feed to the clipboard"""
+
+    BINDING_KEY = "f4"
 
 
 ### main.py ends here

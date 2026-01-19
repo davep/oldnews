@@ -154,6 +154,7 @@ class Main(EnhancedScreen[None]):
         OpenHomePage,
         ChangeTheme,
         CopyHomePageToClipboard,
+        CopyFeedToClipboard,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
