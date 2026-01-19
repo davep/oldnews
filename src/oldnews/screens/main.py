@@ -532,44 +532,39 @@ class Main(EnhancedScreen[None]):
                     title="Can't visit",
                 )
 
+    def _copy_to_clipboard(self, content: str | None, empty_error: str) -> None:
+        """Copy some content to the clipboard.
+
+        Args:
+            content: The content to copy to the clipboard.
+            empty_error: The message to show if there's no content.
+        """
+        if content:
+            self.app.copy_to_clipboard(content)
+            self.notify("Copied to clipboard")
+        else:
+            self.notify(empty_error, severity="error", title="Can't copy")
+
     def action_copy_home_page_to_clipboard_command(self) -> None:
         """Copy the URL of the current subscription's homepage to the clipboard."""
         if subscription := self.query_one(Navigation).current_subscription:
-            if subscription.html_url:
-                self.app.copy_to_clipboard(subscription.html_url)
-                self.notify("Copied to clipboard")
-            else:
-                self.notify(
-                    "No home page URL available for the subscription",
-                    severity="error",
-                    title="Can't copy",
-                )
+            self._copy_to_clipboard(
+                subscription.html_url, "No home page URL available for the subscription"
+            )
 
     def action_copy_feed_to_clipboard_command(self) -> None:
         """Copy the URL of the current subscription's feed to the clipboard."""
         if subscription := self.query_one(Navigation).current_subscription:
-            if subscription.url:
-                self.app.copy_to_clipboard(subscription.url)
-                self.notify("Copied to clipboard")
-            else:
-                self.notify(
-                    "No feed URL available for the subscription",
-                    severity="error",
-                    title="Can't copy",
-                )
+            self._copy_to_clipboard(
+                subscription.url, "No feed URL available for the subscription"
+            )
 
     def action_copy_article_to_clipboard_command(self) -> None:
         """Copy the URL of the current article to the clipboard."""
         if self.article:
-            if self.article.html_url:
-                self.app.copy_to_clipboard(self.article.html_url)
-                self.notify("Copied to clipboard")
-            else:
-                self.notify(
-                    "No URL available for the article",
-                    severity="error",
-                    title="Can't copy",
-                )
+            self._copy_to_clipboard(
+                self.article.html_url, "No URL available for the article"
+            )
 
 
 ### main.py ends here
