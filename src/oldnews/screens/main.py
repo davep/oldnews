@@ -38,6 +38,7 @@ from textual_enhanced.screen import EnhancedScreen
 # Local imports.
 from .. import __version__
 from ..commands import (
+    CopyHomePageToClipboard,
     Escape,
     MarkAllRead,
     Next,
@@ -151,6 +152,7 @@ class Main(EnhancedScreen[None]):
         OpenArticle,
         OpenHomePage,
         ChangeTheme,
+        CopyHomePageToClipboard,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -512,9 +514,7 @@ class Main(EnhancedScreen[None]):
 
     def action_open_home_page_command(self) -> None:
         """Open the home page of the current subscription in the web browser."""
-        if isinstance(
-            subscription := self.query_one(Navigation).current_category, Subscription
-        ):
+        if subscription := self.query_one(Navigation).current_subscription:
             if subscription.html_url:
                 open_url(subscription.html_url)
             else:
@@ -522,6 +522,19 @@ class Main(EnhancedScreen[None]):
                     "No home page URL available for the subscription",
                     severity="error",
                     title="Can't visit",
+                )
+
+    def action_copy_home_page_to_clipboard_command(self) -> None:
+        """Copy the URL of the current subscription's homepage to the clipboard."""
+        if subscription := self.query_one(Navigation).current_subscription:
+            if subscription.html_url:
+                self.app.copy_to_clipboard(subscription.html_url)
+                self.notify("Copied to clipboard")
+            else:
+                self.notify(
+                    "No home page URL available for the subscription",
+                    severity="error",
+                    title="Can't copy",
                 )
 
 

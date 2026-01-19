@@ -13,6 +13,7 @@ from textual_enhanced.commands import (
 ##############################################################################
 # Local imports.
 from ..commands import (
+    CopyHomePageToClipboard,
     Escape,
     MarkAllRead,
     Next,
@@ -44,6 +45,7 @@ class MainCommands(CommandsProvider):
         yield from self.maybe(OpenArticle)
         yield from self.maybe(OpenHomePage)
         yield from self.maybe(MarkAllRead)
+        yield from self.maybe(CopyHomePageToClipboard)
         yield ToggleShowAll()
         yield RefreshFromTheOldReader()
         yield ChangeTheme()

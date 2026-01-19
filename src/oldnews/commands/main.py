@@ -77,4 +77,11 @@ class MarkAllRead(Command):
     BINDING_KEY = "R"
 
 
+##############################################################################
+class CopyHomePageToClipboard(Command):
+    """Copy the URL of the current subscription's home page to the clipboard"""
+
+    BINDING_KEY = "ctrl+shift+c"
+
+
 ### main.py ends here
