@@ -38,6 +38,7 @@ from textual_enhanced.screen import EnhancedScreen
 # Local imports.
 from .. import __version__
 from ..commands import (
+    CopyArticleToClipboard,
     CopyFeedToClipboard,
     CopyHomePageToClipboard,
     Escape,
@@ -155,6 +156,7 @@ class Main(EnhancedScreen[None]):
         ChangeTheme,
         CopyHomePageToClipboard,
         CopyFeedToClipboard,
+        CopyArticleToClipboard,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -248,7 +250,7 @@ class Main(EnhancedScreen[None]):
             # but okay let's be defensive... (when I can come up with a nice
             # little MRE I'll report it).
             return True
-        if action == OpenArticle.action_name():
+        if action in (OpenArticle.action_name(), CopyArticleToClipboard.action_name()):
             return self.article is not None
         if action in (
             OpenHomePage.action_name(),
@@ -552,6 +554,19 @@ class Main(EnhancedScreen[None]):
             else:
                 self.notify(
                     "No feed URL available for the subscription",
+                    severity="error",
+                    title="Can't copy",
+                )
+
+    def action_copy_article_to_clipboard_command(self) -> None:
+        """Copy the URL of the current article to the clipboard."""
+        if self.article:
+            if self.article.html_url:
+                self.app.copy_to_clipboard(self.article.html_url)
+                self.notify("Copied to clipboard")
+            else:
+                self.notify(
+                    "No URL available for the article",
                     severity="error",
                     title="Can't copy",
                 )

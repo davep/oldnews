@@ -3,6 +3,7 @@
 ##############################################################################
 # Local imports.
 from .main import (
+    CopyArticleToClipboard,
     CopyFeedToClipboard,
     CopyHomePageToClipboard,
     Escape,
@@ -20,6 +21,7 @@ from .main import (
 ##############################################################################
 # Exports.
 __all__ = [
+    "CopyArticleToClipboard",
     "CopyFeedToClipboard",
     "CopyHomePageToClipboard",
     "Escape",

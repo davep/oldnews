@@ -91,4 +91,11 @@ class CopyFeedToClipboard(Command):
     BINDING_KEY = "f4"
 
 
+##############################################################################
+class CopyArticleToClipboard(Command):
+    """Copy the URL for the current article to the clipboard"""
+
+    BINDING_KEY = "f5"
+
+
 ### main.py ends here
