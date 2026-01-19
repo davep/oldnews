@@ -43,7 +43,7 @@ from ..commands import (
     Next,
     NextUnread,
     OpenArticle,
-    OpenOrigin,
+    OpenHomePage,
     Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
@@ -149,7 +149,7 @@ class Main(EnhancedScreen[None]):
         Previous,
         PreviousUnread,
         OpenArticle,
-        OpenOrigin,
+        OpenHomePage,
         ChangeTheme,
     ]
 
@@ -244,8 +244,10 @@ class Main(EnhancedScreen[None]):
             # but okay let's be defensive... (when I can come up with a nice
             # little MRE I'll report it).
             return True
-        if action in (OpenArticle.action_name(), OpenOrigin.action_name()):
+        if action == OpenArticle.action_name():
             return self.article is not None
+        if action == OpenHomePage.action_name():
+            return isinstance(self.query_one(Navigation).current_category, Subscription)
         if action in (Next.action_name(), Previous.action_name()):
             return self.articles is not None
         if action in (
@@ -508,14 +510,16 @@ class Main(EnhancedScreen[None]):
                     severity="error",
                 )
 
-    def action_open_origin_command(self) -> None:
-        """Open the origin of the current article in the web browser."""
-        if self.article is not None:
-            if self.article.origin.html_url:
-                open_url(self.article.origin.html_url)
+    def action_open_home_page_command(self) -> None:
+        """Open the home page of the current subscription in the web browser."""
+        if isinstance(
+            subscription := self.query_one(Navigation).current_category, Subscription
+        ):
+            if subscription.html_url:
+                open_url(subscription.html_url)
             else:
                 self.notify(
-                    "No URL available for the article's origin",
+                    "No home page URL available for the subscription",
                     severity="error",
                     title="Can't visit",
                 )
