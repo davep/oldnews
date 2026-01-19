@@ -117,6 +117,13 @@ class Main(EnhancedScreen[None]):
             width: 25%;
         }
 
+        #article-view {
+            display: none;
+            &.--has-articles {
+                display: block;
+            }
+        }
+
         ArticleList {
             height: 1fr;
         }
@@ -306,6 +313,7 @@ class Main(EnhancedScreen[None]):
                 self.article = None
                 if self.query_one("#article-view").has_focus_within:
                     self.query_one(Navigation).focus()
+        self.query_one("#article-view").set_class(bool(self.articles), "--has-articles")
 
     @work(thread=True, exclusive=True)
     def _load_locally(self) -> None:
