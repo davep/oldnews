@@ -537,5 +537,18 @@ class Main(EnhancedScreen[None]):
                     title="Can't copy",
                 )
 
+    def action_copy_feed_to_clipboard_command(self) -> None:
+        """Copy the URL of the current subscription's feed to the clipboard."""
+        if subscription := self.query_one(Navigation).current_subscription:
+            if subscription.url:
+                self.app.copy_to_clipboard(subscription.url)
+                self.notify("Copied to clipboard")
+            else:
+                self.notify(
+                    "No feed URL available for the subscription",
+                    severity="error",
+                    title="Can't copy",
+                )
+
 
 ### main.py ends here

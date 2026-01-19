@@ -3,6 +3,7 @@
 ##############################################################################
 # Local imports.
 from .main import (
+    CopyFeedToClipboard,
     CopyHomePageToClipboard,
     Escape,
     MarkAllRead,
@@ -19,6 +20,7 @@ from .main import (
 ##############################################################################
 # Exports.
 __all__ = [
+    "CopyFeedToClipboard",
     "CopyHomePageToClipboard",
     "Escape",
     "MarkAllRead",

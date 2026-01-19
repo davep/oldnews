@@ -11,6 +11,8 @@
   article. ([#33](https://github.com/davep/oldnews/pull/33))
 - Added the `CopyHomePageToClipboard` command for copying the current
   subscription's homepage URL to the clipboard.
+- Added the `CopyFeedToClipboard` command for copying the current
+  subscription's feed URL to the clipboard.
 
 ## v0.3.0
 

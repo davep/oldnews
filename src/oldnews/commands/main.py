@@ -84,4 +84,9 @@ class CopyHomePageToClipboard(Command):
     BINDING_KEY = "ctrl+shift+c"
 
 
+##############################################################################
+class CopyFeedToClipboard(Command):
+    """Copy the URL of the current subscription's feed to the clipboard"""
+
+
 ### main.py ends here
