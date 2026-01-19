@@ -6,6 +6,9 @@
 
 - Tidy up the display and focus when the article list goes empty.
   ([#32](https://github.com/davep/oldnews/pull/32))
+- Changed `OpenOrigin` into `OpenHomePage` and built it around the URL of
+  the current subscription rather than the origin URL of the current
+  article.
 
 ## v0.3.0
 

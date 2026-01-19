@@ -64,8 +64,8 @@ class OpenArticle(Command):
 
 
 ##############################################################################
-class OpenOrigin(Command):
-    """Open the origin for the current article in the web browser"""
+class OpenHomePage(Command):
+    """Open the home page for the current subscription in the web browser"""
 
     BINDING_KEY = "O"
 

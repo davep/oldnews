@@ -18,7 +18,7 @@ from ..commands import (
     Next,
     NextUnread,
     OpenArticle,
-    OpenOrigin,
+    OpenHomePage,
     Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
@@ -42,7 +42,7 @@ class MainCommands(CommandsProvider):
         yield from self.maybe(Previous)
         yield from self.maybe(PreviousUnread)
         yield from self.maybe(OpenArticle)
-        yield from self.maybe(OpenOrigin)
+        yield from self.maybe(OpenHomePage)
         yield from self.maybe(MarkAllRead)
         yield ToggleShowAll()
         yield RefreshFromTheOldReader()
