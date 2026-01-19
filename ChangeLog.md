@@ -8,7 +8,7 @@
   ([#32](https://github.com/davep/oldnews/pull/32))
 - Changed `OpenOrigin` into `OpenHomePage` and built it around the URL of
   the current subscription rather than the origin URL of the current
-  article.
+  article. ([#33](https://github.com/davep/oldnews/pull/33))
 
 ## v0.3.0
 
