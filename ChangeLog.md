@@ -1,5 +1,12 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- Tidy up the display and focus when the article list goes empty.
+  ([#32](https://github.com/davep/oldnews/pull/32))
+
 ## v0.3.0
 
 **Released: 2026-01-19**

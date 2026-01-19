@@ -117,6 +117,13 @@ class Main(EnhancedScreen[None]):
             width: 25%;
         }
 
+        #article-view {
+            display: none;
+            &.--has-articles {
+                display: block;
+            }
+        }
+
         ArticleList {
             height: 1fr;
         }
@@ -208,7 +215,7 @@ class Main(EnhancedScreen[None]):
         yield Navigation(classes="panel").data_bind(
             Main.folders, Main.subscriptions, Main.unread
         )
-        with Vertical():
+        with Vertical(id="article-view"):
             yield ArticleList(classes="panel").data_bind(
                 Main.articles, Main.current_category
             )
@@ -300,6 +307,13 @@ class Main(EnhancedScreen[None]):
         """Refresh the content of the article list."""
         if self.current_category:
             self.articles = get_local_articles(self.current_category, not self.show_all)
+            # If the result is there's nothing showing, tidy up the content
+            # side of the display and maybe move focus back to navigation.
+            if not self.articles:
+                self.article = None
+                if self.query_one("#article-view").has_focus_within:
+                    self.query_one(Navigation).focus()
+        self.query_one("#article-view").set_class(bool(self.articles), "--has-articles")
 
     @work(thread=True, exclusive=True)
     def _load_locally(self) -> None:
