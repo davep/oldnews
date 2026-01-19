@@ -38,6 +38,7 @@ from textual_enhanced.screen import EnhancedScreen
 # Local imports.
 from .. import __version__
 from ..commands import (
+    CopyFeedToClipboard,
     CopyHomePageToClipboard,
     Escape,
     MarkAllRead,
@@ -248,8 +249,12 @@ class Main(EnhancedScreen[None]):
             return True
         if action == OpenArticle.action_name():
             return self.article is not None
-        if action == OpenHomePage.action_name():
-            return isinstance(self.query_one(Navigation).current_category, Subscription)
+        if action in (
+            OpenHomePage.action_name(),
+            CopyFeedToClipboard.action_name(),
+            CopyHomePageToClipboard.action_name(),
+        ):
+            return self.query_one(Navigation).current_subscription is not None
         if action in (Next.action_name(), Previous.action_name()):
             return self.articles is not None
         if action in (
