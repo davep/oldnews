@@ -6,6 +6,7 @@
 
 - Fixed subscriptions not in folders not showing in navigation.
   ([#49](https://github.com/davep/oldnews/pull/49))
+- Fixed remotely-removed subscriptions appearing back in navigation.
 
 ## v0.4.0
 

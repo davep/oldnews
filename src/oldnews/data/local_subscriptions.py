@@ -84,27 +84,32 @@ def save_local_subscriptions(subscriptions: Subscriptions) -> Subscriptions:
         The subscriptions.
     """
     assert LocalSubscription._db is not None
-    for subscription in subscriptions:
-        LocalSubscriptionCategory.where(subscription=subscription.id).delete()
-        LocalSubscriptionCategory.bulk_insert(
-            [
-                {
-                    "subscription": subscription.id,
-                    "category_id": category.id,
-                    "label": category.label,
-                }
-                for category in subscription.categories
-            ]
-        )
-        LocalSubscription.update_or_insert(
-            LocalSubscription.subscription_id == subscription.id,
-            subscription_id=subscription.id,
-            title=subscription.title,
-            sort_id=subscription.sort_id,
-            first_item_time=subscription.first_item_time,
-            url=subscription.url,
-            html_url=subscription.html_url,
-        )
+    LocalSubscription.truncate()
+    LocalSubscriptionCategory.truncate()
+    LocalSubscription.bulk_insert(
+        [
+            {
+                "subscription_id": subscription.id,
+                "title": subscription.title,
+                "sort_id": subscription.sort_id,
+                "first_item_time": subscription.first_item_time,
+                "url": subscription.url,
+                "html_url": subscription.html_url,
+            }
+            for subscription in subscriptions
+        ]
+    )
+    LocalSubscriptionCategory.bulk_insert(
+        [
+            {
+                "subscription": subscription.id,
+                "category_id": category.id,
+                "label": category.label,
+            }
+            for subscription in subscriptions
+            for category in subscription.categories
+        ]
+    )
     LocalSubscription._db.commit()
     return subscriptions
 
