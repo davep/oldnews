@@ -71,10 +71,10 @@ class ToRSync:
 
     async def _download_newest_articles(self) -> None:
         """Download the latest articles available."""
-        last_grabbed = last_grabbed_data_at() or (
-            datetime.now() - timedelta(days=load_configuration().local_history)
-        )
         new_grab = datetime.now(timezone.utc)
+        last_grabbed = last_grabbed_data_at() or (
+            new_grab - timedelta(days=load_configuration().local_history)
+        )
         loaded = 0
         async for article in Articles.stream_new_since(
             self.session, last_grabbed, n=10
