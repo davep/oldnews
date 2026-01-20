@@ -5,6 +5,7 @@
 **Released: WiP**
 
 - Fixed subscriptions not in folders not showing in navigation.
+  ([#49](https://github.com/davep/oldnews/pull/49))
 
 ## v0.4.0
 
