@@ -11,7 +11,7 @@ from typing import Any, Callable
 from oldas import ArticleIDs, Articles, Folders, Session, Subscriptions
 
 ##############################################################################
-from ..data import (
+from .data import (
     LocalUnread,
     get_local_unread,
     get_unread_article_ids,
