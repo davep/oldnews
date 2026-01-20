@@ -1,5 +1,11 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- Fixed subscriptions not in folders not showing in navigation.
+
 ## v0.4.0
 
 **Released: 2026-01-20**

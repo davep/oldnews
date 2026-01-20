@@ -179,6 +179,11 @@ class Navigation(EnhancedOptionList):
         """Refresh the content of the navigation widget."""
         with self.preserved_highlight:
             self.clear_options()
+            # First off, add subscriptions that lack a folder.
+            for subscription in self.subscriptions:
+                if not subscription.categories:
+                    self.add_option(SubscriptionView(subscription, self.unread))
+            # Now add all the subscriptions that are within folders.
             for folder in self.folders:
                 self._add_folder(folder)
 
