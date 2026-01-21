@@ -2,7 +2,7 @@
 
 ##############################################################################
 # OldAS imports.
-from oldas import Folders, Subscriptions, id_is_a_folder
+from oldas import Folders, Subscriptions, id_is_a_feed
 
 ##############################################################################
 # Local imports.
@@ -41,7 +41,7 @@ def total_unread(unread: LocalUnread) -> int:
     Returns:
         The total unread.
     """
-    return sum(count for category, count in unread.items() if id_is_a_folder(category))
+    return sum(count for category, count in unread.items() if id_is_a_feed(category))
 
 
 ### local_unread.py ends here
