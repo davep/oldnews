@@ -12,6 +12,7 @@
   ([#53](https://github.com/davep/oldnews/pull/53))
 - Fixed freshly-added subscriptions not having their article backlog
   downloaded. ([#55](https://github.com/davep/oldnews/pull/55))
+- Fixed unread count missing unread articles not in folders.
 
 ## v0.4.0
 
