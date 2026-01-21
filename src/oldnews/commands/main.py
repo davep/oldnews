@@ -105,4 +105,11 @@ class Copy(Command):
     BINDING_KEY = "ctrl+c"
 
 
+##############################################################################
+class AddSubscription(Command):
+    """Add a subscription feed"""
+
+    BINDING_KEY = "plus"
+
+
 ### main.py ends here

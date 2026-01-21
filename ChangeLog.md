@@ -8,6 +8,7 @@
   ([#49](https://github.com/davep/oldnews/pull/49))
 - Fixed remotely-removed subscriptions appearing back in navigation.
   ([#50](https://github.com/davep/oldnews/pull/50))
+- Added the `AddSubscription` command for adding a new subscription feed.
 
 ## v0.4.0
 

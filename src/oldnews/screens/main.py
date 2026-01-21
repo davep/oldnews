@@ -31,13 +31,14 @@ from textual.widgets import Footer, Header
 ##############################################################################
 # Textual enhanced imports.
 from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
-from textual_enhanced.dialogs import Confirm
+from textual_enhanced.dialogs import Confirm, ModalInput
 from textual_enhanced.screen import EnhancedScreen
 
 ##############################################################################
 # Local imports.
 from .. import __version__
 from ..commands import (
+    AddSubscription,
     Copy,
     CopyArticleToClipboard,
     CopyFeedToClipboard,
@@ -159,6 +160,7 @@ class Main(EnhancedScreen[None]):
         CopyFeedToClipboard,
         CopyArticleToClipboard,
         Copy,
+        AddSubscription,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -583,6 +585,22 @@ class Main(EnhancedScreen[None]):
                 self.action_copy_article_to_clipboard_command()
             else:
                 self.action_copy_home_page_to_clipboard_command()
+
+    @work
+    async def action_add_subscription_command(self) -> None:
+        """Add a new subscription feed."""
+        if feed := await self.app.push_screen_wait(ModalInput("Subscription URL")):
+            self.notify(feed, title="Subscription request sent to TheOldReader...")
+            if (result := await Subscriptions.add(self._session, feed)).failed:
+                self.notify(
+                    result.error or "TheOldReader did not give a reason",
+                    title="Failed to add subscription",
+                    severity="error",
+                    timeout=8,
+                )
+            else:
+                self.notify("Subscription added")
+                self.post_message(RefreshFromTheOldReader())
 
 
 ### main.py ends here

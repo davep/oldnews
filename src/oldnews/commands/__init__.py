@@ -3,6 +3,7 @@
 ##############################################################################
 # Local imports.
 from .main import (
+    AddSubscription,
     Copy,
     CopyArticleToClipboard,
     CopyFeedToClipboard,
@@ -22,6 +23,7 @@ from .main import (
 ##############################################################################
 # Exports.
 __all__ = [
+    "AddSubscription",
     "Copy",
     "CopyArticleToClipboard",
     "CopyFeedToClipboard",
