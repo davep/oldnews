@@ -13,6 +13,7 @@ from textual_enhanced.commands import (
 ##############################################################################
 # Local imports.
 from ..commands import (
+    AddSubscription,
     Copy,
     CopyArticleToClipboard,
     CopyFeedToClipboard,
@@ -52,6 +53,7 @@ class MainCommands(CommandsProvider):
         yield from self.maybe(CopyFeedToClipboard)
         yield from self.maybe(CopyArticleToClipboard)
         yield from self.maybe(Copy)
+        yield AddSubscription()
         yield ToggleShowAll()
         yield RefreshFromTheOldReader()
         yield ChangeTheme()
