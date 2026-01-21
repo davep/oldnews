@@ -112,4 +112,11 @@ class AddSubscription(Command):
     BINDING_KEY = "plus"
 
 
+##############################################################################
+class RenameSubscription(Command):
+    """Rename the current subscription"""
+
+    BINDING_KEY = "f6"
+
+
 ### main.py ends here

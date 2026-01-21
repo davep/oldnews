@@ -52,6 +52,7 @@ from ..commands import (
     Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
+    RenameSubscription,
     ToggleShowAll,
 )
 from ..data import (
@@ -161,6 +162,7 @@ class Main(EnhancedScreen[None]):
         CopyArticleToClipboard,
         Copy,
         AddSubscription,
+        RenameSubscription,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -260,6 +262,7 @@ class Main(EnhancedScreen[None]):
             OpenHomePage.action_name(),
             CopyFeedToClipboard.action_name(),
             CopyHomePageToClipboard.action_name(),
+            RenameSubscription.action_name(),
         ):
             return self.query_one(Navigation).current_subscription is not None
         if action in (Next.action_name(), Previous.action_name()):
@@ -602,6 +605,19 @@ class Main(EnhancedScreen[None]):
             else:
                 self.notify("Subscription added")
                 self.post_message(RefreshFromTheOldReader())
+
+    @work
+    async def action_rename_subscription_command(self) -> None:
+        """Rename the current subscription."""
+        if subscription := self.query_one(Navigation).current_subscription:
+            if new_name := await self.app.push_screen_wait(
+                ModalInput("Subscription name", subscription.title)
+            ):
+                if await Subscriptions.rename(self._session, subscription, new_name):
+                    self.notify("Renamed")
+                    self.post_message(RefreshFromTheOldReader())
+                else:
+                    self.notify("Rename failed", severity="error", timeout=8)
 
 
 ### main.py ends here
