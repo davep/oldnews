@@ -4,15 +4,24 @@
 # Python imports.
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable
+from typing import Any, AsyncIterator, Callable, Iterable
 
 ##############################################################################
 # OldAS imports.
-from oldas import ArticleIDs, Articles, Folders, Session, Subscriptions
+from oldas import (
+    Article,
+    ArticleIDs,
+    Articles,
+    Folders,
+    Session,
+    Subscription,
+    Subscriptions,
+)
 
 ##############################################################################
 from .data import (
     LocalUnread,
+    get_local_subscriptions,
     get_local_unread,
     get_unread_article_ids,
     last_grabbed_data_at,
@@ -69,16 +78,18 @@ class ToRSync:
         if self.on_new_result:
             self.on_new_result(result)
 
-    async def _download_newest_articles(self) -> None:
-        """Download the latest articles available."""
-        new_grab = datetime.now(timezone.utc)
-        last_grabbed = last_grabbed_data_at() or (
-            new_grab - timedelta(days=load_configuration().local_history)
-        )
+    async def _download(self, stream: AsyncIterator[Article], description: str) -> int:
+        """Download and save articles from an article stream.
+
+        Args:
+            stream: The stream to download.
+            description: The description of the download.
+
+        Returns:
+            The number of articles downloaded.
+        """
         loaded = 0
-        async for article in Articles.stream_new_since(
-            self.session, last_grabbed, n=10
-        ):
+        async for article in stream:
             # I've encountered articles that don't have an origin stream ID,
             # which means that I can't relate them back to a stream, which
             # means I'll never see them anyway...
@@ -92,8 +103,19 @@ class ToRSync:
             save_local_articles(Articles([article]))
             loaded += 1
             if (loaded % 10) == 0:
-                self._step(f"Downloading articles from TheOldReader: {loaded}")
-        if loaded:
+                self._step(f"{description}: {loaded}")
+        return loaded
+
+    async def _download_newest_articles(self) -> None:
+        """Download the latest articles available."""
+        new_grab = datetime.now(timezone.utc)
+        last_grabbed = last_grabbed_data_at() or (
+            new_grab - timedelta(days=load_configuration().local_history)
+        )
+        if loaded := await self._download(
+            Articles.stream_new_since(self.session, last_grabbed, n=10),
+            "Downloading articles from TheOldReader",
+        ):
             self._result(f"Articles downloaded: {loaded}")
         else:
             self._result("No new articles found on TheOldReader")
@@ -114,6 +136,24 @@ class ToRSync:
                 f"Articles found read elsewhere on TheOldReader: {len(mark_as_read)}"
             )
 
+    async def _download_backlog(self, subscriptions: Iterable[Subscription]) -> None:
+        """Download the backlog of articles for the given subscriptions.
+
+        Args:
+            subscriptions: The subscriptions to download the backlog for.
+        """
+        cutoff = datetime.now(timezone.utc) - timedelta(
+            days=load_configuration().local_history
+        )
+        for subscription in subscriptions:
+            if loaded := await self._download(
+                Articles.stream_new_since(self.session, cutoff, subscription, n=10),
+                f"Downloading article backlog for {subscription.title}",
+            ):
+                self._result(
+                    f"Downloaded article backlog for {subscription.title}: {loaded}"
+                )
+
     async def refresh(self) -> None:
         """Refresh the data from TheOldReader.
 
@@ -128,21 +168,39 @@ class ToRSync:
             self.on_new_folders(folders)
 
         # Get the subscriptions list.
+        exising_subscriptions = get_local_subscriptions()
         self._step("Getting subscriptions list")
         subscriptions = save_local_subscriptions(await Subscriptions.load(self.session))
         if self.on_new_subscriptions:
             self.on_new_subscriptions(subscriptions)
 
         # Download the latest articles we don't know about.
-        if never_grabbed_before := ((last_grab := last_grabbed_data_at()) is None):
+        if grabbed_before := ((last_grab := last_grabbed_data_at()) is not None):
             self._step("Getting available articles")
         else:
             self._step(f"Getting new articles since {last_grab}")
         await self._download_newest_articles()
 
         # If we have grabbed data before, let's try and sync up what's been read.
-        if not never_grabbed_before:
+        if grabbed_before:
             await self._refresh_read_status()
+
+        # It's possible we have subscriptions we didn't know about before,
+        # so we want to go and backfill their content regardless of read or
+        # unread status. So, if it looks like we've grabbed data before but
+        # now we have subscriptions we didn't know about before... let's
+        # grab their history regardless.
+        if grabbed_before:
+            was_subscribed_to = set(
+                subscription.id for subscription in exising_subscriptions
+            )
+            now_subscribed_to = set(subscription.id for subscription in subscriptions)
+            if new_subscriptions := now_subscribed_to - was_subscribed_to:
+                await self._download_backlog(
+                    subscription
+                    for subscription in subscriptions
+                    if subscription.id in new_subscriptions
+                )
 
         # Recalculate the unread counts.
         self._step("Calculating unread counts")
