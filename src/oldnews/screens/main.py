@@ -597,6 +597,7 @@ class Main(EnhancedScreen[None]):
                     title="Failed to add subscription",
                     severity="error",
                     timeout=8,
+                    markup=False,
                 )
             else:
                 self.notify("Subscription added")
