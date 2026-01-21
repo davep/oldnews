@@ -15,7 +15,7 @@
 - Fixed unread count missing unread articles not in folders.
   ([#56](https://github.com/davep/oldnews/pull/56))
 - Added the `RenameSubscription` command for renaming the current
-  subscription.
+  subscription. ([#59](https://github.com/davep/oldnews/pull/59))
 
 ## v0.4.0
 
