@@ -11,7 +11,7 @@
 - Added the `AddSubscription` command for adding a new subscription feed.
   ([#53](https://github.com/davep/oldnews/pull/53))
 - Fixed freshly-added subscriptions not having their article backlog
-  downloaded.
+  downloaded. ([#55](https://github.com/davep/oldnews/pull/55))
 
 ## v0.4.0
 
