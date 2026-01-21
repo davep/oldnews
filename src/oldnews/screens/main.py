@@ -342,10 +342,10 @@ class Main(EnhancedScreen[None]):
     @work(thread=True, exclusive=True)
     def _load_locally(self) -> None:
         """Load up any locally-held data."""
-        if folders := get_local_folders():
-            self.post_message(self.NewFolders(folders))
         if subscriptions := get_local_subscriptions():
             self.post_message(self.NewSubscriptions(subscriptions))
+        if folders := get_local_folders():
+            self.post_message(self.NewFolders(folders))
         if cleaned := clean_old_read_articles(
             timedelta(days=load_configuration().local_history)
         ):
