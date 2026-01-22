@@ -8,7 +8,7 @@ from typing import Iterable, Iterator, cast
 
 ##############################################################################
 # OldAS imports.
-from oldas import Article, Articles, Folder, State, Subscription
+from oldas import Article, Articles, Folder, Folders, State, Subscription
 from oldas.articles import Alternate, Alternates, Direction, Origin, Summary
 
 ##############################################################################
@@ -346,6 +346,23 @@ def clean_old_read_articles(cutoff: timedelta) -> int:
     )
     LocalArticle._db.commit()
     return cleaned
+
+
+##############################################################################
+def rename_folder_for_articles(rename_from: str | Folder, rename_to: str) -> None:
+    """Rename a folder for all articles that are in that folder.
+
+    Args:
+        rename_from: The folder name to rename from.
+        rename_to: The folder name to rename to.
+    """
+    assert LocalArticleCategory._db is not None
+    rename_from = Folders.full_id(rename_from)
+    rename_to = Folders.full_id(rename_to)
+    LocalArticleCategory.where(LocalArticleCategory.category == rename_from).update(
+        category=rename_to
+    )
+    LocalArticleCategory._db.commit()
 
 
 ### local_articles.py ends here
