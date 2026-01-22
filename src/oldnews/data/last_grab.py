@@ -8,6 +8,10 @@ from datetime import datetime, timezone
 # TypeDAL imports.
 from typedal import TypedTable
 
+##############################################################################
+# Local imports.
+from .tools import commit
+
 
 ##############################################################################
 class LastGrabbed(TypedTable):
@@ -39,10 +43,9 @@ def remember_we_last_grabbed_at(grab_time: datetime | None = None) -> None:
     Note:
         If `grab_time` isn't supplied then it is recorded as now.
     """
-    assert LastGrabbed._db is not None
     LastGrabbed.truncate()
     LastGrabbed.insert(at_time=grab_time or datetime.now(timezone.utc))
-    LastGrabbed._db.commit()
+    commit(LastGrabbed)
 
 
 ### last_grab.py ends here

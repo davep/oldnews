@@ -15,6 +15,10 @@ from oldas.articles import Alternate, Alternates, Direction, Origin, Summary
 # TypeDAL imports.
 from typedal import TypedField, TypedTable, relationship
 
+##############################################################################
+# Local imports.
+from .tools import commit
+
 
 ##############################################################################
 class LocalArticle(TypedTable):
@@ -62,9 +66,8 @@ class LocalArticle(TypedTable):
             category: The category to add.
         """
         if not str(category) in self.categories:
-            assert LocalArticleCategory._db is not None
             LocalArticleCategory.insert(article=self.id, category=str(category))
-            LocalArticleCategory._db.commit()
+            commit(LocalArticleCategory)
 
     def remove_category(self, category: str | State) -> None:
         """Remove a given category from the local article.
@@ -73,12 +76,11 @@ class LocalArticle(TypedTable):
             category: The category to add.
         """
         if str(category) in self.categories:
-            assert LocalArticleCategory._db is not None
             LocalArticleCategory.where(
                 (LocalArticleCategory.article == self.id)
                 & (LocalArticleCategory.category == str(category))
             ).delete()
-            LocalArticleCategory._db.commit()
+            commit(LocalArticleCategory)
 
 
 ##############################################################################
@@ -113,7 +115,6 @@ def save_local_articles(articles: Articles) -> Articles:
     Returns:
         The articles.
     """
-    assert LocalArticle._db is not None
     for article in articles:
         local_article = LocalArticle.update_or_insert(
             LocalArticle.article_id == article.id,
@@ -146,7 +147,7 @@ def save_local_articles(articles: Articles) -> Articles:
                 for alternate in article.alternate
             ]
         )
-    LocalArticle._db.commit()
+    commit(LocalArticle)
     return articles
 
 
@@ -336,7 +337,6 @@ def get_unread_article_ids() -> list[str]:
 ##############################################################################
 def clean_old_read_articles(cutoff: timedelta) -> int:
     """Clean up articles that are older than the given cutoff time."""
-    assert LocalArticle._db is not None
     read = get_local_read_article_ids()
     retire_time = datetime.now() - cutoff
     cleaned = len(
@@ -344,7 +344,7 @@ def clean_old_read_articles(cutoff: timedelta) -> int:
             (LocalArticle.published < retire_time) & LocalArticle.id.belongs(read)
         ).delete()
     )
-    LocalArticle._db.commit()
+    commit(LocalArticle)
     return cleaned
 
 
@@ -356,13 +356,12 @@ def rename_folder_for_articles(rename_from: str | Folder, rename_to: str) -> Non
         rename_from: The folder name to rename from.
         rename_to: The folder name to rename to.
     """
-    assert LocalArticleCategory._db is not None
     rename_from = Folders.full_id(rename_from)
     rename_to = Folders.full_id(rename_to)
     LocalArticleCategory.where(LocalArticleCategory.category == rename_from).update(
         category=rename_to
     )
-    LocalArticleCategory._db.commit()
+    commit(LocalArticleCategory)
 
 
 ### local_articles.py ends here

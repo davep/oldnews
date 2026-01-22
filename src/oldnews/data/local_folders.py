@@ -8,6 +8,10 @@ from oldas import Folder, Folders
 # TypeDAL imports.
 from typedal import TypedTable
 
+##############################################################################
+# Local imports.
+from .tools import commit
+
 
 ##############################################################################
 class LocalFolder(TypedTable):
@@ -42,12 +46,11 @@ def save_local_folders(folders: Folders) -> Folders:
     Returns:
         The folders.
     """
-    assert LocalFolder._db is not None
     LocalFolder.truncate()
     LocalFolder.bulk_insert(
         [{"folder_id": folder.id, "sort_id": folder.sort_id} for folder in folders]
     )
-    LocalFolder._db.commit()
+    commit(LocalFolder)
     return folders
 
 

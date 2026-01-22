@@ -13,6 +13,10 @@ from oldas.subscriptions import Categories, Category
 # TypeDAL imports.
 from typedal import TypedTable
 
+##############################################################################
+# Local imports.
+from .tools import commit
+
 
 ##############################################################################
 class LocalSubscription(TypedTable):
@@ -83,7 +87,6 @@ def save_local_subscriptions(subscriptions: Subscriptions) -> Subscriptions:
     Returns:
         The subscriptions.
     """
-    assert LocalSubscription._db is not None
     LocalSubscription.truncate()
     LocalSubscriptionCategory.truncate()
     LocalSubscription.bulk_insert(
@@ -110,7 +113,7 @@ def save_local_subscriptions(subscriptions: Subscriptions) -> Subscriptions:
             for category in subscription.categories
         ]
     )
-    LocalSubscription._db.commit()
+    commit(LocalSubscription)
     return subscriptions
 
 

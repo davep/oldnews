@@ -4,6 +4,10 @@
 # TypeDAL imports.
 from typedal import TypedTable
 
+##############################################################################
+# Local imports.
+from .tools import commit
+
 
 ##############################################################################
 class NavigationState(TypedTable):
@@ -33,10 +37,9 @@ def save_navigation_state(state: set[str]) -> None:
     Args:
         state: The state to save.
     """
-    assert NavigationState._db is not None
     NavigationState.truncate()
     NavigationState.bulk_insert([{"expanded_folder_id": folder} for folder in state])
-    NavigationState._db.commit()
+    commit(NavigationState)
 
 
 ### navigation_state.py ends here
