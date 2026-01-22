@@ -14,9 +14,11 @@
   downloaded. ([#55](https://github.com/davep/oldnews/pull/55))
 - Fixed unread count missing unread articles not in folders.
   ([#56](https://github.com/davep/oldnews/pull/56))
-- Added the `Rename` command for renaming the current folder or subscription
-  folder. ([#59](https://github.com/davep/oldnews/pull/59) followed by
+- Added the `Rename` command for renaming the current folder or
+  subscription. ([#59](https://github.com/davep/oldnews/pull/59) followed by
   [#62](https://github.com/davep/oldnews/pull/62))
+- Added the `Remove` command for removing the current folder or
+  subscription. ([#66](https://github.com/davep/oldnews/pull/66))
 
 ## v0.4.0
 

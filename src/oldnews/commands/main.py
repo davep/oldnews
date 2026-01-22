@@ -119,4 +119,11 @@ class Rename(Command):
     BINDING_KEY = "f6"
 
 
+##############################################################################
+class Remove(Command):
+    """Remove the current folder or subscription"""
+
+    BINDING_KEY = "delete"
+
+
 ### main.py ends here

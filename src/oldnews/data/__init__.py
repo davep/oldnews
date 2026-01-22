@@ -17,6 +17,7 @@ from .local_articles import (
     get_unread_article_ids,
     locally_mark_article_ids_read,
     locally_mark_read,
+    remove_folder_from_articles,
     rename_folder_for_articles,
     save_local_articles,
 )
@@ -45,6 +46,7 @@ __all__ = [
     "locally_mark_article_ids_read",
     "LocalUnread",
     "remember_we_last_grabbed_at",
+    "remove_folder_from_articles",
     "rename_folder_for_articles",
     "reset_data",
     "save_configuration",

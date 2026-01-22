@@ -364,4 +364,17 @@ def rename_folder_for_articles(rename_from: str | Folder, rename_to: str) -> Non
     commit(LocalArticleCategory)
 
 
+##############################################################################
+def remove_folder_from_articles(folder: str | Folder) -> None:
+    """Remove a folder from being associated with all articles.
+
+    Args:
+        folder: The folder to remove from all articles.
+    """
+    LocalArticleCategory.where(
+        LocalArticleCategory.category == Folders.full_id(folder)
+    ).delete()
+    commit(LocalArticleCategory)
+
+
 ### local_articles.py ends here
