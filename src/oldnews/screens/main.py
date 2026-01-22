@@ -66,6 +66,7 @@ from ..data import (
     load_configuration,
     locally_mark_article_ids_read,
     locally_mark_read,
+    rename_folder_for_articles,
     total_unread,
     update_configuration,
 )
@@ -634,6 +635,7 @@ class Main(EnhancedScreen[None]):
             ModalInput("Subscription name", folder.name)
         ):
             if await Folders.rename(self._session, folder, new_name):
+                rename_folder_for_articles(folder, new_name)
                 self.notify("Renamed")
                 self.post_message(RefreshFromTheOldReader())
             else:
