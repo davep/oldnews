@@ -18,7 +18,7 @@
   subscription. ([#59](https://github.com/davep/oldnews/pull/59) followed by
   [#62](https://github.com/davep/oldnews/pull/62))
 - Added the `Remove` command for removing the current folder or
-  subscription.
+  subscription. ([#66](https://github.com/davep/oldnews/pull/66))
 
 ## v0.4.0
 
