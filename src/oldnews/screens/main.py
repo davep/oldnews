@@ -52,6 +52,7 @@ from ..commands import (
     Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
+    Remove,
     Rename,
     ToggleShowAll,
 )
@@ -66,6 +67,7 @@ from ..data import (
     load_configuration,
     locally_mark_article_ids_read,
     locally_mark_read,
+    remove_folder_from_articles,
     rename_folder_for_articles,
     total_unread,
     update_configuration,
@@ -164,6 +166,7 @@ class Main(EnhancedScreen[None]):
         Copy,
         AddSubscription,
         Rename,
+        Remove,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -286,7 +289,7 @@ class Main(EnhancedScreen[None]):
                 (navigation := self.query_one(Navigation)).has_focus
                 and navigation.current_subscription is not None
             ) or self.query_one("#article-view").has_focus_within
-        if action == Rename.action_name():
+        if action in (Rename.action_name(), Remove.action_name()):
             return self.query_one(Navigation).current_category is not None
         return True
 
@@ -648,6 +651,52 @@ class Main(EnhancedScreen[None]):
                 self._rename_subscription(category)
             elif isinstance(category, Folder):
                 self._rename_folder(category)
+
+    @work
+    async def _remove_subscription(self, subscription: Subscription) -> None:
+        """Remove the given subscription.
+
+        Args:
+            subscription: The subscription to remove
+        """
+        if await self.app.push_screen_wait(
+            Confirm(
+                f"Remove {subscription.title}?",
+                f"Are you sure you wish to remove the subscription?",
+            )
+        ):
+            if await Subscriptions.remove(self._session, subscription):
+                self.notify(f"Removed {subscription.title}")
+                self.post_message(RefreshFromTheOldReader())
+            else:
+                self.notify("Remove failed", severity="error", timeout=8)
+
+    @work
+    async def _remove_folder(self, folder: Folder) -> None:
+        """Remove the given folder.
+
+        Args:
+            folder: The folder to remove
+        """
+        if await self.app.push_screen_wait(
+            Confirm(
+                f"Remove {folder.name}", "Are you sure you wish to remove the folder?"
+            )
+        ):
+            if await Folders.remove(self._session, folder):
+                remove_folder_from_articles(folder)
+                self.notify(f"Removed {folder.name}")
+                self.post_message(RefreshFromTheOldReader())
+            else:
+                self.notify("Remove failed", severity="error", timeout=8)
+
+    def action_remove_command(self) -> None:
+        """Remove the current folder or subscription."""
+        if category := self.query_one(Navigation).current_category:
+            if isinstance(category, Subscription):
+                self._remove_subscription(category)
+            elif isinstance(category, Folder):
+                self._remove_folder(category)
 
 
 ### main.py ends here

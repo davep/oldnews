@@ -17,6 +17,7 @@ from .main import (
     Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
+    Remove,
     Rename,
     ToggleShowAll,
 )
@@ -39,6 +40,7 @@ __all__ = [
     "PreviousUnread",
     "RefreshFromTheOldReader",
     "Rename",
+    "Remove",
     "ToggleShowAll",
 ]
 

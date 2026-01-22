@@ -27,6 +27,7 @@ from ..commands import (
     Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
+    Remove,
     Rename,
     ToggleShowAll,
 )
@@ -55,6 +56,7 @@ class MainCommands(CommandsProvider):
         yield from self.maybe(CopyArticleToClipboard)
         yield from self.maybe(Copy)
         yield from self.maybe(Rename)
+        yield from self.maybe(Remove)
         yield AddSubscription()
         yield ToggleShowAll()
         yield RefreshFromTheOldReader()
