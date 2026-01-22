@@ -52,7 +52,7 @@ from ..commands import (
     Previous,
     PreviousUnread,
     RefreshFromTheOldReader,
-    RenameSubscription,
+    Rename,
     ToggleShowAll,
 )
 from ..data import (
@@ -66,6 +66,7 @@ from ..data import (
     load_configuration,
     locally_mark_article_ids_read,
     locally_mark_read,
+    rename_folder_for_articles,
     total_unread,
     update_configuration,
 )
@@ -162,7 +163,7 @@ class Main(EnhancedScreen[None]):
         CopyArticleToClipboard,
         Copy,
         AddSubscription,
-        RenameSubscription,
+        Rename,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -262,7 +263,6 @@ class Main(EnhancedScreen[None]):
             OpenHomePage.action_name(),
             CopyFeedToClipboard.action_name(),
             CopyHomePageToClipboard.action_name(),
-            RenameSubscription.action_name(),
         ):
             return self.query_one(Navigation).current_subscription is not None
         if action in (Next.action_name(), Previous.action_name()):
@@ -286,6 +286,8 @@ class Main(EnhancedScreen[None]):
                 (navigation := self.query_one(Navigation)).has_focus
                 and navigation.current_subscription is not None
             ) or self.query_one("#article-view").has_focus_within
+        if action == Rename.action_name():
+            return self.query_one(Navigation).current_category is not None
         return True
 
     @on(SubTitle)
@@ -607,17 +609,45 @@ class Main(EnhancedScreen[None]):
                 self.post_message(RefreshFromTheOldReader())
 
     @work
-    async def action_rename_subscription_command(self) -> None:
+    async def _rename_subscription(self, subscription: Subscription) -> None:
+        """Rename the given subscription
+
+        Args:
+            subscription: The subscription to rename.
+        """
+        if new_name := await self.app.push_screen_wait(
+            ModalInput("Subscription name", subscription.title)
+        ):
+            if await Subscriptions.rename(self._session, subscription, new_name):
+                self.notify("Renamed")
+                self.post_message(RefreshFromTheOldReader())
+            else:
+                self.notify("Rename failed", severity="error", timeout=8)
+
+    @work
+    async def _rename_folder(self, folder: Folder) -> None:
+        """Rename the given subscription
+
+        Args:
+            subscription: The subscription to rename.
+        """
+        if new_name := await self.app.push_screen_wait(
+            ModalInput("Subscription name", folder.name)
+        ):
+            if await Folders.rename(self._session, folder, new_name):
+                rename_folder_for_articles(folder, new_name)
+                self.notify("Renamed")
+                self.post_message(RefreshFromTheOldReader())
+            else:
+                self.notify("Rename failed", severity="error", timeout=8)
+
+    def action_rename_command(self) -> None:
         """Rename the current subscription."""
-        if subscription := self.query_one(Navigation).current_subscription:
-            if new_name := await self.app.push_screen_wait(
-                ModalInput("Subscription name", subscription.title)
-            ):
-                if await Subscriptions.rename(self._session, subscription, new_name):
-                    self.notify("Renamed")
-                    self.post_message(RefreshFromTheOldReader())
-                else:
-                    self.notify("Rename failed", severity="error", timeout=8)
+        if category := self.query_one(Navigation).current_category:
+            if isinstance(category, Subscription):
+                self._rename_subscription(category)
+            elif isinstance(category, Folder):
+                self._rename_folder(category)
 
 
 ### main.py ends here

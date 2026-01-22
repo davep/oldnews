@@ -113,8 +113,8 @@ class AddSubscription(Command):
 
 
 ##############################################################################
-class RenameSubscription(Command):
-    """Rename the current subscription"""
+class Rename(Command):
+    """Rename the current folder or subscription"""
 
     BINDING_KEY = "f6"
 
