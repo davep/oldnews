@@ -34,8 +34,6 @@ from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
 from textual_enhanced.dialogs import Confirm, ModalInput
 from textual_enhanced.screen import EnhancedScreen
 
-##############################################################################
-# Local imports.
 from .. import __version__
 from ..commands import (
     AddSubscription,
@@ -75,6 +73,10 @@ from ..data import (
 from ..providers import MainCommands
 from ..sync import ToRSync
 from ..widgets import ArticleContent, ArticleList, Navigation
+
+##############################################################################
+# Local imports.
+from .new_subscription import NewSubscription
 
 
 ##############################################################################
@@ -597,9 +599,15 @@ class Main(EnhancedScreen[None]):
     @work
     async def action_add_subscription_command(self) -> None:
         """Add a new subscription feed."""
-        if feed := await self.app.push_screen_wait(ModalInput("Subscription URL")):
-            self.notify(feed, title="Subscription request sent to TheOldReader...")
-            if (result := await Subscriptions.add(self._session, feed)).failed:
+        if subscription := await self.app.push_screen_wait(
+            NewSubscription(self.folders)
+        ):
+            self.notify(
+                subscription.feed, title="Subscription request sent to TheOldReader..."
+            )
+            if (
+                result := await Subscriptions.add(self._session, subscription.feed)
+            ).failed:
                 self.notify(
                     result.error or "TheOldReader did not give a reason",
                     title="Failed to add subscription",
@@ -609,6 +617,19 @@ class Main(EnhancedScreen[None]):
                 )
             else:
                 self.notify("Subscription added")
+                if result.stream_id and subscription.folder:
+                    self.notify(f"Moving new subscription into '{subscription.folder}'")
+                    if await Subscriptions.move(
+                        self._session, result.stream_id, subscription.folder
+                    ):
+                        self.notify("Moved")
+                    else:
+                        self.notify(
+                            f"Could not move the new subscription into '{subscription.folder}'",
+                            title="Move failed",
+                            timeout=8,
+                            markup=False,
+                        )
                 self.post_message(RefreshFromTheOldReader())
 
     @work
