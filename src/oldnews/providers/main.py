@@ -20,6 +20,7 @@ from ..commands import (
     CopyHomePageToClipboard,
     Escape,
     MarkAllRead,
+    MoveSubscription,
     Next,
     NextUnread,
     OpenArticle,
@@ -51,6 +52,7 @@ class MainCommands(CommandsProvider):
         yield from self.maybe(OpenArticle)
         yield from self.maybe(OpenHomePage)
         yield from self.maybe(MarkAllRead)
+        yield from self.maybe(MoveSubscription)
         yield from self.maybe(CopyHomePageToClipboard)
         yield from self.maybe(CopyFeedToClipboard)
         yield from self.maybe(CopyArticleToClipboard)

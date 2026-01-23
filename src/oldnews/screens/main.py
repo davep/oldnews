@@ -24,6 +24,7 @@ from oldas import (
 from textual import on, work
 from textual.app import ComposeResult
 from textual.containers import Vertical
+from textual.getters import query_one
 from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Footer, Header
@@ -34,6 +35,8 @@ from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
 from textual_enhanced.dialogs import Confirm, ModalInput
 from textual_enhanced.screen import EnhancedScreen
 
+##############################################################################
+# Local imports.
 from .. import __version__
 from ..commands import (
     AddSubscription,
@@ -43,6 +46,7 @@ from ..commands import (
     CopyHomePageToClipboard,
     Escape,
     MarkAllRead,
+    MoveSubscription,
     Next,
     NextUnread,
     OpenArticle,
@@ -73,9 +77,7 @@ from ..data import (
 from ..providers import MainCommands
 from ..sync import ToRSync
 from ..widgets import ArticleContent, ArticleList, Navigation
-
-##############################################################################
-# Local imports.
+from .folder_input import FolderInput
 from .new_subscription import NewSubscription
 
 
@@ -169,6 +171,7 @@ class Main(EnhancedScreen[None]):
         AddSubscription,
         Rename,
         Remove,
+        MoveSubscription,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -268,6 +271,7 @@ class Main(EnhancedScreen[None]):
             OpenHomePage.action_name(),
             CopyFeedToClipboard.action_name(),
             CopyHomePageToClipboard.action_name(),
+            MoveSubscription.action_name(),
         ):
             return self.query_one(Navigation).current_subscription is not None
         if action in (Next.action_name(), Previous.action_name()):
@@ -718,6 +722,24 @@ class Main(EnhancedScreen[None]):
                 self._remove_subscription(category)
             elif isinstance(category, Folder):
                 self._remove_folder(category)
+
+    @work
+    async def action_move_subscription_command(self) -> None:
+        """Move a subscription to a different folder."""
+        if subscription := self.query_one(Navigation).current_subscription:
+            if target_folder := await self.app.push_screen_wait(
+                FolderInput(self.folders)
+            ):
+                if await Subscriptions.move(self._session, subscription, target_folder):
+                    self.notify("Moved")
+                    self.post_message(RefreshFromTheOldReader())
+                else:
+                    self.notify(
+                        f"Could not move the subscription into '{target_folder}'",
+                        title="Move failed",
+                        timeout=8,
+                        markup=False,
+                    )
 
 
 ### main.py ends here
