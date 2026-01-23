@@ -862,6 +862,7 @@ dependencies = [
     { name = "html-to-markdown" },
     { name = "oldas" },
     { name = "textual" },
+    { name = "textual-autocomplete" },
     { name = "textual-enhanced" },
     { name = "typedal" },
     { name = "xdg-base-dirs" },
@@ -881,6 +882,7 @@ requires-dist = [
     { name = "html-to-markdown", specifier = ">=2.15.0" },
     { name = "oldas", specifier = ">=0.4.0" },
     { name = "textual", specifier = ">=6.3.0" },
+    { name = "textual-autocomplete", specifier = ">=4.0.6" },
     { name = "textual-enhanced", specifier = ">=1.2.0" },
     { name = "typedal", specifier = ">=4.2.2" },
     { name = "xdg-base-dirs", specifier = ">=6.0.2" },
@@ -1197,6 +1199,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/6f/ee/620c887bfad9d6eba062dfa3b6b0e735e0259102e2667b19f21625ef598d/textual-7.3.0.tar.gz", hash = "sha256:3169e8ba5518a979b0771e60be380ab1a6c344f30a2126e360e6f38d009a3de4", size = 1590692, upload-time = "2026-01-15T16:32:02.342Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c3/1f/abeb4e5cb36b99dd37db72beb2a74d58598ccb35aaadf14624ee967d4a6b/textual-7.3.0-py3-none-any.whl", hash = "sha256:db235cecf969c87fe5a9c04d83595f506affc9db81f3a53ab849534d726d330a", size = 716374, upload-time = "2026-01-15T16:31:58.233Z" },
+]
+
+[[package]]
+name = "textual-autocomplete"
+version = "4.0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "textual" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1e/3a/80411bc7b94969eb116ad1b18db90f8dce8a1de441278c4a81fee55a27ca/textual_autocomplete-4.0.6.tar.gz", hash = "sha256:2ba2f0d767be4480ecacb3e4b130cf07340e033c3500fc424fed9125d27a4586", size = 97967, upload-time = "2025-09-24T21:19:20.213Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9f/66/ebe744d79c87f25a42d2654dddbd09462edd595f2ded715245a51a546461/textual_autocomplete-4.0.6-py3-none-any.whl", hash = "sha256:bff69c19386e2cbb4a007503b058dc37671d480a4fa2ddb3959c15ceb4aff9b5", size = 16499, upload-time = "2025-09-24T21:19:18.489Z" },
 ]
 
 [[package]]
