@@ -377,4 +377,33 @@ def remove_folder_from_articles(folder: str | Folder) -> None:
     commit(LocalArticleCategory)
 
 
+##############################################################################
+def move_subscription_articles(
+    subscription: Subscription,
+    from_folder: str | Folder | None,
+    to_folder: str | Folder,
+) -> None:
+    """Move the articles of a subscription from one folder to another.
+
+    Args:
+        subscription: The subscription whose articles we should move.
+        from_folder: The folder to move from.
+        to_folder: The folder to move to.
+    """
+    from_folder = (
+        Folders.full_id(from_folder) if from_folder is not None else from_folder
+    )
+    to_folder = Folders.full_id(to_folder)
+    for article in LocalArticle.where(origin_stream_id=subscription.id).join().select():
+        if from_folder:
+            LocalArticleCategory.where(
+                (LocalArticleCategory.article == article.id)
+                & (LocalArticleCategory.category == from_folder)
+            ).delete()
+            commit(LocalArticleCategory)
+        if to_folder:
+            LocalArticleCategory.insert(article=article.id, category=to_folder)
+            commit(LocalArticleCategory)
+
+
 ### local_articles.py ends here

@@ -35,6 +35,8 @@ from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
 from textual_enhanced.dialogs import Confirm, ModalInput
 from textual_enhanced.screen import EnhancedScreen
 
+from oldnews.data.local_articles import move_subscription_articles
+
 ##############################################################################
 # Local imports.
 from .. import __version__
@@ -731,6 +733,9 @@ class Main(EnhancedScreen[None]):
                 FolderInput(self.folders)
             ):
                 if await Subscriptions.move(self._session, subscription, target_folder):
+                    move_subscription_articles(
+                        subscription, subscription.folder_id or "", target_folder
+                    )
                     self.notify("Moved")
                     self.post_message(RefreshFromTheOldReader())
                 else:
