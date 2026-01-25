@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v0.5.0
 
-**Released: WiP**
+**Released: 2026-01-25**
 
 - Fixed subscriptions not in folders not showing in navigation.
   ([#49](https://github.com/davep/oldnews/pull/49))
