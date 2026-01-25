@@ -24,7 +24,6 @@ from oldas import (
 from textual import on, work
 from textual.app import ComposeResult
 from textual.containers import Vertical
-from textual.getters import query_one
 from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Footer, Header
@@ -34,8 +33,6 @@ from textual.widgets import Footer, Header
 from textual_enhanced.commands import ChangeTheme, Command, Help, Quit
 from textual_enhanced.dialogs import Confirm, ModalInput
 from textual_enhanced.screen import EnhancedScreen
-
-from oldnews.data.local_articles import move_subscription_articles
 
 ##############################################################################
 # Local imports.
@@ -71,6 +68,7 @@ from ..data import (
     load_configuration,
     locally_mark_article_ids_read,
     locally_mark_read,
+    move_subscription_articles,
     remove_folder_from_articles,
     rename_folder_for_articles,
     total_unread,
