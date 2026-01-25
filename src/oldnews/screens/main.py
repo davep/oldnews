@@ -303,8 +303,8 @@ class Main(EnhancedScreen[None]):
             )
         if action == Copy.action_name():
             return (
-                (navigation := self.navigation).has_focus
-                and navigation.current_subscription is not None
+                self.navigation.has_focus
+                and self.navigation.current_subscription is not None
             ) or self.article_view.has_focus_within
         if action in (Rename.action_name(), Remove.action_name()):
             return self.navigation.current_category is not None
