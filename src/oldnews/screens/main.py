@@ -71,6 +71,7 @@ from ..data import (
     locally_mark_read,
     move_subscription_articles,
     remove_folder_from_articles,
+    remove_subscription_articles,
     rename_folder_for_articles,
     total_unread,
     update_configuration,
@@ -699,6 +700,7 @@ class Main(EnhancedScreen[None]):
             )
         ):
             if await Subscriptions.remove(self._session, subscription):
+                remove_subscription_articles(subscription)
                 self.notify(f"Removed {subscription.title}")
                 self.post_message(RefreshFromTheOldReader())
             else:

@@ -19,6 +19,7 @@ from .local_articles import (
     locally_mark_read,
     move_subscription_articles,
     remove_folder_from_articles,
+    remove_subscription_articles,
     rename_folder_for_articles,
     save_local_articles,
 )
@@ -49,6 +50,7 @@ __all__ = [
     "move_subscription_articles",
     "remember_we_last_grabbed_at",
     "remove_folder_from_articles",
+    "remove_subscription_articles",
     "rename_folder_for_articles",
     "reset_data",
     "save_configuration",

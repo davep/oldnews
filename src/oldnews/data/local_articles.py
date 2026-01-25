@@ -406,4 +406,15 @@ def move_subscription_articles(
             commit(LocalArticleCategory)
 
 
+##############################################################################
+def remove_subscription_articles(subscription: Subscription) -> None:
+    """Remove all the articles associated with the given subscription.
+
+    Args:
+        subscription: The subscription to remove the articles for.
+    """
+    LocalArticle.where(origin_stream_id=subscription.id).delete()
+    commit(LocalArticle)
+
+
 ### local_articles.py ends here
