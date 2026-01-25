@@ -381,7 +381,7 @@ def remove_folder_from_articles(folder: str | Folder) -> None:
 def move_subscription_articles(
     subscription: Subscription,
     from_folder: str | Folder | None,
-    to_folder: str | Folder,
+    to_folder: str | Folder | None,
 ) -> None:
     """Move the articles of a subscription from one folder to another.
 
@@ -393,7 +393,7 @@ def move_subscription_articles(
     from_folder = (
         Folders.full_id(from_folder) if from_folder is not None else from_folder
     )
-    to_folder = Folders.full_id(to_folder)
+    to_folder = Folders.full_id(to_folder) if to_folder is not None else to_folder
     for article in LocalArticle.where(origin_stream_id=subscription.id).join().select():
         if from_folder:
             LocalArticleCategory.where(

@@ -734,7 +734,7 @@ class Main(EnhancedScreen[None]):
             ) is not None:
                 if await Subscriptions.move(self._session, subscription, target_folder):
                     move_subscription_articles(
-                        subscription, subscription.folder_id or "", target_folder
+                        subscription, subscription.folder_id, target_folder
                     )
                     self.notify("Moved")
                     self.post_message(RefreshFromTheOldReader())
