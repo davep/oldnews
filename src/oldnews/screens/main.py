@@ -24,6 +24,7 @@ from oldas import (
 from textual import on, work
 from textual.app import ComposeResult
 from textual.containers import Vertical
+from textual.getters import query_one
 from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Footer, Header
@@ -193,6 +194,15 @@ class Main(EnhancedScreen[None]):
     show_all: var[bool] = var(False)
     """Should we show all articles or only new?"""
 
+    navigation = query_one(Navigation)
+    """The navigation panel."""
+    article_view = query_one("#article-view", Vertical)
+    """The panel that contains views of articles."""
+    article_list = query_one(ArticleList)
+    """The article list panel."""
+    article_content = query_one(ArticleContent)
+    """The article content panel."""
+
     @dataclass
     class SubTitle(Message):
         """Message sent to set the sub-title to something."""
@@ -273,7 +283,7 @@ class Main(EnhancedScreen[None]):
             CopyHomePageToClipboard.action_name(),
             MoveSubscription.action_name(),
         ):
-            return self.query_one(Navigation).current_subscription is not None
+            return self.navigation.current_subscription is not None
         if action in (Next.action_name(), Previous.action_name()):
             return self.articles is not None
         if action in (
@@ -282,7 +292,7 @@ class Main(EnhancedScreen[None]):
             MarkAllRead.action_name(),
         ):
             # If we're inside the navigation panel...
-            if self.query_one(Navigation).has_focus:
+            if self.navigation.has_focus:
                 # ...we just care if there's anything unread somewhere.
                 return any(total for total in self.unread.values())
             # Otherwise we care if we can see a current list of articles and
@@ -292,11 +302,11 @@ class Main(EnhancedScreen[None]):
             )
         if action == Copy.action_name():
             return (
-                (navigation := self.query_one(Navigation)).has_focus
+                (navigation := self.navigation).has_focus
                 and navigation.current_subscription is not None
-            ) or self.query_one("#article-view").has_focus_within
+            ) or self.article_view.has_focus_within
         if action in (Rename.action_name(), Remove.action_name()):
-            return self.query_one(Navigation).current_category is not None
+            return self.navigation.current_category is not None
         return True
 
     @on(SubTitle)
@@ -346,9 +356,9 @@ class Main(EnhancedScreen[None]):
             # side of the display and maybe move focus back to navigation.
             if not self.articles:
                 self.article = None
-                if self.query_one("#article-view").has_focus_within:
-                    self.query_one(Navigation).focus()
-        self.query_one("#article-view").set_class(bool(self.articles), "--has-articles")
+                if self.article_view.has_focus_within:
+                    self.navigation.focus()
+        self.article_view.set_class(bool(self.articles), "--has-articles")
 
     @work(thread=True, exclusive=True)
     def _load_locally(self) -> None:
@@ -404,7 +414,7 @@ class Main(EnhancedScreen[None]):
         self.current_category = message.category
         self.article = None
         self._refresh_article_list()
-        self.query_one(ArticleList).focus()
+        self.article_list.focus()
 
     def _watch_show_all(self) -> None:
         """Handle changes to the show all flag."""
@@ -432,7 +442,7 @@ class Main(EnhancedScreen[None]):
             message: The message requesting an article be viewed.
         """
         self.article = message.article
-        self.query_one(ArticleContent).focus()
+        self.article_content.focus()
         self.set_timer(
             min(0.1, load_configuration().mark_read_on_read_timeout),
             lambda: self._mark_read(message.article),
@@ -454,47 +464,45 @@ class Main(EnhancedScreen[None]):
         level to the topmost, and if we're at the topmost then exit the
         application.
         """
-        if self.focused is not None and self.focused.parent is self.query_one(
-            ArticleContent
-        ):
-            self.query_one(ArticleList).focus()
+        if self.focused is not None and self.focused.parent is self.article_content:
+            self.article_list.focus()
             self.article = None
-        elif self.focused is self.query_one(ArticleList):
-            self.query_one(Navigation).focus()
-        elif self.focused is self.query_one(Navigation):
+        elif self.focused is self.article_list:
+            self.navigation.focus()
+        elif self.focused is self.navigation:
             self.app.exit()
 
     def action_next_command(self) -> None:
         """Go to the next article in the currently-viewed category."""
         if self.article is None:
-            self.query_one(ArticleList).highlight_next_article()
+            self.article_list.highlight_next_article()
         else:
-            self.query_one(ArticleList).select_next_article()
+            self.article_list.select_next_article()
 
     def action_previous_command(self) -> None:
         """Go to the previous article in the currently-viewed category."""
         if self.article is None:
-            self.query_one(ArticleList).highlight_previous_article()
+            self.article_list.highlight_previous_article()
         else:
-            self.query_one(ArticleList).select_previous_article()
+            self.article_list.select_previous_article()
 
     def action_next_unread_command(self) -> None:
         """Go to the next unread article in the currently-viewed category."""
-        if (navigation := self.query_one(Navigation)).has_focus:
-            navigation.highlight_next_unread_category()
+        if self.navigation.has_focus:
+            self.navigation.highlight_next_unread_category()
         elif self.article is None:
-            self.query_one(ArticleList).highlight_next_unread_article()
+            self.article_list.highlight_next_unread_article()
         else:
-            self.query_one(ArticleList).select_next_unread_article()
+            self.article_list.select_next_unread_article()
 
     def action_previous_unread_command(self) -> None:
         """Go to the previous unread article in the currently-viewed category"""
-        if (navigation := self.query_one(Navigation)).has_focus:
-            navigation.highlight_previous_unread_category()
+        if self.navigation.has_focus:
+            self.navigation.highlight_previous_unread_category()
         elif self.article is None:
-            self.query_one(ArticleList).highlight_previous_unread_article()
+            self.article_list.highlight_previous_unread_article()
         else:
-            self.query_one(ArticleList).select_previous_unread_article()
+            self.article_list.select_previous_unread_article()
 
     def action_open_article_command(self) -> None:
         """Open the current article in a web browser."""
@@ -511,7 +519,7 @@ class Main(EnhancedScreen[None]):
     @work
     async def action_mark_all_read_command(self) -> None:
         """Mark all unread articles in the current category as read."""
-        if (current_category := self.query_one(Navigation).current_category) is None:
+        if (current_category := self.navigation.current_category) is None:
             return
         if not (
             ids_to_mark_read := [
@@ -545,7 +553,7 @@ class Main(EnhancedScreen[None]):
 
     def action_open_home_page_command(self) -> None:
         """Open the home page of the current subscription in the web browser."""
-        if subscription := self.query_one(Navigation).current_subscription:
+        if subscription := self.navigation.current_subscription:
             if subscription.html_url:
                 open_url(subscription.html_url)
             else:
@@ -570,14 +578,14 @@ class Main(EnhancedScreen[None]):
 
     def action_copy_home_page_to_clipboard_command(self) -> None:
         """Copy the URL of the current subscription's homepage to the clipboard."""
-        if subscription := self.query_one(Navigation).current_subscription:
+        if subscription := self.navigation.current_subscription:
             self._copy_to_clipboard(
                 subscription.html_url, "No home page URL available for the subscription"
             )
 
     def action_copy_feed_to_clipboard_command(self) -> None:
         """Copy the URL of the current subscription's feed to the clipboard."""
-        if subscription := self.query_one(Navigation).current_subscription:
+        if subscription := self.navigation.current_subscription:
             self._copy_to_clipboard(
                 subscription.url, "No feed URL available for the subscription"
             )
@@ -591,10 +599,10 @@ class Main(EnhancedScreen[None]):
 
     def action_copy_command(self) -> None:
         """Copy a URL to the clipboard depending on the current context."""
-        if (navigation := self.query_one(Navigation)).has_focus:
+        if (navigation := self.navigation).has_focus:
             if navigation.current_subscription:
                 self.action_copy_home_page_to_clipboard_command()
-        elif self.query_one("#article-view").has_focus_within:
+        elif self.article_view.has_focus_within:
             if self.article:
                 self.action_copy_article_to_clipboard_command()
             else:
@@ -671,7 +679,7 @@ class Main(EnhancedScreen[None]):
 
     def action_rename_command(self) -> None:
         """Rename the current subscription."""
-        if category := self.query_one(Navigation).current_category:
+        if category := self.navigation.current_category:
             if isinstance(category, Subscription):
                 self._rename_subscription(category)
             elif isinstance(category, Folder):
@@ -717,7 +725,7 @@ class Main(EnhancedScreen[None]):
 
     def action_remove_command(self) -> None:
         """Remove the current folder or subscription."""
-        if category := self.query_one(Navigation).current_category:
+        if category := self.navigation.current_category:
             if isinstance(category, Subscription):
                 self._remove_subscription(category)
             elif isinstance(category, Folder):
@@ -726,7 +734,7 @@ class Main(EnhancedScreen[None]):
     @work
     async def action_move_subscription_command(self) -> None:
         """Move a subscription to a different folder."""
-        if subscription := self.query_one(Navigation).current_subscription:
+        if subscription := self.navigation.current_subscription:
             if (
                 target_folder := await self.app.push_screen_wait(
                     FolderInput(self.folders)
