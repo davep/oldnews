@@ -729,9 +729,11 @@ class Main(EnhancedScreen[None]):
     async def action_move_subscription_command(self) -> None:
         """Move a subscription to a different folder."""
         if subscription := self.query_one(Navigation).current_subscription:
-            if target_folder := await self.app.push_screen_wait(
-                FolderInput(self.folders)
-            ):
+            if (
+                target_folder := await self.app.push_screen_wait(
+                    FolderInput(self.folders)
+                )
+            ) is not None:
                 if await Subscriptions.move(self._session, subscription, target_folder):
                     move_subscription_articles(
                         subscription, subscription.folder_id or "", target_folder

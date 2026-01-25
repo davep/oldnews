@@ -47,7 +47,9 @@ class FolderInput(ModalInput):
         """
         self._folders = folders
         """The folders that already exist."""
-        super().__init__(placeholder="Enter the name of the folder to move to")
+        super().__init__(
+            placeholder="Enter the name of the folder to move to; leaving empty means top-level (no folder)"
+        )
 
     def compose(self) -> ComposeResult:
         with Vertical():
