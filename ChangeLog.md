@@ -23,6 +23,7 @@
   folder to another. ([#68](https://github.com/davep/oldnews/pull/68))
 - Added the `Information` command for showing information about the current
   folder, subscription or article.
+  ([#75](https://github.com/davep/oldnews/pull/75))
 
 ## v0.4.0
 
