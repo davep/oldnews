@@ -20,7 +20,7 @@
 - Added the `Remove` command for removing the current folder or
   subscription. ([#66](https://github.com/davep/oldnews/pull/66))
 - Added the `MoveSubscription` command for moving a subscription from one
-  folder to another.
+  folder to another. ([#68](https://github.com/davep/oldnews/pull/68))
 
 ## v0.4.0
 
