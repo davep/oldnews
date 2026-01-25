@@ -126,4 +126,11 @@ class Remove(Command):
     BINDING_KEY = "delete"
 
 
+##############################################################################
+class MoveSubscription(Command):
+    """Move the current subscription to folder"""
+
+    BINDING_KEY = "f7"
+
+
 ### main.py ends here
