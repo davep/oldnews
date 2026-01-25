@@ -21,6 +21,9 @@
   subscription. ([#66](https://github.com/davep/oldnews/pull/66))
 - Added the `MoveSubscription` command for moving a subscription from one
   folder to another. ([#68](https://github.com/davep/oldnews/pull/68))
+- Added the `Information` command for showing information about the current
+  folder, subscription or article.
+  ([#75](https://github.com/davep/oldnews/pull/75))
 
 ## v0.4.0
 

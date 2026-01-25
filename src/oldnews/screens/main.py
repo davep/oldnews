@@ -45,6 +45,7 @@ from ..commands import (
     CopyFeedToClipboard,
     CopyHomePageToClipboard,
     Escape,
+    Information,
     MarkAllRead,
     MoveSubscription,
     Next,
@@ -80,6 +81,7 @@ from ..providers import MainCommands
 from ..sync import ToRSync
 from ..widgets import ArticleContent, ArticleList, Navigation
 from .folder_input import FolderInput
+from .information_display import InformationDisplay
 from .new_subscription import NewSubscription
 
 
@@ -158,6 +160,7 @@ class Main(EnhancedScreen[None]):
         RefreshFromTheOldReader,
         # Everything else.
         Escape,
+        Information,
         MarkAllRead,
         Next,
         NextUnread,
@@ -303,9 +306,14 @@ class Main(EnhancedScreen[None]):
             )
         if action == Copy.action_name():
             return (
-                (navigation := self.navigation).has_focus
-                and navigation.current_subscription is not None
+                self.navigation.has_focus
+                and self.navigation.current_subscription is not None
             ) or self.article_view.has_focus_within
+        if action == Information.action_name():
+            return (
+                self.navigation.has_focus
+                and self.navigation.current_category is not None
+            ) or (self.article_view.has_focus_within and self.article is not None)
         if action in (Rename.action_name(), Remove.action_name()):
             return self.navigation.current_category is not None
         return True
@@ -755,6 +763,54 @@ class Main(EnhancedScreen[None]):
                         timeout=8,
                         markup=False,
                     )
+
+    @work
+    async def action_information_command(self) -> None:
+        """Show some information about the current item."""
+        # TODO: The article has pretty rich data, so in here I'm not showing
+        # it all, just enough to be useful. In the future perhaps make it a
+        # lot richer.
+        information: InformationDisplay | None = None
+        if self.navigation.has_focus and (category := self.navigation.current_category):
+            if isinstance(category, Folder):
+                information = InformationDisplay(
+                    "Folder", (("ID", category.id), ("Sort ID", category.sort_id))
+                )
+            elif isinstance(category, Subscription):
+                information = InformationDisplay(
+                    "Subscription",
+                    (
+                        ("ID", category.id),
+                        ("Title", category.title),
+                        ("Sort ID", category.sort_id),
+                        ("First Item Time", f"{category.first_item_time}"),
+                        ("URL", category.url),
+                        ("HTML URL", category.html_url),
+                        *(
+                            (
+                                f"Category[{n}]",
+                                f"{sub_category.id}, {sub_category.label}",
+                            )
+                            for n, sub_category in enumerate(category.categories)
+                        ),
+                    ),
+                )
+        elif self.article_view.has_focus_within and self.article:
+            information = InformationDisplay(
+                "Article",
+                (
+                    ("ID", self.article.id),
+                    ("Title", self.article.title),
+                    ("Published", f"{self.article.published}"),
+                    ("Updated", f"{self.article.updated}"),
+                    *(
+                        (f"Category[{n}]", f"{sub_category}")
+                        for n, sub_category in enumerate(self.article.categories)
+                    ),
+                ),
+            )
+        if information:
+            await self.app.push_screen_wait(information)
 
 
 ### main.py ends here

@@ -19,6 +19,7 @@ from ..commands import (
     CopyFeedToClipboard,
     CopyHomePageToClipboard,
     Escape,
+    Information,
     MarkAllRead,
     MoveSubscription,
     Next,
@@ -59,6 +60,7 @@ class MainCommands(CommandsProvider):
         yield from self.maybe(Copy)
         yield from self.maybe(Rename)
         yield from self.maybe(Remove)
+        yield from self.maybe(Information)
         yield AddSubscription()
         yield ToggleShowAll()
         yield RefreshFromTheOldReader()

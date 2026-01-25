@@ -133,4 +133,11 @@ class MoveSubscription(Command):
     BINDING_KEY = "f7"
 
 
+##############################################################################
+class Information(Command):
+    """Show low-level information about the selected item"""
+
+    BINDING_KEY = "f8"
+
+
 ### main.py ends here
