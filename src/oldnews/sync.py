@@ -28,6 +28,7 @@ from .data import (
     load_configuration,
     locally_mark_article_ids_read,
     remember_we_last_grabbed_at,
+    remove_subscription_articles,
     save_local_articles,
     save_local_folders,
     save_local_subscriptions,
@@ -64,7 +65,7 @@ class ToRSync:
         """Initialise the sync object."""
         self._last_sync = last_grabbed_data_at()
         """The time at which we last did a sync."""
-        self._first_sync = self._last_sync is not None
+        self._first_sync = self._last_sync is None
         """Is this our first ever sync?"""
 
     def _step(self, step: str) -> None:
@@ -194,6 +195,18 @@ class ToRSync:
             self._result("No new articles found on TheOldReader")
         remember_we_last_grabbed_at(new_grab)
 
+    @staticmethod
+    def _set_of_ids(subscriptions: Subscriptions) -> set[str]:
+        """Get a set of the IDs of the given subscriptions.
+
+        Args:
+            subscriptions: The subscriptions to get the IDs of.
+
+        Returns:
+            A [set][`set`] of subscription IDs.
+        """
+        return {subscription.id for subscription in subscriptions}
+
     async def _get_historical_articles(
         self,
         original_subscriptions: Subscriptions,
@@ -201,26 +214,43 @@ class ToRSync:
     ) -> None:
         """Download article histories for any new subscriptions.
 
+        Args:
+            original_subscriptions: The known subscriptions before the sync.
+            current_subscriptions: The subscriptions we're now subscribed to.
+
         It's possible we have subscriptions we didn't know about before, so
         we want to go and backfill their content regardless of read or
         unread status. So, if it looks like we've grabbed data before but
         now we have subscriptions we didn't know about before... let's grab
         their history regardless.
         """
-        if self._first_sync:
-            return
-        was_subscribed_to = set(
-            subscription.id for subscription in original_subscriptions
-        )
-        now_subscribed_to = set(
-            subscription.id for subscription in current_subscriptions
-        )
-        if new_subscriptions := now_subscribed_to - was_subscribed_to:
+        if not self._first_sync and (
+            new_subscriptions := self._set_of_ids(current_subscriptions)
+            - self._set_of_ids(original_subscriptions)
+        ):
             await self._download_backlog(
                 subscription
                 for subscription in current_subscriptions
                 if subscription.id in new_subscriptions
             )
+
+    def _clean_orphaned_articles(
+        self,
+        original_subscriptions: Subscriptions,
+        current_subscriptions: Subscriptions,
+    ) -> None:
+        """Clean any articles left over from removed subscriptions.
+
+        Args:
+            original_subscriptions: The known subscriptions before the sync.
+            current_subscriptions: The subscriptions we're now subscribed to.
+        """
+        if not self._first_sync and (
+            removed_subscriptions := self._set_of_ids(original_subscriptions)
+            - self._set_of_ids(current_subscriptions)
+        ):
+            for subscription in removed_subscriptions:
+                remove_subscription_articles(subscription)
 
     async def _get_unread_counts(
         self, folders: Folders, subscriptions: Subscriptions
@@ -242,6 +272,7 @@ class ToRSync:
         await self._get_new_articles()
         await self._get_updated_read_status()
         await self._get_historical_articles(original_subscriptions, subscriptions)
+        self._clean_orphaned_articles(original_subscriptions, subscriptions)
         await self._get_unread_counts(folders, subscriptions)
         if self.on_sync_finished:
             self.on_sync_finished()
