@@ -60,6 +60,13 @@ class ToRSync:
     on_sync_finished: Callback = None
     """Function to call when the sync has finished."""
 
+    def __post_init__(self) -> None:
+        """Initialise the sync object."""
+        self._last_sync = last_grabbed_data_at()
+        """The time at which we last did a sync."""
+        self._first_sync = self._last_sync is not None
+        """Is this our first ever sync?"""
+
     def _step(self, step: str) -> None:
         """Mark a new step.
 
@@ -106,23 +113,10 @@ class ToRSync:
                 self._step(f"{description}: {loaded}")
         return loaded
 
-    async def _download_newest_articles(self) -> None:
-        """Download the latest articles available."""
-        new_grab = datetime.now(timezone.utc)
-        last_grabbed = last_grabbed_data_at() or (
-            new_grab - timedelta(days=load_configuration().local_history)
-        )
-        if loaded := await self._download(
-            Articles.stream_new_since(self.session, last_grabbed, n=10),
-            "Downloading articles from TheOldReader",
-        ):
-            self._result(f"Articles downloaded: {loaded}")
-        else:
-            self._result("No new articles found on TheOldReader")
-        remember_we_last_grabbed_at(new_grab)
-
-    async def _refresh_read_status(self) -> None:
+    async def _get_updated_read_status(self) -> None:
         """Refresh the read status from the server."""
+        if self._first_sync:
+            return
         self._step("Getting list of unread articles from TheOldReader")
         remote_unread_articles = set(
             article_id.full_id
@@ -154,61 +148,101 @@ class ToRSync:
                     f"Downloaded article backlog for {subscription.title}: {loaded}"
                 )
 
+    async def _get_folders(self) -> Folders:
+        """Get the list of folders from the server.
+
+        Returns:
+            The folders.
+        """
+        self._step("Getting folder list")
+        folders = save_local_folders(await Folders.load(self.session))
+        if self.on_new_folders:
+            self.on_new_folders(folders)
+        return folders
+
+    async def _get_subscriptions(self) -> tuple[Subscriptions, Subscriptions]:
+        """Get the list of subscriptions from the server.
+
+        Returns:
+            A tuple of the original subscription list before the sync, and
+            after.
+        """
+        self._step("Getting subscriptions list")
+        original_subscriptions = get_local_subscriptions()
+        subscriptions = save_local_subscriptions(await Subscriptions.load(self.session))
+        if self.on_new_subscriptions:
+            self.on_new_subscriptions(subscriptions)
+        return original_subscriptions, subscriptions
+
+    async def _get_new_articles(self) -> None:
+        """Download any new articles."""
+        self._step(
+            "Getting available articles"
+            if self._first_sync
+            else f"Getting new articles since {self._last_sync}"
+        )
+        new_grab = datetime.now(timezone.utc)
+        last_grabbed = last_grabbed_data_at() or (
+            new_grab - timedelta(days=load_configuration().local_history)
+        )
+        if loaded := await self._download(
+            Articles.stream_new_since(self.session, last_grabbed, n=10),
+            "Downloading articles from TheOldReader",
+        ):
+            self._result(f"Articles downloaded: {loaded}")
+        else:
+            self._result("No new articles found on TheOldReader")
+        remember_we_last_grabbed_at(new_grab)
+
+    async def _get_historical_articles(
+        self,
+        original_subscriptions: Subscriptions,
+        current_subscriptions: Subscriptions,
+    ) -> None:
+        """Download article histories for any new subscriptions.
+
+        It's possible we have subscriptions we didn't know about before, so
+        we want to go and backfill their content regardless of read or
+        unread status. So, if it looks like we've grabbed data before but
+        now we have subscriptions we didn't know about before... let's grab
+        their history regardless.
+        """
+        if self._first_sync:
+            return
+        was_subscribed_to = set(
+            subscription.id for subscription in original_subscriptions
+        )
+        now_subscribed_to = set(
+            subscription.id for subscription in current_subscriptions
+        )
+        if new_subscriptions := now_subscribed_to - was_subscribed_to:
+            await self._download_backlog(
+                subscription
+                for subscription in current_subscriptions
+                if subscription.id in new_subscriptions
+            )
+
+    async def _get_unread_counts(
+        self, folders: Folders, subscriptions: Subscriptions
+    ) -> None:
+        """Get the updated unread counts."""
+        self._step("Calculating unread counts")
+        unread = get_local_unread(folders, subscriptions)
+        if self.on_new_unread:
+            self.on_new_unread(unread)
+
     async def refresh(self) -> None:
         """Refresh the data from TheOldReader.
 
         Args:
             session: The TheOldReader API session object.
         """
-
-        # Get the folder list.
-        self._step("Getting folder list")
-        folders = save_local_folders(await Folders.load(self.session))
-        if self.on_new_folders:
-            self.on_new_folders(folders)
-
-        # Get the subscriptions list.
-        exising_subscriptions = get_local_subscriptions()
-        self._step("Getting subscriptions list")
-        subscriptions = save_local_subscriptions(await Subscriptions.load(self.session))
-        if self.on_new_subscriptions:
-            self.on_new_subscriptions(subscriptions)
-
-        # Download the latest articles we don't know about.
-        if grabbed_before := ((last_grab := last_grabbed_data_at()) is not None):
-            self._step("Getting available articles")
-        else:
-            self._step(f"Getting new articles since {last_grab}")
-        await self._download_newest_articles()
-
-        # If we have grabbed data before, let's try and sync up what's been read.
-        if grabbed_before:
-            await self._refresh_read_status()
-
-        # It's possible we have subscriptions we didn't know about before,
-        # so we want to go and backfill their content regardless of read or
-        # unread status. So, if it looks like we've grabbed data before but
-        # now we have subscriptions we didn't know about before... let's
-        # grab their history regardless.
-        if grabbed_before:
-            was_subscribed_to = set(
-                subscription.id for subscription in exising_subscriptions
-            )
-            now_subscribed_to = set(subscription.id for subscription in subscriptions)
-            if new_subscriptions := now_subscribed_to - was_subscribed_to:
-                await self._download_backlog(
-                    subscription
-                    for subscription in subscriptions
-                    if subscription.id in new_subscriptions
-                )
-
-        # Recalculate the unread counts.
-        self._step("Calculating unread counts")
-        unread = get_local_unread(folders, subscriptions)
-        if self.on_new_unread:
-            self.on_new_unread(unread)
-
-        # Finally we're all done.
+        folders = await self._get_folders()
+        original_subscriptions, subscriptions = await self._get_subscriptions()
+        await self._get_new_articles()
+        await self._get_updated_read_status()
+        await self._get_historical_articles(original_subscriptions, subscriptions)
+        await self._get_unread_counts(folders, subscriptions)
         if self.on_sync_finished:
             self.on_sync_finished()
 
