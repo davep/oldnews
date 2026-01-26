@@ -6,6 +6,8 @@
 
 - When a subscription is removed elsewhere, its locally-held articles are
   now removed. ([#80](https://github.com/davep/oldnews/pull/80))
+- Added an application log, which logs to the application's data directory.
+  ([#84](https://github.com/davep/oldnews/pull/84))
 
 ## v0.5.0
 
