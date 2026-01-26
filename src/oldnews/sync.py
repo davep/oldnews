@@ -118,12 +118,11 @@ class ToRSync:
         """Refresh the read status from the server."""
         if self._first_sync:
             return
-        self._step("Getting list of unread articles from TheOldReader")
+        self._step("Syncing read/unread status with TheOldReader")
         remote_unread_articles = set(
             article_id.full_id
             for article_id in await ArticleIDs.load_unread(self.session)
         )
-        self._step("Comparing against locally-read articles")
         local_unread_articles = set(get_unread_article_ids())
         if mark_as_read := local_unread_articles - remote_unread_articles:
             locally_mark_article_ids_read(mark_as_read)
@@ -252,11 +251,10 @@ class ToRSync:
             for subscription in removed_subscriptions:
                 remove_subscription_articles(subscription)
 
-    async def _get_unread_counts(
+    def _get_unread_counts(
         self, folders: Folders, subscriptions: Subscriptions
     ) -> None:
         """Get the updated unread counts."""
-        self._step("Calculating unread counts")
         unread = get_local_unread(folders, subscriptions)
         if self.on_new_unread:
             self.on_new_unread(unread)
@@ -273,7 +271,7 @@ class ToRSync:
         await self._get_updated_read_status()
         await self._get_historical_articles(original_subscriptions, subscriptions)
         self._clean_orphaned_articles(original_subscriptions, subscriptions)
-        await self._get_unread_counts(folders, subscriptions)
+        self._get_unread_counts(folders, subscriptions)
         if self.on_sync_finished:
             self.on_sync_finished()
 
