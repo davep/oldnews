@@ -182,7 +182,7 @@ class ToRSync:
             else f"Getting new articles since {self._last_sync}"
         )
         new_grab = datetime.now(timezone.utc)
-        last_grabbed = last_grabbed_data_at() or (
+        last_grabbed = self._last_sync or (
             new_grab - timedelta(days=load_configuration().local_history)
         )
         if loaded := await self._download(
