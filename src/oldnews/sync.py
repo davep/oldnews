@@ -21,6 +21,7 @@ from oldas import (
 ##############################################################################
 from .data import (
     LocalUnread,
+    Log,
     get_local_subscriptions,
     get_local_unread,
     get_unread_article_ids,
@@ -74,6 +75,7 @@ class ToRSync:
         Args:
             step: The step that is happening.
         """
+        Log().info(step)
         if self.on_new_step:
             self.on_new_step(step)
 
@@ -83,6 +85,7 @@ class ToRSync:
         Args:
             result: The result that should be shown.
         """
+        Log().info(result)
         if self.on_new_result:
             self.on_new_result(result)
 
@@ -125,6 +128,7 @@ class ToRSync:
         )
         local_unread_articles = set(get_unread_article_ids())
         if mark_as_read := local_unread_articles - remote_unread_articles:
+            Log().debug(f"Articles found as marked read elsewhere: {mark_as_read}")
             locally_mark_article_ids_read(mark_as_read)
             self._result(
                 f"Articles found read elsewhere on TheOldReader: {len(mark_as_read)}"
@@ -223,10 +227,12 @@ class ToRSync:
         now we have subscriptions we didn't know about before... let's grab
         their history regardless.
         """
+        Log().info("Checking for historical articles")
         if not self._first_sync and (
             new_subscriptions := self._set_of_ids(current_subscriptions)
             - self._set_of_ids(original_subscriptions)
         ):
+            Log().info(f"New subscriptions found: {new_subscriptions}")
             await self._download_backlog(
                 subscription
                 for subscription in current_subscriptions
@@ -244,10 +250,12 @@ class ToRSync:
             original_subscriptions: The known subscriptions before the sync.
             current_subscriptions: The subscriptions we're now subscribed to.
         """
+        Log().info("Checking for orphaned articles")
         if not self._first_sync and (
             removed_subscriptions := self._set_of_ids(original_subscriptions)
             - self._set_of_ids(current_subscriptions)
         ):
+            Log().info(f"Found remotely-removed subscriptions: {removed_subscriptions}")
             for subscription in removed_subscriptions:
                 remove_subscription_articles(subscription)
 
