@@ -64,7 +64,7 @@ class ToRSync:
         """Initialise the sync object."""
         self._last_sync = last_grabbed_data_at()
         """The time at which we last did a sync."""
-        self._first_sync = self._last_sync is not None
+        self._first_sync = self._last_sync is None
         """Is this our first ever sync?"""
 
     def _step(self, step: str) -> None:
