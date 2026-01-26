@@ -9,6 +9,7 @@ from oldas import OldASError, OldASInvalidLogin, Session
 from textual import on
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
+from textual.getters import query_one
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input
 
@@ -48,6 +49,11 @@ class Login(ModalScreen[Session | None]):
 
     BINDINGS = [("escape", "cancel")]
 
+    user_name = query_one("#user-name", Input)
+    """The user name input widget."""
+    password = query_one("#password", Input)
+    """The password input widget."""
+
     def __init__(self, session: Session) -> None:
         """Initialise the login dialog.
 
@@ -71,9 +77,7 @@ class Login(ModalScreen[Session | None]):
     @on(Button.Pressed, "#login")
     async def login(self) -> None:
         """Log into TheOldReader."""
-        if (user := self.query_one("#user-name", Input).value) and (
-            password := self.query_one("#password", Input).value
-        ):
+        if (user := self.user_name.value) and (password := self.password.value):
             try:
                 # TODO: Add some sort of busy effect as the login happens.
                 await self._session.login(user, password)
