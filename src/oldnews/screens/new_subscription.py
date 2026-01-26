@@ -13,6 +13,7 @@ from oldas import Folders
 from textual import on
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
+from textual.getters import query_one
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Label
 
@@ -66,6 +67,13 @@ class NewSubscription(ModalScreen[NewSubscriptionData | None]):
 
     BINDINGS = [("escape", "cancel")]
 
+    feed_input = query_one("#feed", Input)
+    """The feed input widget."""
+    folder_input = query_one("#folder", Input)
+    """The folder input widget."""
+    add_button = query_one("#add", Button)
+    """The add button."""
+
     def __init__(self, folders: Folders) -> None:
         """Initialise the dialog object.
 
@@ -98,18 +106,16 @@ class NewSubscription(ModalScreen[NewSubscriptionData | None]):
     @on(Input.Changed, "#feed")
     def _refresh_state(self) -> None:
         """Refresh the state of the dialog."""
-        self.query_one("#add").disabled = not bool(
-            self.query_one("#feed", Input).value.strip()
-        )
+        self.add_button.disabled = not bool(self.feed_input.value.strip())
 
     @on(Button.Pressed, "#add")
     def action_add(self) -> None:
         """React to the user pressing the add button."""
-        if feed := self.query_one("#feed", Input).value.strip():
+        if feed := self.feed_input.value.strip():
             self.dismiss(
                 NewSubscriptionData(
                     feed=feed,
-                    folder=self.query_one("#folder", Input).value.strip(),
+                    folder=self.folder_input.value.strip(),
                 )
             )
 
