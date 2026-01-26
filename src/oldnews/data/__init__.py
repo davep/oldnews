@@ -26,6 +26,7 @@ from .local_articles import (
 from .local_folders import get_local_folders, save_local_folders
 from .local_subscriptions import get_local_subscriptions, save_local_subscriptions
 from .local_unread import LocalUnread, get_local_unread, total_unread
+from .log import Log
 from .navigation_state import get_navigation_state, save_navigation_state
 from .reset import reset_data
 
@@ -33,6 +34,7 @@ from .reset import reset_data
 # Exports.
 __all__ = [
     "Configuration",
+    "Log",
     "clean_old_read_articles",
     "get_auth_token",
     "get_local_articles",
