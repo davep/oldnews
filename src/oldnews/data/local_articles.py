@@ -17,6 +17,7 @@ from typedal import TypedField, TypedTable, relationship
 
 ##############################################################################
 # Local imports.
+from .log import Log
 from .tools import commit
 
 
@@ -339,11 +340,13 @@ def clean_old_read_articles(cutoff: timedelta) -> int:
     """Clean up articles that are older than the given cutoff time."""
     read = get_local_read_article_ids()
     retire_time = datetime.now() - cutoff
+    Log().debug(f"Cleaning up read articles published before {retire_time}")
     cleaned = len(
         LocalArticle.where(
             (LocalArticle.published < retire_time) & LocalArticle.id.belongs(read)
         ).delete()
     )
+    Log().debug(f"Cleaned: {cleaned}")
     commit(LocalArticle)
     return cleaned
 
@@ -358,6 +361,7 @@ def rename_folder_for_articles(rename_from: str | Folder, rename_to: str) -> Non
     """
     rename_from = Folders.full_id(rename_from)
     rename_to = Folders.full_id(rename_to)
+    Log().debug(f"Renaming folder for local articles from {rename_from} to {rename_to}")
     LocalArticleCategory.where(LocalArticleCategory.category == rename_from).update(
         category=rename_to
     )
@@ -371,9 +375,9 @@ def remove_folder_from_articles(folder: str | Folder) -> None:
     Args:
         folder: The folder to remove from all articles.
     """
-    LocalArticleCategory.where(
-        LocalArticleCategory.category == Folders.full_id(folder)
-    ).delete()
+    folder = Folders.full_id(folder)
+    Log().debug(f"Removing folder {folder} from all local articles")
+    LocalArticleCategory.where(LocalArticleCategory.category == folder).delete()
     commit(LocalArticleCategory)
 
 
@@ -394,6 +398,9 @@ def move_subscription_articles(
         Folders.full_id(from_folder) if from_folder is not None else from_folder
     )
     to_folder = Folders.full_id(to_folder) if to_folder is not None else to_folder
+    Log().debug(
+        f"Moving all articles of {subscription.title} ({subscription.id}) from folder {from_folder} to {to_folder}"
+    )
     for article in LocalArticle.where(origin_stream_id=subscription.id).join().select():
         if from_folder:
             LocalArticleCategory.where(
@@ -415,6 +422,7 @@ def remove_subscription_articles(subscription: str | Subscription) -> None:
     """
     if isinstance(subscription, Subscription):
         subscription = subscription.id
+    Log().debug(f"Removing all local articles for subscription {subscription}")
     LocalArticle.where(origin_stream_id=subscription).delete()
     commit(LocalArticle)
 
