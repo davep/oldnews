@@ -15,7 +15,7 @@ spell   := $(run) codespell
 # Local "interactive testing" of the code.
 .PHONY: run
 run:				# Run the code in a testing context
-	$(run) $(app)
+	OLDNEWS_DEBUG=1 $(run) $(app)
 
 .PHONY: serve
 serve:				# Run in server mode for use in the browser
