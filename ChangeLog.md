@@ -1,5 +1,12 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- When a subscription is removed elsewhere, its locally-held articles are
+  now removed.
+
 ## v0.5.0
 
 **Released: 2026-01-25**
