@@ -5,7 +5,7 @@
 **Released: WiP**
 
 - When a subscription is removed elsewhere, its locally-held articles are
-  now removed.
+  now removed. ([#80](https://github.com/davep/oldnews/pull/80))
 
 ## v0.5.0
 
