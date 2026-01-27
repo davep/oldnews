@@ -11,6 +11,8 @@
 - Added a `directories` command line command that can be used to see which
   directories are being used by the application.
   ([#88](https://github.com/davep/oldnews/pull/88))
+- Added the ability to expand all folders in the navigation panel.
+- Added the ability to collapse all folders in the navigation panel.
 
 ## v0.5.0
 
