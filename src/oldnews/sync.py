@@ -69,13 +69,15 @@ class ToRSync:
         self._first_sync = self._last_sync is None
         """Is this our first ever sync?"""
 
-    def _step(self, step: str) -> None:
+    def _step(self, step: str, *, log: bool = True) -> None:
         """Mark a new step.
 
         Args:
             step: The step that is happening.
+            log: Should we log the step?
         """
-        Log().info(step)
+        if log:
+            Log().info(step)
         if self.on_new_step:
             self.on_new_step(step)
 
@@ -114,7 +116,7 @@ class ToRSync:
             save_local_articles(Articles([article]))
             loaded += 1
             if (loaded % 10) == 0:
-                self._step(f"{description}: {loaded}")
+                self._step(f"{description}: {loaded}", log=False)
         return loaded
 
     async def _get_updated_read_status(self) -> None:
