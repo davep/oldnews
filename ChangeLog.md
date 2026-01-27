@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v0.6.0
 
-**Released: WiP**
+**Released: 2026-01-27**
 
 - When a subscription is removed elsewhere, its locally-held articles are
   now removed. ([#80](https://github.com/davep/oldnews/pull/80))
