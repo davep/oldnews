@@ -62,6 +62,7 @@ from ..commands import (
 from ..data import (
     LocalUnread,
     clean_old_read_articles,
+    data_dump,
     get_local_articles,
     get_local_folders,
     get_local_subscriptions,
@@ -767,48 +768,13 @@ class Main(EnhancedScreen[None]):
     @work
     async def action_information_command(self) -> None:
         """Show some information about the current item."""
-        # TODO: The article has pretty rich data, so in here I'm not showing
-        # it all, just enough to be useful. In the future perhaps make it a
-        # lot richer.
         information: InformationDisplay | None = None
         if self.navigation.has_focus and (category := self.navigation.current_category):
-            if isinstance(category, Folder):
-                information = InformationDisplay(
-                    "Folder", (("ID", category.id), ("Sort ID", category.sort_id))
-                )
-            elif isinstance(category, Subscription):
-                information = InformationDisplay(
-                    "Subscription",
-                    (
-                        ("ID", category.id),
-                        ("Title", category.title),
-                        ("Sort ID", category.sort_id),
-                        ("First Item Time", f"{category.first_item_time}"),
-                        ("URL", category.url),
-                        ("HTML URL", category.html_url),
-                        *(
-                            (
-                                f"Category[{n}]",
-                                f"{sub_category.id}, {sub_category.label}",
-                            )
-                            for n, sub_category in enumerate(category.categories)
-                        ),
-                    ),
-                )
-        elif self.article_view.has_focus_within and self.article:
             information = InformationDisplay(
-                "Article",
-                (
-                    ("ID", self.article.id),
-                    ("Title", self.article.title),
-                    ("Published", f"{self.article.published}"),
-                    ("Updated", f"{self.article.updated}"),
-                    *(
-                        (f"Category[{n}]", f"{sub_category}")
-                        for n, sub_category in enumerate(self.article.categories)
-                    ),
-                ),
+                category.__class__.__name__, data_dump(category)
             )
+        elif self.article_view.has_focus_within and self.article:
+            information = InformationDisplay("Article", data_dump(self.article))
         if information:
             await self.app.push_screen_wait(information)
 
