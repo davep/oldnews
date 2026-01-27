@@ -186,11 +186,11 @@ class Navigation(EnhancedOptionList):
         with self.preserved_highlight:
             self.clear_options()
             # First off, add subscriptions that lack a folder.
-            for subscription in self.subscriptions:
+            for subscription in sorted(self.subscriptions):
                 if not subscription.categories:
                     self.add_option(SubscriptionView(subscription, self.unread))
             # Now add all the subscriptions that are within folders.
-            for folder in self.folders:
+            for folder in sorted(self.folders):
                 self._add_folder(folder)
 
     def _watch_folders(self) -> None:
