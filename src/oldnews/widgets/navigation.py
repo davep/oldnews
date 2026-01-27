@@ -123,7 +123,13 @@ class Navigation(EnhancedOptionList):
     """
 
     BINDINGS = [
-        HelpfulBinding("ctrl+enter", "toggle_folder", tooltip="Expand/collapse folder")
+        HelpfulBinding("ctrl+enter", "toggle_folder", tooltip="Expand/collapse folder"),
+        HelpfulBinding(
+            "ctrl+right_square_bracket", "expand_all", tooltip="Expand all folders"
+        ),
+        HelpfulBinding(
+            "ctrl+left_square_bracket", "collapse_all", tooltip="Collapse all folders"
+        ),
     ]
 
     folders: var[Folders] = var(Folders)
@@ -212,6 +218,18 @@ class Navigation(EnhancedOptionList):
             self._expanded ^= {option.folder.id}
             self._save_state()
             self._refresh_navigation()
+
+    def _action_expand_all(self) -> None:
+        """Action that expands all folders."""
+        self._expanded = {folder.id for folder in self.folders}
+        self._save_state()
+        self._refresh_navigation()
+
+    def _action_collapse_all(self) -> None:
+        """Action that collapses all folders."""
+        self._expanded = set()
+        self._save_state()
+        self._refresh_navigation()
 
     @work(thread=True)
     def _save_state(self) -> None:
