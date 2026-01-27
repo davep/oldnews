@@ -8,6 +8,8 @@
   now removed. ([#80](https://github.com/davep/oldnews/pull/80))
 - Added an application log, which logs to the application's data directory.
   ([#84](https://github.com/davep/oldnews/pull/84))
+- Added a `directories` command line command that can be used to see which
+  directories are being used by the application.
 
 ## v0.5.0
 

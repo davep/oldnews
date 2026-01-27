@@ -10,6 +10,7 @@ from operator import attrgetter
 # Local imports.
 from . import __doc__, __version__
 from .data import initialise_database, reset_data
+from .data.locations import config_dir, data_dir
 from .oldnews import OldNews
 
 
@@ -47,6 +48,13 @@ def get_args() -> Namespace:
     # Allow for commands on the command line.
     sub_parser = parser.add_subparsers(
         dest="command", help="Available commands", required=False
+    )
+
+    # Add the 'directories' command.
+    sub_parser.add_parser(
+        "directories",
+        aliases=["dirs", "d"],
+        help="Show the directories created and used by OldNews",
     )
 
     # Add the 'license' command.
@@ -135,6 +143,9 @@ def reset_news(args: Namespace) -> None:
 def main() -> None:
     """Main entry function."""
     match (args := get_args()).command:
+        case "d" | "dirs" | "directories":
+            print(config_dir())
+            print(data_dir())
         case "reset":
             reset_news(args)
         case "license" | "licence":
