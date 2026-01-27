@@ -10,6 +10,7 @@ from .config import (
     update_configuration,
 )
 from .db import initialise_database
+from .dump import data_dump
 from .last_grab import last_grabbed_data_at, remember_we_last_grabbed_at
 from .local_articles import (
     clean_old_read_articles,
@@ -36,6 +37,7 @@ __all__ = [
     "Configuration",
     "Log",
     "clean_old_read_articles",
+    "data_dump",
     "get_auth_token",
     "get_local_articles",
     "get_local_folders",
