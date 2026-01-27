@@ -12,7 +12,9 @@
   directories are being used by the application.
   ([#88](https://github.com/davep/oldnews/pull/88))
 - Added the ability to expand all folders in the navigation panel.
+  ([#89](https://github.com/davep/oldnews/pull/89))
 - Added the ability to collapse all folders in the navigation panel.
+  ([#89](https://github.com/davep/oldnews/pull/89))
 
 ## v0.5.0
 
