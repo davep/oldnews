@@ -5,7 +5,7 @@
 **Released: WiP**
 
 - Sort the content of the `Navigation` panel in alphabetical order, within
-  folder.
+  folder. ([#91](https://github.com/davep/oldnews/pull/91))
 
 ## v0.6.0
 
