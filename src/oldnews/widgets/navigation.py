@@ -7,7 +7,7 @@ from __future__ import annotations
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from typing import cast
+from typing import Iterable, Iterator, cast
 
 ##############################################################################
 # OldAs imports.
@@ -157,41 +157,71 @@ class Navigation(EnhancedOptionList):
         self._expanded = get_navigation_state()
         """The IDs of the folders that are expanded."""
 
-    def _add_subscriptions(self, parent_folder: str) -> None:
-        """Add the subscriptions for a given parent folder.
+    def _viewable(
+        self, subscriptions: Iterable[Subscription]
+    ) -> Iterator[SubscriptionView]:
+        """Given a iterable of subscriptions, make them viewable.
+
+        Args:
+            subscriptions: The subscriptions to make viewable.
+
+        Yields:
+            Views of the subscriptions.
+        """
+        yield from (
+            SubscriptionView(subscription, self.unread)
+            for subscription in sorted(subscriptions)
+        )
+
+    def _gather_subscriptions_for_folder(
+        self, parent_folder: Folder
+    ) -> Iterator[SubscriptionView]:
+        """Gather the subscriptions for a given parent folder.
 
         Args:
             parent_folder: The parent folder to add the subscriptions for.
-        """
-        for subscription in sorted(self.subscriptions):
-            if any(
-                category.id == parent_folder for category in subscription.categories
-            ):
-                self.add_option(SubscriptionView(subscription, self.unread))
 
-    def _add_folder(self, folder: Folder) -> None:
-        """Add the given folder to the navigation.
-
-        Args:
-            folder: The folder to add.
+        Yields:
+            The subscriptions within that folder.
         """
-        self.add_option(
-            FolderView(folder, expanded := folder.id in self._expanded, self.unread)
+        yield from self._viewable(
+            subscription
+            for subscription in self.subscriptions
+            if parent_folder in subscription.categories
         )
-        if expanded:
-            self._add_subscriptions(folder.id)
+
+    def _gather_folders(self) -> Iterator[FolderView | SubscriptionView]:
+        """Gather up all the folders and their subscriptions.
+
+        Yields:
+            Folder and subscription options.
+        """
+        # TODO: https://github.com/davep/oldas/issues/35 hence specifying
+        for folder in self.folders:
+            yield FolderView(
+                folder, expanded := folder.id in self._expanded, self.unread
+            )
+            if expanded:
+                yield from self._gather_subscriptions_for_folder(folder)
+
+    def _gather_folderless_subscrtiptions(self) -> Iterator[SubscriptionView]:
+        """Gather up all the subscriptions that don't live in a folder.
+
+        Yields:
+            Subscription options for folderless subscriptions.
+        """
+        yield from self._viewable(
+            subscription
+            for subscription in self.subscriptions
+            if not subscription.categories
+        )
 
     def _refresh_navigation(self) -> None:
         """Refresh the content of the navigation widget."""
         with self.preserved_highlight:
-            self.clear_options()
-            # First off, add subscriptions that lack a folder.
-            for subscription in sorted(self.subscriptions):
-                if not subscription.categories:
-                    self.add_option(SubscriptionView(subscription, self.unread))
-            # Now add all the subscriptions that are within folders.
-            for folder in sorted(self.folders):
-                self._add_folder(folder)
+            self.set_options(
+                (*self._gather_folderless_subscrtiptions(), *self._gather_folders())
+            )
 
     def _watch_folders(self) -> None:
         """React to the folders being updated."""
@@ -205,6 +235,25 @@ class Navigation(EnhancedOptionList):
         """React to the unread data being updated."""
         self._refresh_navigation()
 
+    @work(thread=True)
+    def _save_state(self, state: set[str]) -> None:
+        """Save the folder expanded/collapsed state.
+
+        Args:
+            state: The state to save.
+        """
+        save_navigation_state(state)
+
+    def _set_expansion(self, new_state: set[str]) -> None:
+        """Set the new navigation state.
+
+        Args:
+            new_state: The new state to set.
+        """
+        self._expanded = new_state
+        self._save_state(new_state)
+        self._refresh_navigation()
+
     def _action_toggle_folder(self) -> None:
         """Action that toggles the expanded state of a folder."""
         if self.highlighted is None:
@@ -215,26 +264,15 @@ class Navigation(EnhancedOptionList):
             self.notify("Only folders can be collapsed/expanded", severity="warning")
             return
         if option.folder.id is not None:
-            self._expanded ^= {option.folder.id}
-            self._save_state()
-            self._refresh_navigation()
+            self._set_expansion(self._expanded ^ {option.folder.id})
 
     def _action_expand_all(self) -> None:
         """Action that expands all folders."""
-        self._expanded = {folder.id for folder in self.folders}
-        self._save_state()
-        self._refresh_navigation()
+        self._set_expansion({folder.id for folder in self.folders})
 
     def _action_collapse_all(self) -> None:
         """Action that collapses all folders."""
-        self._expanded = set()
-        self._save_state()
-        self._refresh_navigation()
-
-    @work(thread=True)
-    def _save_state(self) -> None:
-        """Save the folder expanded/collapsed state."""
-        save_navigation_state(self._expanded)
+        self._set_expansion(set())
 
     @on(EnhancedOptionList.OptionSelected)
     def _handle_selection(self, message: EnhancedOptionList.OptionSelected) -> None:

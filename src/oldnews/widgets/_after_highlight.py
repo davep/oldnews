@@ -45,7 +45,7 @@ def options_after_highlight[T](
     highlight = (len(options) - highlight - 1) if direction == "previous" else highlight
     return (
         option
-        for option in [*options[highlight:], *options[0:highlight]][1:]
+        for option in [*options[highlight:], *options[:highlight]][1:]
         if option_filter(option)
     )
 
