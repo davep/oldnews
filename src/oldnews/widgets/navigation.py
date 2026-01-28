@@ -168,13 +168,9 @@ class Navigation(EnhancedOptionList):
         Yields:
             Views of the subscriptions.
         """
-        # TODO: https://github.com/davep/oldas/issues/35 hence specifying
-        # the key here.
         yield from (
             SubscriptionView(subscription, self.unread)
-            for subscription in sorted(
-                subscriptions, key=lambda sub: sub.title.casefold()
-            )
+            for subscription in sorted(subscriptions)
         )
 
     def _gather_subscriptions_for_folder(
@@ -201,7 +197,7 @@ class Navigation(EnhancedOptionList):
             Folder and subscription options.
         """
         # TODO: https://github.com/davep/oldas/issues/35 hence specifying
-        for folder in sorted(self.folders, key=lambda f: f.name.casefold()):
+        for folder in self.folders:
             yield FolderView(
                 folder, expanded := folder.id in self._expanded, self.unread
             )
