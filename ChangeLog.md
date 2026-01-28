@@ -1,11 +1,13 @@
 # OldNews ChangeLog
 
-## Unrealsed
+## v0.7.0
 
-**Released: WiP**
+**Released: 2026-01-28**
 
 - The content of the `Navigation` panel is now sorted in alphabetical order,
-  within folder. ([#91](https://github.com/davep/oldnews/pull/91))
+  within folder. ([#91](https://github.com/davep/oldnews/pull/91),
+  [#92](https://github.com/davep/oldnews/pull/92),
+  [#95](https://github.com/davep/oldnews/pull/95))
 
 ## v0.6.0
 
