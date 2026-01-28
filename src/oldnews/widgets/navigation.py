@@ -7,7 +7,7 @@ from __future__ import annotations
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from typing import Iterable, Iterator, cast
+from typing import Callable, Iterable, Iterator, cast
 
 ##############################################################################
 # OldAs imports.
@@ -157,6 +157,22 @@ class Navigation(EnhancedOptionList):
         self._expanded = get_navigation_state()
         """The IDs of the folders that are expanded."""
 
+    @staticmethod
+    def _key(attr: str) -> Callable[[object], str]:
+        """Create a key to use with `sorted`.
+
+        Args:
+            attr: The attribute to sort on.
+
+        Returns:
+            A function to get a `casefold` version of the attribute.
+        """
+
+        def _casefold(value: object) -> str:
+            return cast(str, getattr(value, attr)).casefold()
+
+        return _casefold
+
     def _viewable(
         self, subscriptions: Iterable[Subscription]
     ) -> Iterator[SubscriptionView]:
@@ -170,7 +186,7 @@ class Navigation(EnhancedOptionList):
         """
         yield from (
             SubscriptionView(subscription, self.unread)
-            for subscription in sorted(subscriptions)
+            for subscription in sorted(subscriptions, key=self._key("title"))
         )
 
     def _gather_subscriptions_for_folder(
@@ -196,8 +212,7 @@ class Navigation(EnhancedOptionList):
         Yields:
             Folder and subscription options.
         """
-        # TODO: https://github.com/davep/oldas/issues/35 hence specifying
-        for folder in self.folders:
+        for folder in sorted(self.folders, key=self._key("name")):
             yield FolderView(
                 folder, expanded := folder.id in self._expanded, self.unread
             )
