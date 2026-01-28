@@ -163,11 +163,11 @@ class Navigation(EnhancedOptionList):
         Args:
             parent_folder: The parent folder to add the subscriptions for.
         """
-        for subscription in sorted(self.subscriptions):
-            if any(
-                category.id == parent_folder for category in subscription.categories
-            ):
-                self.add_option(SubscriptionView(subscription, self.unread))
+        self.add_options(
+            SubscriptionView(subscription, self.unread)
+            for subscription in sorted(self.subscriptions)
+            if parent_folder in subscription.categories
+        )
 
     def _add_folder(self, folder: Folder) -> None:
         """Add the given folder to the navigation.
