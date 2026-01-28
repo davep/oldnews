@@ -157,7 +157,7 @@ class Navigation(EnhancedOptionList):
         self._expanded = get_navigation_state()
         """The IDs of the folders that are expanded."""
 
-    def _add_subscriptions(self, parent_folder: str) -> None:
+    def _add_subscriptions(self, parent_folder: Folder) -> None:
         """Add the subscriptions for a given parent folder.
 
         Args:
@@ -179,7 +179,7 @@ class Navigation(EnhancedOptionList):
             FolderView(folder, expanded := folder.id in self._expanded, self.unread)
         )
         if expanded:
-            self._add_subscriptions(folder.id)
+            self._add_subscriptions(folder)
 
     def _refresh_navigation(self) -> None:
         """Refresh the content of the navigation widget."""
