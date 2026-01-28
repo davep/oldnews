@@ -7,7 +7,7 @@ from __future__ import annotations
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from typing import Iterator, cast
+from typing import Iterable, Iterator, cast
 
 ##############################################################################
 # OldAs imports.
@@ -157,6 +157,26 @@ class Navigation(EnhancedOptionList):
         self._expanded = get_navigation_state()
         """The IDs of the folders that are expanded."""
 
+    def _viewable(
+        self, subscriptions: Iterable[Subscription]
+    ) -> Iterator[SubscriptionView]:
+        """Given a iterable of subscriptions, make them viewable.
+
+        Args:
+            subscriptions: The subscriptions to make viewable.
+
+        Yields:
+            Views of the subscriptions.
+        """
+        # TODO: https://github.com/davep/oldas/issues/35 hence specifying
+        # the key here.
+        yield from (
+            SubscriptionView(subscription, self.unread)
+            for subscription in sorted(
+                subscriptions, key=lambda sub: sub.title.casefold()
+            )
+        )
+
     def _gather_subscriptions_for_folder(
         self, parent_folder: Folder
     ) -> Iterator[SubscriptionView]:
@@ -168,9 +188,9 @@ class Navigation(EnhancedOptionList):
         Yields:
             The subscriptions within that folder.
         """
-        yield from (
-            SubscriptionView(subscription, self.unread)
-            for subscription in sorted(self.subscriptions)
+        yield from self._viewable(
+            subscription
+            for subscription in self.subscriptions
             if parent_folder in subscription.categories
         )
 
@@ -180,7 +200,8 @@ class Navigation(EnhancedOptionList):
         Yields:
             Folder and subscription options.
         """
-        for folder in sorted(self.folders):
+        # TODO: https://github.com/davep/oldas/issues/35 hence specifying
+        for folder in sorted(self.folders, key=lambda f: f.name.casefold()):
             yield FolderView(
                 folder, expanded := folder.id in self._expanded, self.unread
             )
@@ -193,9 +214,9 @@ class Navigation(EnhancedOptionList):
         Yields:
             Subscription options for folderless subscriptions.
         """
-        yield from (
-            SubscriptionView(subscription, self.unread)
-            for subscription in sorted(self.subscriptions)
+        yield from self._viewable(
+            subscription
+            for subscription in self.subscriptions
             if not subscription.categories
         )
 
