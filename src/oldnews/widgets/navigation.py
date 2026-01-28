@@ -163,7 +163,7 @@ class Navigation(EnhancedOptionList):
         Args:
             parent_folder: The parent folder to add the subscriptions for.
         """
-        for subscription in self.subscriptions:
+        for subscription in sorted(self.subscriptions):
             if any(
                 category.id == parent_folder for category in subscription.categories
             ):
