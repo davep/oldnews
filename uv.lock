@@ -844,14 +844,14 @@ wheels = [
 
 [[package]]
 name = "oldas"
-version = "0.8.0"
+version = "0.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/da/91/d8cc6f74679d0951f930aa81968c068703d41406f969660faed6b86cf137/oldas-0.8.0.tar.gz", hash = "sha256:4910b43fb2a2b185007312118eb1efcf349923183b1de4ff72902877928890fd", size = 11377, upload-time = "2026-01-28T09:42:08.679Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/e9/feaf854dfc69fc9f72e54f33c7b9ddd5df300511adf18914a617b6019b74/oldas-0.9.0.tar.gz", hash = "sha256:3725fcb76beb438077ea656d0e7b9004d3d9792d92396c1a5ed18b74d6571d06", size = 11337, upload-time = "2026-01-28T16:53:36.162Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c1/f2/55ae5df3417c94aea5a94e8e76e05a85cf94c4dd9a542ae79bc641184b0f/oldas-0.8.0-py3-none-any.whl", hash = "sha256:1c83e53f8ab502683c904839e89fefc7658363d474f235f47fb08b58390503fb", size = 17072, upload-time = "2026-01-28T09:42:07.715Z" },
+    { url = "https://files.pythonhosted.org/packages/f1/72/6ca8d82acc859f0570680fee3a34741c9f61f48069ab0dfb455f345de875/oldas-0.9.0-py3-none-any.whl", hash = "sha256:0d924705f2af457baaa73479df832755fa810ee11a5c96225946f700d22181f9", size = 16943, upload-time = "2026-01-28T16:53:37.391Z" },
 ]
 
 [[package]]
@@ -880,7 +880,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "html-to-markdown", specifier = ">=2.15.0" },
-    { name = "oldas", specifier = ">=0.8.0" },
+    { name = "oldas", specifier = ">=0.9.0" },
     { name = "textual", specifier = ">=6.3.0" },
     { name = "textual-autocomplete", specifier = ">=4.0.6" },
     { name = "textual-enhanced", specifier = ">=1.2.0" },
