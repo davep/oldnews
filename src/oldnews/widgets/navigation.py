@@ -205,6 +205,25 @@ class Navigation(EnhancedOptionList):
         """React to the unread data being updated."""
         self._refresh_navigation()
 
+    @work(thread=True)
+    def _save_state(self, state: set[str]) -> None:
+        """Save the folder expanded/collapsed state.
+
+        Args:
+            state: The state to save.
+        """
+        save_navigation_state(state)
+
+    def _set_expansion(self, new_state: set[str]) -> None:
+        """Set the new navigation state.
+
+        Args:
+            new_state: The new state to set.
+        """
+        self._expanded = new_state
+        self._save_state(new_state)
+        self._refresh_navigation()
+
     def _action_toggle_folder(self) -> None:
         """Action that toggles the expanded state of a folder."""
         if self.highlighted is None:
@@ -215,26 +234,15 @@ class Navigation(EnhancedOptionList):
             self.notify("Only folders can be collapsed/expanded", severity="warning")
             return
         if option.folder.id is not None:
-            self._expanded ^= {option.folder.id}
-            self._save_state()
-            self._refresh_navigation()
+            self._set_expansion(self._expanded ^ {option.folder.id})
 
     def _action_expand_all(self) -> None:
         """Action that expands all folders."""
-        self._expanded = {folder.id for folder in self.folders}
-        self._save_state()
-        self._refresh_navigation()
+        self._set_expansion({folder.id for folder in self.folders})
 
     def _action_collapse_all(self) -> None:
         """Action that collapses all folders."""
-        self._expanded = set()
-        self._save_state()
-        self._refresh_navigation()
-
-    @work(thread=True)
-    def _save_state(self) -> None:
-        """Save the folder expanded/collapsed state."""
-        save_navigation_state(self._expanded)
+        self._set_expansion(set())
 
     @on(EnhancedOptionList.OptionSelected)
     def _handle_selection(self, message: EnhancedOptionList.OptionSelected) -> None:
