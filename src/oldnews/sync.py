@@ -270,7 +270,12 @@ class TheOldReaderSync:
     def _get_unread_counts(
         self, folders: Folders, subscriptions: Subscriptions
     ) -> None:
-        """Get the updated unread counts."""
+        """Get the updated unread counts.
+
+        Args:
+            folders: The folders to get the counts for.
+            subscriptions: The subscriptions to get the counts for.
+        """
         unread = get_local_unread(folders, subscriptions)
         if self.on_new_unread:
             self.on_new_unread(unread)
