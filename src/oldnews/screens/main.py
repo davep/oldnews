@@ -412,7 +412,7 @@ class Main(EnhancedScreen[None]):
             ),
             on_new_unread=lambda unread: self.post_message(self.NewUnread(unread)),
             on_sync_finished=lambda: self.post_message(self.SyncFinished()),
-        ).refresh()
+        ).sync()
 
     @on(Navigation.CategorySelected)
     def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:

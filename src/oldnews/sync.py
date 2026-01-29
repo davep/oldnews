@@ -280,8 +280,8 @@ class TheOldReaderSync:
         if self.on_new_unread:
             self.on_new_unread(unread)
 
-    async def refresh(self) -> None:
-        """Refresh the data from TheOldReader."""
+    async def sync(self) -> None:
+        """Sync the data from TheOldReader."""
         folders = await self._get_folders()
         original_subscriptions, subscriptions = await self._get_subscriptions()
         await self._get_new_articles()
