@@ -276,11 +276,7 @@ class TheOldReaderSync:
             self.on_new_unread(unread)
 
     async def refresh(self) -> None:
-        """Refresh the data from TheOldReader.
-
-        Args:
-            session: The TheOldReader API session object.
-        """
+        """Refresh the data from TheOldReader."""
         folders = await self._get_folders()
         original_subscriptions, subscriptions = await self._get_subscriptions()
         await self._get_new_articles()
