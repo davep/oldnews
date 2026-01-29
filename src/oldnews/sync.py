@@ -276,9 +276,8 @@ class TheOldReaderSync:
             folders: The folders to get the counts for.
             subscriptions: The subscriptions to get the counts for.
         """
-        unread = get_local_unread(folders, subscriptions)
         if self.on_new_unread:
-            self.on_new_unread(unread)
+            self.on_new_unread(get_local_unread(folders, subscriptions))
 
     async def sync(self) -> None:
         """Sync the data from TheOldReader."""
