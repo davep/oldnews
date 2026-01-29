@@ -79,7 +79,7 @@ from ..data import (
     update_configuration,
 )
 from ..providers import MainCommands
-from ..sync import ToRSync
+from ..sync import TheOldReaderSync
 from ..widgets import ArticleContent, ArticleList, Navigation
 from .folder_input import FolderInput
 from .information_display import InformationDisplay
@@ -402,7 +402,7 @@ class Main(EnhancedScreen[None]):
     @work(exclusive=True)
     async def action_refresh_from_the_old_reader_command(self) -> None:
         """Load the main data from TheOldReader."""
-        await ToRSync(
+        await TheOldReaderSync(
             self._session,
             on_new_step=lambda step: self.post_message(self.SubTitle(step)),
             on_new_result=lambda result: self.notify(result),
@@ -412,7 +412,7 @@ class Main(EnhancedScreen[None]):
             ),
             on_new_unread=lambda unread: self.post_message(self.NewUnread(unread)),
             on_sync_finished=lambda: self.post_message(self.SyncFinished()),
-        ).refresh()
+        ).sync()
 
     @on(Navigation.CategorySelected)
     def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:

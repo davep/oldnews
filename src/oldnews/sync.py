@@ -4,7 +4,7 @@
 # Python imports.
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, AsyncIterator, Callable, Iterable
+from typing import Any, AsyncIterator, Callable, Final, Iterable
 
 ##############################################################################
 # OldAS imports.
@@ -41,10 +41,14 @@ type Callback = Callable[[], Any] | None
 type CallbackWith[T] = Callable[[T], Any] | None
 """Type of callback with a single argument."""
 
+##############################################################################
+BATCH_SIZE: Final[int] = 10
+"""Batch size for downloading articles."""
+
 
 ##############################################################################
 @dataclass
-class ToRSync:
+class TheOldReaderSync:
     """Class that handles syncing data from TheOldReader."""
 
     session: Session
@@ -111,11 +115,11 @@ class ToRSync:
             # TODO: Right now I'm saving articles one at a time; perhaps I
             # should save them in small batches? This would be simple enough
             # -- perhaps same them in batches the same size as the buffer
-            # window I'm using right now (currently 10 articles per trip to
-            # ToR).
+            # window I'm using right now (currently BATCH_SIZE articles per
+            # trip to ToR).
             save_local_articles(Articles([article]))
             loaded += 1
-            if (loaded % 10) == 0:
+            if (loaded % BATCH_SIZE) == 0:
                 self._step(f"{description}: {loaded}", log=False)
         return loaded
 
@@ -147,7 +151,9 @@ class ToRSync:
         )
         for subscription in subscriptions:
             if loaded := await self._download(
-                Articles.stream_new_since(self.session, cutoff, subscription, n=10),
+                Articles.stream_new_since(
+                    self.session, cutoff, subscription, n=BATCH_SIZE
+                ),
                 f"Downloading article backlog for {subscription.title}",
             ):
                 self._result(
@@ -192,7 +198,7 @@ class ToRSync:
             new_grab - timedelta(days=load_configuration().local_history)
         )
         if loaded := await self._download(
-            Articles.stream_new_since(self.session, last_grabbed, n=10),
+            Articles.stream_new_since(self.session, last_grabbed, n=BATCH_SIZE),
             "Downloading articles from TheOldReader",
         ):
             self._result(f"Articles downloaded: {loaded}")
@@ -264,17 +270,17 @@ class ToRSync:
     def _get_unread_counts(
         self, folders: Folders, subscriptions: Subscriptions
     ) -> None:
-        """Get the updated unread counts."""
-        unread = get_local_unread(folders, subscriptions)
-        if self.on_new_unread:
-            self.on_new_unread(unread)
-
-    async def refresh(self) -> None:
-        """Refresh the data from TheOldReader.
+        """Get the updated unread counts.
 
         Args:
-            session: The TheOldReader API session object.
+            folders: The folders to get the counts for.
+            subscriptions: The subscriptions to get the counts for.
         """
+        if self.on_new_unread:
+            self.on_new_unread(get_local_unread(folders, subscriptions))
+
+    async def sync(self) -> None:
+        """Sync the data from TheOldReader."""
         folders = await self._get_folders()
         original_subscriptions, subscriptions = await self._get_subscriptions()
         await self._get_new_articles()
