@@ -48,7 +48,7 @@ BATCH_SIZE: Final[int] = 10
 
 ##############################################################################
 @dataclass
-class ToRSync:
+class TheOldReaderSync:
     """Class that handles syncing data from TheOldReader."""
 
     session: Session
