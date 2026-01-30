@@ -1,5 +1,12 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- Added a busy dialog when we're waiting for TheOldReader to add a new
+  subscription.
+
 ## v0.7.0
 
 **Released: 2026-01-28**
