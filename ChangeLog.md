@@ -5,7 +5,7 @@
 **Released: WiP**
 
 - Added a busy dialog when we're waiting for TheOldReader to add a new
-  subscription.
+  subscription. ([#99](https://github.com/davep/oldnews/pull/99))
 
 ## v0.7.0
 
