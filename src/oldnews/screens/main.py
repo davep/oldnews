@@ -84,6 +84,7 @@ from ..widgets import ArticleContent, ArticleList, Navigation
 from .folder_input import FolderInput
 from .information_display import InformationDisplay
 from .new_subscription import NewSubscription
+from .process_subscription import ProcessSubscription
 
 
 ##############################################################################
@@ -624,11 +625,10 @@ class Main(EnhancedScreen[None]):
         if subscription := await self.app.push_screen_wait(
             NewSubscription(self.folders)
         ):
-            self.notify(
-                subscription.feed, title="Subscription request sent to TheOldReader..."
-            )
             if (
-                result := await Subscriptions.add(self._session, subscription.feed)
+                result := await self.app.push_screen_wait(
+                    ProcessSubscription(self._session, subscription)
+                )
             ).failed:
                 self.notify(
                     result.error or "TheOldReader did not give a reason",
