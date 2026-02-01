@@ -416,7 +416,9 @@ class Main(EnhancedScreen[None]):
                 self.NewSubscriptions, self.post_message
             ),
             on_new_unread=Pipe[LocalUnread, bool](self.NewUnread, self.post_message),
-            on_sync_finished=lambda: self.post_message(self.SyncFinished()),
+            on_sync_finished=Pipe[Pipe.Nullary, bool](
+                self.SyncFinished, self.post_message
+            ),
         ).sync()
 
     @on(Navigation.CategorySelected)
