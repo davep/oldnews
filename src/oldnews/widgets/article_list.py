@@ -7,6 +7,7 @@ from __future__ import annotations
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
+from operator import attrgetter
 from typing import cast
 
 ##############################################################################
@@ -156,7 +157,7 @@ class ArticleList(EnhancedOptionList):
             cast(list[ArticleView], self.options),
             self.highlighted,
             direction,
-            lambda article_view: article_view.article.is_unread,
+            attrgetter("article.is_unread"),
         ):
             if next_hit.id is not None:
                 self.highlighted = self.get_option_index(next_hit.id)

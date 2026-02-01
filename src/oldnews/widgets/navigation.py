@@ -328,6 +328,17 @@ class Navigation(EnhancedOptionList):
             return current
         return None
 
+    def _contains_unread(self, category: FolderView | SubscriptionView) -> bool:
+        """Does the given folder or subscription have unread items?
+
+        Args:
+            category: The folder or subscription to check.
+
+        Returns:
+            `True` if there are unread items, `False` if not.
+        """
+        return bool(category.id and self.unread.get(category.id))
+
     def _highlight_unread(self, direction: Direction) -> bool:
         """Highlight the next category with unread articles, if there is one.
 
@@ -342,7 +353,7 @@ class Navigation(EnhancedOptionList):
             cast(list[FolderView | SubscriptionView], self.options),
             self.highlighted,
             direction,
-            lambda category: bool(category.id and self.unread.get(category.id)),
+            self._contains_unread,
         ):
             if next_hit.id is not None:
                 self.highlighted = self.get_option_index(next_hit.id)
