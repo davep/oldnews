@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v0.8.0
 
-**Released: WiP**
+**Released: 2026-02-01**
 
 - Added a busy dialog when we're waiting for TheOldReader to add a new
   subscription. ([#99](https://github.com/davep/oldnews/pull/99))
