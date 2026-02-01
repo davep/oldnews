@@ -149,6 +149,15 @@ wheels = [
 ]
 
 [[package]]
+name = "bagofstuff"
+version = "0.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b8/30/28fff6d01a832045e8fc3f51620996d0a3bad8233ebc8fa3697c2f983b7f/bagofstuff-0.0.1.tar.gz", hash = "sha256:a79f5d8ebd5c9f7bfb5b1d46826f859996e90ba5204eab972a38b085782ef83c", size = 2514, upload-time = "2026-01-31T14:50:42.35Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ea/a1/f3c6d420b0faa0a4bb532ab15640fe874d9ce1e2484da6ec17b3335ff32f/bagofstuff-0.0.1-py3-none-any.whl", hash = "sha256:7583340a1e2b49e1a2e389d545920f97b30cb4ba0c26cae9ef80df093501709a", size = 3576, upload-time = "2026-01-31T14:50:40.531Z" },
+]
+
+[[package]]
 name = "certifi"
 version = "2026.1.4"
 source = { registry = "https://pypi.org/simple" }
@@ -859,6 +868,7 @@ name = "oldnews"
 version = "0.7.0"
 source = { editable = "." }
 dependencies = [
+    { name = "bagofstuff" },
     { name = "html-to-markdown" },
     { name = "oldas" },
     { name = "textual" },
@@ -879,6 +889,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "bagofstuff", specifier = ">=0.0.1" },
     { name = "html-to-markdown", specifier = ">=2.15.0" },
     { name = "oldas", specifier = ">=0.10.0" },
     { name = "textual", specifier = ">=6.3.0" },

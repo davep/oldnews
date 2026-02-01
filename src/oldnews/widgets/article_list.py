@@ -32,7 +32,7 @@ from textual_enhanced.widgets import EnhancedOptionList
 
 ##############################################################################
 # Local imports.
-from ._after_highlight import HighlightDirection, options_after_highlight
+from ._next_matching_option import Direction, next_matching_option
 
 
 ##############################################################################
@@ -142,7 +142,7 @@ class ArticleList(EnhancedOptionList):
         assert isinstance(message.option, ArticleView)
         self.post_message(self.ViewArticle(message.option.article))
 
-    def _highlight_unread(self, direction: HighlightDirection) -> bool:
+    def _highlight_unread(self, direction: Direction) -> bool:
         """Highlight the next unread article, if there is one.
 
         Args:
@@ -152,14 +152,11 @@ class ArticleList(EnhancedOptionList):
             `True` if an unread article was found and highlighted, `False`
             if not.
         """
-        if next_hit := next(
-            options_after_highlight(
-                self,
-                cast(list[ArticleView], self.options),
-                direction,
-                lambda article_view: article_view.article.is_unread,
-            ),
-            None,
+        if next_hit := next_matching_option(
+            cast(list[ArticleView], self.options),
+            self.highlighted,
+            direction,
+            lambda article_view: article_view.article.is_unread,
         ):
             if next_hit.id is not None:
                 self.highlighted = self.get_option_index(next_hit.id)
@@ -177,11 +174,11 @@ class ArticleList(EnhancedOptionList):
 
     def highlight_next_unread_article(self) -> None:
         """Highlight the next unread article in the list."""
-        self._highlight_unread("next")
+        self._highlight_unread("forward")
 
     def highlight_previous_unread_article(self) -> None:
         """Highlight the previous unread article in the list."""
-        self._highlight_unread("previous")
+        self._highlight_unread("backward")
 
     def select_next_article(self) -> None:
         """Select the next article in the list."""
@@ -195,12 +192,12 @@ class ArticleList(EnhancedOptionList):
 
     def select_next_unread_article(self) -> None:
         """Select the next unread article in the list."""
-        if self._highlight_unread("next"):
+        if self._highlight_unread("forward"):
             self.call_later(self.run_action, "select")
 
     def select_previous_unread_article(self) -> None:
         """Select the next unread article in the list."""
-        if self._highlight_unread("previous"):
+        if self._highlight_unread("backward"):
             self.call_later(self.run_action, "select")
 
 
