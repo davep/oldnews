@@ -35,7 +35,7 @@ from textual_enhanced.widgets import EnhancedOptionList
 ##############################################################################
 # Local imports.
 from ..data import LocalUnread, get_navigation_state, save_navigation_state
-from ._after_highlight import HighlightDirection, options_after_highlight
+from ._next_matching_option import Direction, next_matching_option
 
 
 ##############################################################################
@@ -328,7 +328,7 @@ class Navigation(EnhancedOptionList):
             return current
         return None
 
-    def _highlight_unread(self, direction: HighlightDirection) -> bool:
+    def _highlight_unread(self, direction: Direction) -> bool:
         """Highlight the next category with unread articles, if there is one.
 
         Args:
@@ -338,14 +338,11 @@ class Navigation(EnhancedOptionList):
             `True` if an unread category was found and highlighted, `False`
             if not.
         """
-        if next_hit := next(
-            options_after_highlight(
-                self,
-                cast(list[FolderView | SubscriptionView], self.options),
-                direction,
-                lambda category: bool(category.id and self.unread.get(category.id)),
-            ),
-            None,
+        if next_hit := next_matching_option(
+            cast(list[FolderView | SubscriptionView], self.options),
+            self.highlighted,
+            direction,
+            lambda category: bool(category.id and self.unread.get(category.id)),
         ):
             if next_hit.id is not None:
                 self.highlighted = self.get_option_index(next_hit.id)
@@ -355,11 +352,11 @@ class Navigation(EnhancedOptionList):
 
     def highlight_next_unread_category(self) -> None:
         """Highlight the next unread category."""
-        self._highlight_unread("next")
+        self._highlight_unread("forward")
 
     def highlight_previous_unread_category(self) -> None:
         """Highlight the previous unread category."""
-        self._highlight_unread("previous")
+        self._highlight_unread("backward")
 
 
 ### navigation.py ends here
