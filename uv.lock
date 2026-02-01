@@ -889,7 +889,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "bagofstuff", specifier = ">=0.0.1" },
+    { name = "bagofstuff", specifier = ">=0.1.0" },
     { name = "html-to-markdown", specifier = ">=2.15.0" },
     { name = "oldas", specifier = ">=0.10.0" },
     { name = "textual", specifier = ">=6.3.0" },
