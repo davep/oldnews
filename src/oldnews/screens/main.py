@@ -7,6 +7,10 @@ from datetime import datetime, timedelta
 from webbrowser import open as open_url
 
 ##############################################################################
+# BagOfStuff imports.
+from bagofstuff.pipe import Pipe
+
+##############################################################################
 # OldAs imports.
 from oldas import (
     Article,
@@ -405,13 +409,13 @@ class Main(EnhancedScreen[None]):
         """Load the main data from TheOldReader."""
         await TheOldReaderSync(
             self._session,
-            on_new_step=lambda step: self.post_message(self.SubTitle(step)),
-            on_new_result=lambda result: self.notify(result),
-            on_new_folders=lambda folders: self.post_message(self.NewFolders(folders)),
-            on_new_subscriptions=lambda subscriptions: self.post_message(
-                self.NewSubscriptions(subscriptions)
+            on_new_step=Pipe[str, bool](self.SubTitle, self.post_message),
+            on_new_result=self.notify,
+            on_new_folders=Pipe[Folders, bool](self.NewFolders, self.post_message),
+            on_new_subscriptions=Pipe[Subscriptions, bool](
+                self.NewSubscriptions, self.post_message
             ),
-            on_new_unread=lambda unread: self.post_message(self.NewUnread(unread)),
+            on_new_unread=Pipe[LocalUnread, bool](self.NewUnread, self.post_message),
             on_sync_finished=lambda: self.post_message(self.SyncFinished()),
         ).sync()
 
