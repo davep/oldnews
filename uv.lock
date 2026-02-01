@@ -150,11 +150,11 @@ wheels = [
 
 [[package]]
 name = "bagofstuff"
-version = "0.0.1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b8/30/28fff6d01a832045e8fc3f51620996d0a3bad8233ebc8fa3697c2f983b7f/bagofstuff-0.0.1.tar.gz", hash = "sha256:a79f5d8ebd5c9f7bfb5b1d46826f859996e90ba5204eab972a38b085782ef83c", size = 2514, upload-time = "2026-01-31T14:50:42.35Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a1/3b/10d7c0fa260a09ce1c90e00a6effd30596d03ff87fc796a6cc1f1efd7a2f/bagofstuff-0.1.0.tar.gz", hash = "sha256:f72ca831650c84dddf3679dcc350b89a13f7702785a3c4808dcd051ced3c3b1c", size = 2786, upload-time = "2026-02-01T15:52:07.664Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ea/a1/f3c6d420b0faa0a4bb532ab15640fe874d9ce1e2484da6ec17b3335ff32f/bagofstuff-0.0.1-py3-none-any.whl", hash = "sha256:7583340a1e2b49e1a2e389d545920f97b30cb4ba0c26cae9ef80df093501709a", size = 3576, upload-time = "2026-01-31T14:50:40.531Z" },
+    { url = "https://files.pythonhosted.org/packages/ac/55/a144cc562abf54e4810bb5b0ec970639f9a7d7bd4522cefb564b2146a1f4/bagofstuff-0.1.0-py3-none-any.whl", hash = "sha256:837d3441b15b150959dc7887778e4e5b7ccc8ebb896e14cc27f264388fe53264", size = 3844, upload-time = "2026-02-01T15:52:06.5Z" },
 ]
 
 [[package]]
@@ -416,13 +416,13 @@ wheels = [
 
 [[package]]
 name = "html-to-markdown"
-version = "2.23.4"
+version = "2.24.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f1/13/06d8f83cd222a6b26d12b9199c49f2425a345fcf8e51f4d20f9fc0b62171/html_to_markdown-2.23.4.tar.gz", hash = "sha256:3452274e9a8409fcdde73b22fcc6147e4e84c9d95164497209173f430a670e75", size = 290086, upload-time = "2026-01-20T18:37:11.697Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f2/de/3b5709d69c108e042b7f588ea9f530eefa25e50367f74b9963001e141c69/html_to_markdown-2.24.4.tar.gz", hash = "sha256:d7c3eaa452ac972b10102aaf30d08ce65bccc82fa9c79a09eaa9abae2ac324b0", size = 293270, upload-time = "2026-02-01T07:13:33.887Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/62/ec/5f87f57ef552eab41e236ee50f2b0209fbb5b8902db083b91b73c76b5a63/html_to_markdown-2.23.4-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:757795f1d371d42d5a599174fa7f0bf0906e4e8ccfb276e0373b07d2f6b1a976", size = 9034499, upload-time = "2026-01-20T18:37:04.459Z" },
-    { url = "https://files.pythonhosted.org/packages/43/8a/c5a5fd1480b6e669897c16d05ab669f4752d8393def458f27a5b248549d3/html_to_markdown-2.23.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:056502277f9c35a3ef4a68170f1389100e9065a36ee52bc55aba00905b00c1b3", size = 9808398, upload-time = "2026-01-20T18:37:07.206Z" },
-    { url = "https://files.pythonhosted.org/packages/ec/8c/3b322be76ba019af512da5e0e363f8717d85ad8cbb36063ba6228a6726e9/html_to_markdown-2.23.4-cp310-abi3-win_amd64.whl", hash = "sha256:96ff3242ab29f35384226e1dd1d88a57215fb8bf6999ea2b9aeb39ab712ba5db", size = 9404642, upload-time = "2026-01-20T18:37:09.921Z" },
+    { url = "https://files.pythonhosted.org/packages/56/0c/c4b6fc1da60e377d7771845fb0c7c94a73c481e4ff12c6f416cb6e4ccd3a/html_to_markdown-2.24.4-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:bf27e8d1730449a5555b0c867be1e7237408490297acc223df31c9b770ee01b6", size = 8849522, upload-time = "2026-02-01T07:13:26.09Z" },
+    { url = "https://files.pythonhosted.org/packages/74/8c/03dc8e24edc7b850a1f8aa9cfe86b7d52bf19a563fa5bb18ef10967f3ea7/html_to_markdown-2.24.4-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:fe674336fb2d0372307b8eb997e201e8473a5a5a3672c376cccfba91df8b4cb6", size = 9670902, upload-time = "2026-02-01T07:13:28.82Z" },
+    { url = "https://files.pythonhosted.org/packages/71/65/4511f50b5d172693e92abffed44e3244f04e238b8b1b7abe32836a2ce6e8/html_to_markdown-2.24.4-cp310-abi3-win_amd64.whl", hash = "sha256:b226ff52c9313d250c64b6175c0d859cb281415d32a169e1dae4d775255af0dc", size = 9265682, upload-time = "2026-02-01T07:13:31.487Z" },
 ]
 
 [[package]]
@@ -853,14 +853,14 @@ wheels = [
 
 [[package]]
 name = "oldas"
-version = "0.10.0"
+version = "0.11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/66/d1/e81a0284c89d248f5daadeea260a46496e0380b0c0b3b7991eabbe41f4c0/oldas-0.10.0.tar.gz", hash = "sha256:bd290bf41f34c2961b0e118f5ada31cab24307c5d801dd8bafd80bdd6562cb68", size = 11163, upload-time = "2026-01-28T18:59:11.547Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/47/b7/51f9e9d5153364496af94382cea8e5478af11b101f0e3c14155b217f176f/oldas-0.11.0.tar.gz", hash = "sha256:70062fbec32817a20407537aec5dcc3c4a245292e5ede8b8f0adab3b34d99787", size = 11236, upload-time = "2026-01-30T14:09:34.302Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/42/52/612f37cd67f3b96a3563b577009c1563067954d672362e074c2c09e9d84b/oldas-0.10.0-py3-none-any.whl", hash = "sha256:2607632192fed1d807f58308f7c05f7e489e008841ebe697aef42db15d8b4d9c", size = 16736, upload-time = "2026-01-28T18:59:10.612Z" },
+    { url = "https://files.pythonhosted.org/packages/89/74/914260d1635ce65d140ba18a7291d7b2208986558cf32adf074f5905cace/oldas-0.11.0-py3-none-any.whl", hash = "sha256:02d945a48bcdde49fd662ed8f4ab2809dcffc1ad48c8cce780d6462963486ad9", size = 16844, upload-time = "2026-01-30T14:09:35.122Z" },
 ]
 
 [[package]]
@@ -1197,7 +1197,7 @@ wheels = [
 
 [[package]]
 name = "textual"
-version = "7.4.0"
+version = "7.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py", extra = ["linkify"] },
@@ -1207,9 +1207,9 @@ dependencies = [
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/64/8d/2fbd6b8652f4cabf9cb0852d7af1aa45b6cad32d0f50735856e8f9e41719/textual-7.4.0.tar.gz", hash = "sha256:1a9598e485492f9a8f033c7ec5e59528df3ab0742fda925681acf78b0fb210de", size = 1592252, upload-time = "2026-01-25T19:57:04.624Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9f/38/7d169a765993efde5095c70a668bf4f5831bb7ac099e932f2783e9b71abf/textual-7.5.0.tar.gz", hash = "sha256:c730cba1e3d704e8f1ca915b6a3af01451e3bca380114baacf6abf87e9dac8b6", size = 1592319, upload-time = "2026-01-30T13:46:39.881Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ab/9c/4169ccffed6d53f78e3175eae0cd649990071c6e24b6ad8830812ebab726/textual-7.4.0-py3-none-any.whl", hash = "sha256:41a066cae649654d4ecfe53b8316f5737c0042d1693ce50690b769a7840780ac", size = 717985, upload-time = "2026-01-25T19:57:02.966Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/78/96ddb99933e11d91bc6e05edae23d2687e44213066bcbaca338898c73c47/textual-7.5.0-py3-none-any.whl", hash = "sha256:849dfee9d705eab3b2d07b33152b7bd74fb1f5056e002873cc448bce500c6374", size = 718164, upload-time = "2026-01-30T13:46:37.635Z" },
 ]
 
 [[package]]
