@@ -349,15 +349,16 @@ class Navigation(EnhancedOptionList):
             `True` if an unread category was found and highlighted, `False`
             if not.
         """
-        if next_hit := next_matching_option(
-            cast(list[FolderView | SubscriptionView], self.options),
-            self.highlighted,
-            direction,
-            self._contains_unread,
-        ):
-            if next_hit.id is not None:
-                self.highlighted = self.get_option_index(next_hit.id)
-                return True
+        if (
+            next_hit := next_matching_option(
+                cast(list[FolderView | SubscriptionView], self.options),
+                self.highlighted,
+                direction,
+                self._contains_unread,
+            )
+        ) and next_hit.id is not None:
+            self.highlighted = self.get_option_index(next_hit.id)
+            return True
         self.notify("No more folders or subscriptions with unread articles")
         return False
 

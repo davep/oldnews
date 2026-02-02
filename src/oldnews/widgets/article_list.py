@@ -153,15 +153,16 @@ class ArticleList(EnhancedOptionList):
             `True` if an unread article was found and highlighted, `False`
             if not.
         """
-        if next_hit := next_matching_option(
-            cast(list[ArticleView], self.options),
-            self.highlighted,
-            direction,
-            attrgetter("article.is_unread"),
-        ):
-            if next_hit.id is not None:
-                self.highlighted = self.get_option_index(next_hit.id)
-                return True
+        if (
+            next_hit := next_matching_option(
+                cast(list[ArticleView], self.options),
+                self.highlighted,
+                direction,
+                attrgetter("article.is_unread"),
+            )
+        ) and next_hit.id is not None:
+            self.highlighted = self.get_option_index(next_hit.id)
+            return True
         self.notify("No more unread articles")
         return False
 
