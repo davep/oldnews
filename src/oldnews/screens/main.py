@@ -711,7 +711,7 @@ class Main(EnhancedScreen[None]):
         if await self.app.push_screen_wait(
             Confirm(
                 f"Remove {subscription.title}?",
-                f"Are you sure you wish to remove the subscription?",
+                "Are you sure you wish to remove the subscription?",
             )
         ):
             if await Subscriptions.remove(self._session, subscription):
