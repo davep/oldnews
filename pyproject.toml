@@ -89,6 +89,10 @@ select = [
     # isort
     "I",
 ]
+ignore = [
+    # I think try...expect...pass reads far better.
+    "SIM105",
+]
 
 [tool.ruff.lint.pycodestyle]
 max-line-length = 120
