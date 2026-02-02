@@ -544,7 +544,10 @@ class Main(EnhancedScreen[None]):
             ]
         ):
             return
-        category_description = f"{current_category.__class__.__name__.lower()} '{current_category.name if isinstance(current_category, Folder) else current_category.title}'"
+        category_description = (
+            f"{current_category.__class__.__name__.lower()} "
+            f"'{current_category.name if isinstance(current_category, Folder) else current_category.title}'"
+        )
         plural = "s" if len(ids_to_mark_read) > 1 else ""
         if await self.app.push_screen_wait(
             Confirm(
