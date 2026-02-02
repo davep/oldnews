@@ -2,7 +2,7 @@
 
 ##############################################################################
 # Python imports.
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 ##############################################################################
 # TypeDAL imports.
@@ -44,7 +44,7 @@ def remember_we_last_grabbed_at(grab_time: datetime | None = None) -> None:
         If `grab_time` isn't supplied then it is recorded as now.
     """
     LastGrabbed.truncate()
-    LastGrabbed.insert(at_time=grab_time or datetime.now(timezone.utc))
+    LastGrabbed.insert(at_time=grab_time or datetime.now(UTC))
     commit(LastGrabbed)
 
 

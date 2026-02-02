@@ -3,7 +3,7 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any, AsyncIterator, Callable, Final, Iterable
 
 ##############################################################################
@@ -146,9 +146,7 @@ class TheOldReaderSync:
         Args:
             subscriptions: The subscriptions to download the backlog for.
         """
-        cutoff = datetime.now(timezone.utc) - timedelta(
-            days=load_configuration().local_history
-        )
+        cutoff = datetime.now(UTC) - timedelta(days=load_configuration().local_history)
         for subscription in subscriptions:
             if loaded := await self._download(
                 Articles.stream_new_since(
@@ -193,7 +191,7 @@ class TheOldReaderSync:
             if self._first_sync
             else f"Getting new articles since {self._last_sync}"
         )
-        new_grab = datetime.now(timezone.utc)
+        new_grab = datetime.now(UTC)
         last_grabbed = self._last_sync or (
             new_grab - timedelta(days=load_configuration().local_history)
         )
