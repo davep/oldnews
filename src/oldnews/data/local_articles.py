@@ -182,13 +182,12 @@ def _for_subscription(
         The articles.
     """
     read = get_local_read_article_ids() if unread_only else set()
-    for article in (
+    yield from (
         LocalArticle.where(~LocalArticle.id.belongs(read))
         .where(origin_stream_id=subscription.id)
         .join()
         .orderby(~LocalArticle.published)
-    ):
-        yield article
+    )
 
 
 ##############################################################################
@@ -209,13 +208,12 @@ def _for_folder(folder: Folder, unread_only: bool) -> Iterator[LocalArticle]:
         ).collect()
     }
     read = get_local_read_article_ids() if unread_only else set()
-    for article in (
+    yield from (
         LocalArticle.where(LocalArticle.id.belongs(in_folder - read))
         .select()
         .join()
         .orderby(~LocalArticle.published)
-    ):
-        yield article
+    )
 
 
 ##############################################################################
