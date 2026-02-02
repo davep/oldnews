@@ -67,7 +67,7 @@ class LocalArticle(TypedTable):
         Args:
             category: The category to add.
         """
-        if not str(category) in self.categories:
+        if str(category) not in self.categories:
             LocalArticleCategory.insert(article=self.id, category=str(category))
             commit(LocalArticleCategory)
 
