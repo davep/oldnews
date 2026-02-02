@@ -2,9 +2,10 @@
 
 ##############################################################################
 # Python imports.
+from collections.abc import Iterable, Iterator
 from datetime import datetime, timedelta
 from html import unescape
-from typing import Iterable, Iterator, cast
+from typing import cast
 
 ##############################################################################
 # OldAS imports.
@@ -66,7 +67,7 @@ class LocalArticle(TypedTable):
         Args:
             category: The category to add.
         """
-        if not str(category) in self.categories:
+        if str(category) not in self.categories:
             LocalArticleCategory.insert(article=self.id, category=str(category))
             commit(LocalArticleCategory)
 
@@ -181,13 +182,12 @@ def _for_subscription(
         The articles.
     """
     read = get_local_read_article_ids() if unread_only else set()
-    for article in (
+    yield from (
         LocalArticle.where(~LocalArticle.id.belongs(read))
         .where(origin_stream_id=subscription.id)
         .join()
         .orderby(~LocalArticle.published)
-    ):
-        yield article
+    )
 
 
 ##############################################################################
@@ -208,13 +208,12 @@ def _for_folder(folder: Folder, unread_only: bool) -> Iterator[LocalArticle]:
         ).collect()
     }
     read = get_local_read_article_ids() if unread_only else set()
-    for article in (
+    yield from (
         LocalArticle.where(LocalArticle.id.belongs(in_folder - read))
         .select()
         .join()
         .orderby(~LocalArticle.published)
-    ):
-        yield article
+    )
 
 
 ##############################################################################
