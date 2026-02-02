@@ -2,9 +2,10 @@
 
 ##############################################################################
 # Python imports.
+from collections.abc import Iterable, Iterator
 from datetime import datetime, timedelta
 from html import unescape
-from typing import Iterable, Iterator, cast
+from typing import cast
 
 ##############################################################################
 # OldAS imports.

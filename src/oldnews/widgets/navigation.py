@@ -6,8 +6,9 @@ from __future__ import annotations
 
 ##############################################################################
 # Python imports.
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
-from typing import Callable, Iterable, Iterator, cast
+from typing import cast
 
 ##############################################################################
 # OldAs imports.

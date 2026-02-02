@@ -2,9 +2,10 @@
 
 ##############################################################################
 # Python imports.
+from collections.abc import AsyncIterator, Callable, Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import Any, AsyncIterator, Callable, Final, Iterable
+from typing import Any, Final
 
 ##############################################################################
 # OldAS imports.
