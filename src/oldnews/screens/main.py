@@ -751,25 +751,24 @@ class Main(EnhancedScreen[None]):
     @work
     async def action_move_subscription_command(self) -> None:
         """Move a subscription to a different folder."""
-        if subscription := self.navigation.current_subscription:
-            if (
-                target_folder := await self.app.push_screen_wait(
-                    FolderInput(self.folders)
+        if not (subscription := self.navigation.current_subscription):
+            return
+        if (
+            target_folder := await self.app.push_screen_wait(FolderInput(self.folders))
+        ) is not None:
+            if await Subscriptions.move(self._session, subscription, target_folder):
+                move_subscription_articles(
+                    subscription, subscription.folder_id, target_folder
                 )
-            ) is not None:
-                if await Subscriptions.move(self._session, subscription, target_folder):
-                    move_subscription_articles(
-                        subscription, subscription.folder_id, target_folder
-                    )
-                    self.notify("Moved")
-                    self.post_message(RefreshFromTheOldReader())
-                else:
-                    self.notify(
-                        f"Could not move the subscription into '{target_folder}'",
-                        title="Move failed",
-                        timeout=8,
-                        markup=False,
-                    )
+                self.notify("Moved")
+                self.post_message(RefreshFromTheOldReader())
+            else:
+                self.notify(
+                    f"Could not move the subscription into '{target_folder}'",
+                    title="Move failed",
+                    timeout=8,
+                    markup=False,
+                )
 
     @work
     async def action_information_command(self) -> None:
