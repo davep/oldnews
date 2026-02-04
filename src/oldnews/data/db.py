@@ -11,7 +11,6 @@ from typedal.config import TypeDALConfig
 
 ##############################################################################
 # Local imports.
-from .last_grab import LastGrabbed
 from .local_articles import LocalArticle, LocalArticleAlternate, LocalArticleCategory
 from .local_subscriptions import LocalSubscription, LocalSubscriptionCategory
 from .locations import data_dir
@@ -86,7 +85,6 @@ def initialise_database() -> TypeDAL:
     )
 
     dal.define(NavigationState)
-    dal.define(LastGrabbed)
 
     return dal
 

@@ -3,7 +3,7 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from webbrowser import open as open_url
 
 ##############################################################################
@@ -397,8 +397,8 @@ class Main(EnhancedScreen[None]):
             self.post_message(self.NewUnread(unread))
         self._refresh_article_list()
         # If we've never grabbed data from ToR before, or if it's been long enough...
-        if (last_grabbed := last_grabbed_data_at()) is None or (
-            (datetime.now() - last_grabbed).seconds
+        if (last_grabbed := await last_grabbed_data_at()) is None or (
+            (datetime.now(UTC) - last_grabbed).seconds
             >= load_configuration().startup_refresh_holdoff_period
         ):
             # ...kick off a refresh from TheOldReader.

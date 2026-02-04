@@ -69,9 +69,9 @@ class TheOldReaderSync:
 
     def __post_init__(self) -> None:
         """Initialise the sync object."""
-        self._last_sync = last_grabbed_data_at()
+        self._last_sync: datetime | None = None
         """The time at which we last did a sync."""
-        self._first_sync = self._last_sync is None
+        self._first_sync = True
         """Is this our first ever sync?"""
 
     def _step(self, step: str, *, log: bool = True) -> None:
@@ -203,7 +203,7 @@ class TheOldReaderSync:
             self._result(f"Articles downloaded: {loaded}")
         else:
             self._result("No new articles found on TheOldReader")
-        remember_we_last_grabbed_at(new_grab)
+        await remember_we_last_grabbed_at(new_grab)
 
     @staticmethod
     def _set_of_ids(subscriptions: Subscriptions) -> set[str]:
@@ -280,6 +280,8 @@ class TheOldReaderSync:
 
     async def sync(self) -> None:
         """Sync the data from TheOldReader."""
+        self._last_sync = await last_grabbed_data_at()
+        self._first_sync = self._last_sync is None
         folders = await self._get_folders()
         original_subscriptions, subscriptions = await self._get_subscriptions()
         await self._get_new_articles()
