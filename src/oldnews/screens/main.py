@@ -71,6 +71,7 @@ from ..data import (
     get_local_folders,
     get_local_subscriptions,
     get_local_unread,
+    initialise_local_data,
     last_grabbed_data_at,
     load_configuration,
     locally_mark_article_ids_read,
@@ -79,6 +80,7 @@ from ..data import (
     remove_folder_from_articles,
     remove_subscription_articles,
     rename_folder_for_articles,
+    shutdown_local_data,
     total_unread,
     update_configuration,
 )
@@ -268,6 +270,10 @@ class Main(EnhancedScreen[None]):
         self.show_all = load_configuration().show_all
         self._load_locally()
 
+    async def on_unmount(self) -> None:
+        """Tidy up as the DOM unmounts."""
+        await shutdown_local_data()
+
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
         """Check if an action is possible to perform right now.
 
@@ -376,11 +382,12 @@ class Main(EnhancedScreen[None]):
         self.article_view.set_class(bool(self.articles), "--has-articles")
 
     @work(thread=True, exclusive=True)
-    def _load_locally(self) -> None:
+    async def _load_locally(self) -> None:
         """Load up any locally-held data."""
+        await initialise_local_data()
         if subscriptions := get_local_subscriptions():
             self.post_message(self.NewSubscriptions(subscriptions))
-        if folders := get_local_folders():
+        if folders := await get_local_folders():
             self.post_message(self.NewFolders(folders))
         if cleaned := clean_old_read_articles(
             timedelta(days=load_configuration().local_history)

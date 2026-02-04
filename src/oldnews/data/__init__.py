@@ -24,6 +24,7 @@ from .local_articles import (
     rename_folder_for_articles,
     save_local_articles,
 )
+from .local_data import initialise_local_data, shutdown_local_data
 from .local_folders import get_local_folders, save_local_folders
 from .local_subscriptions import get_local_subscriptions, save_local_subscriptions
 from .local_unread import LocalUnread, get_local_unread, total_unread
@@ -46,6 +47,7 @@ __all__ = [
     "get_navigation_state",
     "get_unread_article_ids",
     "initialise_database",
+    "initialise_local_data",
     "last_grabbed_data_at",
     "load_configuration",
     "locally_mark_read",
@@ -62,6 +64,7 @@ __all__ = [
     "save_local_folders",
     "save_local_subscriptions",
     "save_navigation_state",
+    "shutdown_local_data",
     "set_auth_token",
     "total_unread",
     "update_configuration",

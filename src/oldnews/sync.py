@@ -166,7 +166,7 @@ class TheOldReaderSync:
             The folders.
         """
         self._step("Getting folder list")
-        folders = save_local_folders(await Folders.load(self.session))
+        folders = await save_local_folders(await Folders.load(self.session))
         if self.on_new_folders:
             self.on_new_folders(folders)
         return folders

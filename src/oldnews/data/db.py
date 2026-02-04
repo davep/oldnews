@@ -13,7 +13,6 @@ from typedal.config import TypeDALConfig
 # Local imports.
 from .last_grab import LastGrabbed
 from .local_articles import LocalArticle, LocalArticleAlternate, LocalArticleCategory
-from .local_folders import LocalFolder
 from .local_subscriptions import LocalSubscription, LocalSubscriptionCategory
 from .locations import data_dir
 from .navigation_state import NavigationState
@@ -66,8 +65,6 @@ def initialise_database() -> TypeDAL:
     )
 
     dal.define(LocalArticleAlternate)
-
-    dal.define(LocalFolder)
 
     dal.define(LocalSubscription)
     safely_index(
