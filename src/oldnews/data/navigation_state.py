@@ -1,45 +1,31 @@
 """Code relating to persisting the state of navigation."""
 
 ##############################################################################
-# TypeDAL imports.
-from typedal import TypedTable
-
-##############################################################################
 # Local imports.
-from .tools import commit
+from .models import NavigationState
 
 
 ##############################################################################
-class NavigationState(TypedTable):
-    """Table that holds state of the navigation table."""
-
-    expanded_folder_id: str
-    """The ID of a folder that is in the expanded state."""
-
-
-##############################################################################
-def get_navigation_state() -> set[str]:
+async def get_navigation_state() -> set[str]:
     """Get the navigation state.
 
     Returns:
         The saved navigation state.
     """
-    return set(
-        row.expanded_folder_id
-        for row in NavigationState.select(NavigationState.expanded_folder_id)
-    )
+    return set(state.expanded_folder_id for state in await NavigationState.all())
 
 
 ##############################################################################
-def save_navigation_state(state: set[str]) -> None:
+async def save_navigation_state(state: set[str]) -> None:
     """Save the navigation state.
 
     Args:
         state: The state to save.
     """
-    NavigationState.truncate()
-    NavigationState.bulk_insert([{"expanded_folder_id": folder} for folder in state])
-    commit(NavigationState)
+    await NavigationState.all().delete()
+    await NavigationState.bulk_create(
+        NavigationState(expanded_folder_id=folder) for folder in state
+    )
 
 
 ### navigation_state.py ends here

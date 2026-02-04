@@ -14,4 +14,12 @@ class LastGrabbed(Model):
     """The time at which data was last grabbed."""
 
 
+##############################################################################
+class NavigationState(Model):
+    """Table that holds state of the navigation table."""
+
+    expanded_folder_id = fields.CharField(max_length=256)
+    """The ID of a folder that is in the expanded state."""
+
+
 ### local_state.py ends here

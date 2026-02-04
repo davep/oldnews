@@ -155,8 +155,12 @@ class Navigation(EnhancedOptionList):
             classes: The CSS classes of the navigation widget.
         """
         super().__init__(id=id, classes=classes)
-        self._expanded = get_navigation_state()
+        self._expanded: set[str] = set()
         """The IDs of the folders that are expanded."""
+
+    def on_mount(self) -> None:
+        """Configure the widget once the DOM is mounted."""
+        self.call_next(self._load_state)
 
     @staticmethod
     def _key(attr: str) -> Callable[[object], str]:
@@ -251,14 +255,18 @@ class Navigation(EnhancedOptionList):
         """React to the unread data being updated."""
         self._refresh_navigation()
 
-    @work(thread=True)
-    def _save_state(self, state: set[str]) -> None:
+    async def _load_state(self) -> None:
+        """Load the navigation state."""
+        self._expanded = await get_navigation_state()
+
+    @work
+    async def _save_state(self, state: set[str]) -> None:
         """Save the folder expanded/collapsed state.
 
         Args:
             state: The state to save.
         """
-        save_navigation_state(state)
+        await save_navigation_state(state)
 
     def _set_expansion(self, new_state: set[str]) -> None:
         """Set the new navigation state.

@@ -14,7 +14,6 @@ from typedal.config import TypeDALConfig
 from .local_articles import LocalArticle, LocalArticleAlternate, LocalArticleCategory
 from .local_subscriptions import LocalSubscription, LocalSubscriptionCategory
 from .locations import data_dir
-from .navigation_state import NavigationState
 from .tools import safely_index
 
 
@@ -83,8 +82,6 @@ def initialise_database() -> TypeDAL:
         "idx_local_subscription_category_category_id",
         LocalSubscriptionCategory.category_id,
     )
-
-    dal.define(NavigationState)
 
     return dal
 
