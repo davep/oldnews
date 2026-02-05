@@ -2,8 +2,8 @@
 
 ##############################################################################
 # Python imports.
-from collections.abc import Iterable, Iterator
-from datetime import datetime, timedelta
+from collections.abc import Iterable
+from datetime import UTC, datetime, timedelta
 from html import unescape
 from typing import cast
 
@@ -13,102 +13,17 @@ from oldas import Article, Articles, Folder, Folders, State, Subscription
 from oldas.articles import Alternate, Alternates, Direction, Origin, Summary
 
 ##############################################################################
-# TypeDAL imports.
-from typedal import TypedField, TypedTable, relationship
+# Tortoise imports.
+from tortoise.transactions import in_transaction
 
 ##############################################################################
 # Local imports.
 from .log import Log
-from .tools import commit
+from .models import LocalArticle, LocalArticleAlternate, LocalArticleCategory
 
 
 ##############################################################################
-class LocalArticle(TypedTable):
-    """A local copy of an article."""
-
-    article_id: TypedField[str]
-    """The ID of the article."""
-    title: str
-    """The title of the article."""
-    published: TypedField[datetime] = TypedField(datetime)
-    """The time when the article was published."""
-    updated: TypedField[datetime] = TypedField(datetime)
-    """The time when the article was updated."""
-    author: str
-    """The author of the article."""
-    summary_direction: str
-    """The direction for the text in the summary."""
-    summary_content: TypedField[str] = TypedField(str, type="text")
-    """The content of the summary."""
-    origin_stream_id: str
-    """The stream ID for the article's origin."""
-    origin_title: str
-    """The title of the origin of the article."""
-    origin_html_url: str
-    """The URL of the HTML of the origin of the article."""
-    categories = relationship(
-        list["LocalArticleCategory"],
-        condition=lambda article, category: cast(LocalArticle, article).id
-        == cast(LocalArticleCategory, category).article,
-        join="left",
-    )
-    """The categories associated with this article."""
-    alternate = relationship(
-        list["LocalArticleAlternate"],
-        condition=lambda article, alternate: cast(LocalArticle, article).id
-        == cast(LocalArticleAlternate, alternate).article,
-        join="left",
-    )
-    """The alternates for the article."""
-
-    def add_category(self, category: str | State) -> None:
-        """Add a given category to the local article.
-
-        Args:
-            category: The category to add.
-        """
-        if str(category) not in self.categories:
-            LocalArticleCategory.insert(article=self.id, category=str(category))
-            commit(LocalArticleCategory)
-
-    def remove_category(self, category: str | State) -> None:
-        """Remove a given category from the local article.
-
-        Args:
-            category: The category to add.
-        """
-        if str(category) in self.categories:
-            LocalArticleCategory.where(
-                (LocalArticleCategory.article == self.id)
-                & (LocalArticleCategory.category == str(category))
-            ).delete()
-            commit(LocalArticleCategory)
-
-
-##############################################################################
-class LocalArticleCategory(TypedTable):
-    """A local copy of the categories associated with an article."""
-
-    article: TypedField[LocalArticle]
-    """The article that this category belongs to."""
-    category: str
-    """The category."""
-
-
-##############################################################################
-class LocalArticleAlternate(TypedTable):
-    """A local copy of the alternate URLs associated with an article."""
-
-    article: TypedField[LocalArticle]
-    """The article that this alternate belongs to."""
-    href: str
-    """The URL of the alternate."""
-    mime_type: str
-    """The MIME type of the alternate."""
-
-
-##############################################################################
-def save_local_articles(articles: Articles) -> Articles:
+async def save_local_articles(articles: Articles) -> Articles:
     """Locally save the given articles.
 
     Args:
@@ -117,107 +32,61 @@ def save_local_articles(articles: Articles) -> Articles:
     Returns:
         The articles.
     """
+    Log().debug("save_local_articles")
     for article in articles:
-        local_article = LocalArticle.update_or_insert(
-            LocalArticle.article_id == article.id,
-            article_id=article.id,
-            title=article.title,
-            published=article.published,
-            updated=article.updated,
-            author=article.author,
-            summary_direction=article.summary.direction,
-            summary_content=article.summary.content,
-            origin_stream_id=article.origin.stream_id,
-            origin_title=article.origin.title,
-            origin_html_url=article.origin.html_url,
-        )
-        LocalArticleCategory.where(article=local_article.id).delete()
-        LocalArticleCategory.bulk_insert(
-            [
-                {"article": local_article.id, "category": str(category)}
+        async with in_transaction():
+            Log().debug("Step 1")
+            local_article, _ = await LocalArticle.update_or_create(
+                article_id=article.id,
+                title=article.title,
+                published=article.published,
+                updated=article.updated,
+                author=article.author,
+                summary_direction=article.summary.direction,
+                summary_content=article.summary.content,
+                origin_stream_id=article.origin.stream_id,
+                origin_title=article.origin.title,
+                origin_html_url=article.origin.html_url,
+            )
+            Log().debug("Step 2")
+            await LocalArticleCategory.filter(article=local_article).delete()
+            Log().debug("Step 3")
+            await LocalArticleCategory.bulk_create(
+                LocalArticleCategory(article=local_article, category=str(category))
                 for category in article.categories
-            ]
-        )
-        LocalArticleAlternate.where(article=local_article.id).delete()
-        LocalArticleAlternate.bulk_insert(
-            [
-                {
-                    "article": local_article.id,
-                    "href": alternate.href,
-                    "mime_type": alternate.mime_type,
-                }
-                for alternate in article.alternate
-            ]
-        )
-    commit(LocalArticle)
+            )
+            Log().debug("Step 4")
+            await LocalArticleAlternate.filter(article=local_article).delete()
+            Log().debug("Step 5")
+            await LocalArticleAlternate.bulk_create(
+                LocalArticleAlternate(
+                    article=local_article,
+                    href=alternate.href,
+                    mime_type=alternate.mime_type,
+                )
+                for alternate in article.alternates  # type: ignore
+            )
+    Log().debug("Done")
     return articles
 
 
 ##############################################################################
-def get_local_read_article_ids() -> set[int]:
+async def get_local_read_article_ids() -> set[str]:
     """Get the set of local articles that have been read.
 
     Returns:
         A `set` of IDs of articles that have been read.
     """
     return {
-        category.article.id
-        for category in LocalArticleCategory.where(
-            LocalArticleCategory.category == State.READ
-        ).collect()
+        category.article.article_id
+        for category in await LocalArticleCategory.filter(
+            category=str(State.READ)
+        ).prefetch_related("article")
     }
 
 
 ##############################################################################
-def _for_subscription(
-    subscription: Subscription, unread_only: bool
-) -> Iterator[LocalArticle]:
-    """Get all unread articles for a given subscription.
-
-    Args:
-        subscription: The subscription to get the articles for.
-        unread_only: Only load up the unread articles?
-
-    Yields:
-        The articles.
-    """
-    read = get_local_read_article_ids() if unread_only else set()
-    yield from (
-        LocalArticle.where(~LocalArticle.id.belongs(read))
-        .where(origin_stream_id=subscription.id)
-        .join()
-        .orderby(~LocalArticle.published)
-    )
-
-
-##############################################################################
-def _for_folder(folder: Folder, unread_only: bool) -> Iterator[LocalArticle]:
-    """Get all unread articles for a given folder.
-
-    Args:
-        folder: The folder to get the articles for.
-        unread_only: Only load up the unread articles?
-
-    Yields:
-        The unread articles.
-    """
-    in_folder = {
-        category.article.id
-        for category in LocalArticleCategory.where(
-            LocalArticleCategory.category == folder.id
-        ).collect()
-    }
-    read = get_local_read_article_ids() if unread_only else set()
-    yield from (
-        LocalArticle.where(LocalArticle.id.belongs(in_folder - read))
-        .select()
-        .join()
-        .orderby(~LocalArticle.published)
-    )
-
-
-##############################################################################
-def get_local_articles(
+async def get_local_articles(
     related_to: Folder | Subscription, unread_only: bool
 ) -> Articles:
     """Get all available unread articles.
@@ -228,12 +97,18 @@ def get_local_articles(
 
     Returns: The unread articles.
     """
-    articles: list[Article] = []
-    for article in (
-        _for_folder(related_to, unread_only)
+    local_articles = (
+        LocalArticle.filter(categories__category=related_to.id)
         if isinstance(related_to, Folder)
-        else _for_subscription(related_to, unread_only)
-    ):
+        else LocalArticle.filter(origin_stream_id=related_to.id)
+    )
+    if unread_only and (read := (await get_local_read_article_ids())):
+        local_articles = local_articles.filter(article_id__not_in=read)
+
+    articles: list[Article] = []
+    for article in await local_articles.prefetch_related(
+        "categories", "alternates"
+    ).order_by("-published"):
         articles.append(
             Article(
                 id=article.article_id,
@@ -242,11 +117,12 @@ def get_local_articles(
                 updated=article.updated,
                 author=article.author,
                 categories=Article.clean_categories(
-                    category.category for category in article.categories
+                    category.category
+                    for category in article.categories  # type: ignore
                 ),
                 alternate=Alternates(
                     Alternate(href=alternate.href, mime_type=alternate.mime_type)
-                    for alternate in article.alternate
+                    for alternate in article.alternates  # type: ignore
                 ),
                 origin=Origin(
                     stream_id=article.origin_stream_id,
@@ -263,95 +139,87 @@ def get_local_articles(
 
 
 ##############################################################################
-def locally_mark_read(article: Article) -> None:
+async def locally_mark_read(article: Article) -> None:
     """Mark the given article as read.
 
     Args:
         article: The article to locally mark as read.
     """
-    if local_article := LocalArticle.where(
-        LocalArticle.article_id == article.id
-    ).first():
-        local_article.add_category(State.READ)
+    if local_article := await LocalArticle.filter(article_id=article.id).get_or_none():
+        await local_article.add_category(str(State.READ))
 
 
 ##############################################################################
-def locally_mark_article_ids_read(articles: Iterable[str]) -> None:
+async def locally_mark_article_ids_read(articles: Iterable[str]) -> None:
     """Locally mark a collection of article IDs as being read.
 
     Args:
         articles: The article IDs to mark as read.
     """
-    for local_article in LocalArticle.where(LocalArticle.article_id.belongs(articles)):
-        local_article.add_category(State.READ)
+    if articles := set(articles):
+        for article in await LocalArticle.filter(article_id__in=articles):
+            await article.add_category(State.READ)
 
 
 ##############################################################################
-def unread_count_in(
-    category: Folder | Subscription, read: set[int] | None = None
+async def unread_count_in(
+    category: Folder | Subscription, read: set[str] | None = None
 ) -> int:
     """Get the count of unread articles in a given category.
 
     Args:
-        category: The category to get the unread count for.
+        category: The category (Folder or Subscription) to get the unread count for.
         read: The set of IDs of read articles.
 
     Returns:
         The count of unread articles in that category.
-
-    Notes:
-        Note that `read` is optional and will be worked out of not passed,
-        but if this function is being called in a tight loop it's more
-        efficient to provide this externally.
     """
-    read = get_local_read_article_ids() if read is None else read
-    if isinstance(category, Folder):
-        in_folder = {
-            category.article.id
-            for category in LocalArticleCategory.where(
-                LocalArticleCategory.category == category.id
-            ).collect()
-        }
-        return LocalArticle.where(LocalArticle.id.belongs(in_folder - read)).count()
-    return (
-        LocalArticle.where(~LocalArticle.id.belongs(read))
-        .where(origin_stream_id=category.id)
-        .count()
+    query = (
+        LocalArticle.filter(categories__category=category.id)
+        if isinstance(category, Folder)
+        else LocalArticle.filter(origin_stream_id=category.id)
     )
+    if read := read if read is not None else await get_local_read_article_ids():
+        query = query.filter(article_id__not_in=read)
+    return await query.count()
 
 
 ##############################################################################
-def get_unread_article_ids() -> list[str]:
+async def get_unread_article_ids() -> list[str]:
     """Get a list of all the unread article IDs.
 
     Returns:
         The list of IDs of unread articles.
     """
-    read = get_local_read_article_ids()
+    read = await get_local_read_article_ids()
     return [
         article.article_id
-        for article in LocalArticle.where(~LocalArticle.id.belongs(read)).select()
+        for article in await LocalArticle.filter(article_id__not_in=read)
     ]
 
 
 ##############################################################################
-def clean_old_read_articles(cutoff: timedelta) -> int:
-    """Clean up articles that are older than the given cutoff time."""
-    read = get_local_read_article_ids()
-    retire_time = datetime.now() - cutoff
+async def clean_old_read_articles(cutoff: timedelta) -> int:
+    """Clean up articles that are older than the given cutoff time.
+
+    Args:
+        cutoff: The cutoff period after which articles will be removed.
+
+    Returns:
+        The number of removed articles.
+    """
+    read = await get_local_read_article_ids()
+    retire_time = datetime.now(UTC) - cutoff
     Log().debug(f"Cleaning up read articles published before {retire_time}")
-    cleaned = len(
-        LocalArticle.where(
-            (LocalArticle.published < retire_time) & LocalArticle.id.belongs(read)
-        ).delete()
-    )
+    cleaned = await LocalArticle.filter(
+        published__lt=retire_time, article_id__in=read
+    ).delete()
     Log().debug(f"Cleaned: {cleaned}")
-    commit(LocalArticle)
     return cleaned
 
 
 ##############################################################################
-def rename_folder_for_articles(rename_from: str | Folder, rename_to: str) -> None:
+async def rename_folder_for_articles(rename_from: str | Folder, rename_to: str) -> None:
     """Rename a folder for all articles that are in that folder.
 
     Args:
@@ -361,14 +229,11 @@ def rename_folder_for_articles(rename_from: str | Folder, rename_to: str) -> Non
     rename_from = Folders.full_id(rename_from)
     rename_to = Folders.full_id(rename_to)
     Log().debug(f"Renaming folder for local articles from {rename_from} to {rename_to}")
-    LocalArticleCategory.where(LocalArticleCategory.category == rename_from).update(
-        category=rename_to
-    )
-    commit(LocalArticleCategory)
+    await LocalArticleCategory.filter(category=rename_from).update(category=rename_to)
 
 
 ##############################################################################
-def remove_folder_from_articles(folder: str | Folder) -> None:
+async def remove_folder_from_articles(folder: str | Folder) -> None:
     """Remove a folder from being associated with all articles.
 
     Args:
@@ -376,12 +241,11 @@ def remove_folder_from_articles(folder: str | Folder) -> None:
     """
     folder = Folders.full_id(folder)
     Log().debug(f"Removing folder {folder} from all local articles")
-    LocalArticleCategory.where(LocalArticleCategory.category == folder).delete()
-    commit(LocalArticleCategory)
+    await LocalArticleCategory.filter(category=folder).delete()
 
 
 ##############################################################################
-def move_subscription_articles(
+async def move_subscription_articles(
     subscription: Subscription,
     from_folder: str | Folder | None,
     to_folder: str | Folder | None,
@@ -400,20 +264,17 @@ def move_subscription_articles(
     Log().debug(
         f"Moving all articles of {subscription.title} ({subscription.id}) from folder {from_folder} to {to_folder}"
     )
-    for article in LocalArticle.where(origin_stream_id=subscription.id).join().select():
+    for article in await LocalArticle.filter(
+        origin_stream_id=subscription.id
+    ).prefetch_related("categories"):
         if from_folder:
-            LocalArticleCategory.where(
-                (LocalArticleCategory.article == article.id)
-                & (LocalArticleCategory.category == from_folder)
-            ).delete()
-            commit(LocalArticleCategory)
+            await article.remove_category(from_folder)
         if to_folder:
-            LocalArticleCategory.insert(article=article.id, category=to_folder)
-            commit(LocalArticleCategory)
+            await article.add_category(to_folder)
 
 
 ##############################################################################
-def remove_subscription_articles(subscription: str | Subscription) -> None:
+async def remove_subscription_articles(subscription: str | Subscription) -> None:
     """Remove all the articles associated with the given subscription.
 
     Args:
@@ -422,8 +283,7 @@ def remove_subscription_articles(subscription: str | Subscription) -> None:
     if isinstance(subscription, Subscription):
         subscription = subscription.id
     Log().debug(f"Removing all local articles for subscription {subscription}")
-    LocalArticle.where(origin_stream_id=subscription).delete()
-    commit(LocalArticle)
+    LocalArticle.filter(origin_stream_id=subscription).delete()
 
 
 ### local_articles.py ends here

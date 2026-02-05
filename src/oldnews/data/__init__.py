@@ -9,7 +9,6 @@ from .config import (
     save_configuration,
     update_configuration,
 )
-from .db import initialise_database
 from .dump import data_dump
 from .last_grab import last_grabbed_data_at, remember_we_last_grabbed_at
 from .local_articles import (
@@ -46,7 +45,6 @@ __all__ = [
     "get_local_unread",
     "get_navigation_state",
     "get_unread_article_ids",
-    "initialise_database",
     "initialise_local_data",
     "last_grabbed_data_at",
     "load_configuration",

@@ -118,7 +118,7 @@ class TheOldReaderSync:
             # -- perhaps same them in batches the same size as the buffer
             # window I'm using right now (currently BATCH_SIZE articles per
             # trip to ToR).
-            save_local_articles(Articles([article]))
+            await save_local_articles(Articles([article]))
             loaded += 1
             if (loaded % BATCH_SIZE) == 0:
                 self._step(f"{description}: {loaded}", log=False)
@@ -133,10 +133,10 @@ class TheOldReaderSync:
             article_id.full_id
             for article_id in await ArticleIDs.load_unread(self.session)
         )
-        local_unread_articles = set(get_unread_article_ids())
+        local_unread_articles = set(await get_unread_article_ids())
         if mark_as_read := local_unread_articles - remote_unread_articles:
             Log().debug(f"Articles found as marked read elsewhere: {mark_as_read}")
-            locally_mark_article_ids_read(mark_as_read)
+            await locally_mark_article_ids_read(mark_as_read)
             self._result(
                 f"Articles found read elsewhere on TheOldReader: {len(mark_as_read)}"
             )
@@ -248,7 +248,7 @@ class TheOldReaderSync:
                 if subscription.id in new_subscriptions
             )
 
-    def _clean_orphaned_articles(
+    async def _clean_orphaned_articles(
         self,
         original_subscriptions: Subscriptions,
         current_subscriptions: Subscriptions,
@@ -266,9 +266,9 @@ class TheOldReaderSync:
         ):
             Log().info(f"Found remotely-removed subscriptions: {removed_subscriptions}")
             for subscription in removed_subscriptions:
-                remove_subscription_articles(subscription)
+                await remove_subscription_articles(subscription)
 
-    def _get_unread_counts(
+    async def _get_unread_counts(
         self, folders: Folders, subscriptions: Subscriptions
     ) -> None:
         """Get the updated unread counts.
@@ -278,7 +278,7 @@ class TheOldReaderSync:
             subscriptions: The subscriptions to get the counts for.
         """
         if self.on_new_unread:
-            self.on_new_unread(get_local_unread(folders, subscriptions))
+            self.on_new_unread(await get_local_unread(folders, subscriptions))
 
     async def sync(self) -> None:
         """Sync the data from TheOldReader."""
@@ -289,8 +289,8 @@ class TheOldReaderSync:
         await self._get_new_articles()
         await self._get_updated_read_status()
         await self._get_historical_articles(original_subscriptions, subscriptions)
-        self._clean_orphaned_articles(original_subscriptions, subscriptions)
-        self._get_unread_counts(folders, subscriptions)
+        await self._clean_orphaned_articles(original_subscriptions, subscriptions)
+        await self._get_unread_counts(folders, subscriptions)
         if self.on_sync_finished:
             self.on_sync_finished()
 
