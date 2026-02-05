@@ -5,6 +5,10 @@
 from datetime import UTC, datetime
 
 ##############################################################################
+# Tortoise imports.
+from tortoise.transactions import in_transaction
+
+##############################################################################
 # Local imports.
 from .models import LastGrabbed
 
@@ -31,8 +35,9 @@ async def remember_we_last_grabbed_at(grab_time: datetime | None = None) -> None
     Note:
         If `grab_time` isn't supplied then it is recorded as now.
     """
-    await LastGrabbed.all().delete()
-    await LastGrabbed.create(at_time=grab_time or datetime.now(UTC))
+    async with in_transaction():
+        await LastGrabbed.all().delete()
+        await LastGrabbed.create(at_time=grab_time or datetime.now(UTC))
 
 
 ### last_grab.py ends here
