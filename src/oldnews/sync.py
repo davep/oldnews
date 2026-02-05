@@ -179,8 +179,10 @@ class TheOldReaderSync:
             after.
         """
         self._step("Getting subscriptions list")
-        original_subscriptions = get_local_subscriptions()
-        subscriptions = save_local_subscriptions(await Subscriptions.load(self.session))
+        original_subscriptions = await get_local_subscriptions()
+        subscriptions = await save_local_subscriptions(
+            await Subscriptions.load(self.session)
+        )
         if self.on_new_subscriptions:
             self.on_new_subscriptions(subscriptions)
         return original_subscriptions, subscriptions

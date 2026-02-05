@@ -378,7 +378,7 @@ class Main(EnhancedScreen[None]):
     @work(thread=True, exclusive=True)
     async def _load_locally(self) -> None:
         """Load up any locally-held data."""
-        if subscriptions := get_local_subscriptions():
+        if subscriptions := await get_local_subscriptions():
             self.post_message(self.NewSubscriptions(subscriptions))
         if folders := await get_local_folders():
             self.post_message(self.NewFolders(folders))

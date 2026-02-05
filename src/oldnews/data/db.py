@@ -12,7 +12,6 @@ from typedal.config import TypeDALConfig
 ##############################################################################
 # Local imports.
 from .local_articles import LocalArticle, LocalArticleAlternate, LocalArticleCategory
-from .local_subscriptions import LocalSubscription, LocalSubscriptionCategory
 from .locations import data_dir
 from .tools import safely_index
 
@@ -63,25 +62,6 @@ def initialise_database() -> TypeDAL:
     )
 
     dal.define(LocalArticleAlternate)
-
-    dal.define(LocalSubscription)
-    safely_index(
-        LocalSubscription,
-        "idx_local_subscription_subscription_id",
-        LocalSubscription.subscription_id,
-    )
-
-    dal.define(LocalSubscriptionCategory)
-    safely_index(
-        LocalSubscriptionCategory,
-        "idx_local_subscription_category_subscription",
-        LocalSubscriptionCategory.subscription,
-    )
-    safely_index(
-        LocalSubscriptionCategory,
-        "idx_local_subscription_category_category_id",
-        LocalSubscriptionCategory.category_id,
-    )
 
     return dal
 

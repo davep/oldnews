@@ -1,55 +1,20 @@
 """Code relating to persisting subscriptions."""
 
 ##############################################################################
-# Python imports.
-from datetime import datetime
-
+# Tortoise imports.
 ##############################################################################
 # OldAS subscriptions.
 from oldas import Subscription, Subscriptions
 from oldas.subscriptions import Categories, Category
-
-##############################################################################
-# TypeDAL imports.
-from typedal import TypedTable
+from tortoise.transactions import in_transaction
 
 ##############################################################################
 # Local imports.
-from .tools import commit
+from .models import LocalSubscription, LocalSubscriptionCategory
 
 
 ##############################################################################
-class LocalSubscription(TypedTable):
-    """A local copy of a subscription."""
-
-    subscription_id: str
-    """The ID of the subscription."""
-    title: str
-    """The title of the subscription."""
-    sort_id: str
-    """The sort ID of the subscription."""
-    first_item_time: datetime
-    """The time of the first item."""
-    url: str
-    """The URL of the subscription."""
-    html_url: str
-    """The HTML URL of the subscription."""
-
-
-##############################################################################
-class LocalSubscriptionCategory(TypedTable):
-    """A local copy of the categories associated with a subscription."""
-
-    subscription: str
-    """The ID of the subscription this category belongs to."""
-    category_id: str
-    """The ID for the category."""
-    label: str
-    """The label for the category."""
-
-
-##############################################################################
-def get_local_subscriptions() -> Subscriptions:
+async def get_local_subscriptions() -> Subscriptions:
     """Gets the local cache of known subscriptions.
 
     Return:
@@ -68,17 +33,15 @@ def get_local_subscriptions() -> Subscriptions:
                     id=category.category_id,
                     label=category.label,
                 )
-                for category in LocalSubscriptionCategory.where(
-                    subscription=subscription.subscription_id
-                )
+                for category in subscription.categories  # type: ignore
             ),
         )
-        for subscription in LocalSubscription.select(LocalSubscription.ALL)
+        for subscription in await LocalSubscription.all().prefetch_related("categories")
     )
 
 
 ##############################################################################
-def save_local_subscriptions(subscriptions: Subscriptions) -> Subscriptions:
+async def save_local_subscriptions(subscriptions: Subscriptions) -> Subscriptions:
     """Local save the given subscriptions.
 
     Args:
@@ -87,33 +50,28 @@ def save_local_subscriptions(subscriptions: Subscriptions) -> Subscriptions:
     Returns:
         The subscriptions.
     """
-    LocalSubscription.truncate()
-    LocalSubscriptionCategory.truncate()
-    LocalSubscription.bulk_insert(
-        [
-            {
-                "subscription_id": subscription.id,
-                "title": subscription.title,
-                "sort_id": subscription.sort_id,
-                "first_item_time": subscription.first_item_time,
-                "url": subscription.url,
-                "html_url": subscription.html_url,
-            }
+    async with in_transaction():
+        await LocalSubscription.all().delete()
+        await LocalSubscription.bulk_create(
+            LocalSubscription(
+                subscription_id=subscription.id,
+                title=subscription.title,
+                sort_id=subscription.sort_id,
+                first_item_time=subscription.first_item_time,
+                url=subscription.url,
+                html_url=subscription.html_url,
+            )
             for subscription in subscriptions
-        ]
-    )
-    LocalSubscriptionCategory.bulk_insert(
-        [
-            {
-                "subscription": subscription.id,
-                "category_id": category.id,
-                "label": category.label,
-            }
+        )
+        await LocalSubscriptionCategory.bulk_create(
+            LocalSubscriptionCategory(
+                subscription_id=subscription.id,
+                category_id=category.id,
+                label=category.label,
+            )
             for subscription in subscriptions
             for category in subscription.categories
-        ]
-    )
-    commit(LocalSubscription)
+        )
     return subscriptions
 
 
