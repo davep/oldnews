@@ -22,7 +22,7 @@ class LocalArticle(Model):
     """The time when the article was published."""
     updated = fields.DatetimeField()
     """The time when the article was updated."""
-    author = fields.CharField(max_length=255)
+    author = fields.TextField()
     """The author of the article."""
     summary_direction = fields.CharField(max_length=10)
     """The direction for the text in the summary."""
