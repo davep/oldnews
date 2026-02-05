@@ -377,7 +377,7 @@ class Main(EnhancedScreen[None]):
                     self.navigation.focus()
         self.article_view.set_class(bool(self.articles), "--has-articles")
 
-    @work(thread=True, exclusive=True)
+    @work(exclusive=True)
     async def _load_locally(self) -> None:
         """Load up any locally-held data."""
         if subscriptions := await get_local_subscriptions():
