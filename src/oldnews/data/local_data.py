@@ -11,6 +11,7 @@ from tortoise import Tortoise
 ##############################################################################
 # Local imports.
 from .locations import data_dir
+from .log import Log
 
 
 ##############################################################################
@@ -26,6 +27,7 @@ def local_db_file() -> Path:
 ##############################################################################
 async def initialise_local_data() -> None:
     """Initialise the local storage."""
+    Log().debug("Database startup")
     await Tortoise.init(
         db_url=f"sqlite://{local_db_file()}",
         modules={"models": ["oldnews.data.models"]},
@@ -37,6 +39,7 @@ async def initialise_local_data() -> None:
 async def shutdown_local_data() -> None:
     """Close down the local connection."""
     await Tortoise.close_connections()
+    Log().debug("Database shutdown")
 
 
 ### local_data.py ends here
