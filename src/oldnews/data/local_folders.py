@@ -5,6 +5,10 @@
 from oldas import Folder, Folders
 
 ##############################################################################
+# Tortoise imports.
+from tortoise.transactions import in_transaction
+
+##############################################################################
 # Local imports.
 from .models import LocalFolder
 
@@ -32,10 +36,12 @@ async def save_local_folders(folders: Folders) -> Folders:
     Returns:
         The folders.
     """
-    await LocalFolder.all().delete()
-    await LocalFolder.bulk_create(
-        LocalFolder(folder_id=folder.id, sort_id=folder.sort_id) for folder in folders
-    )
+    async with in_transaction():
+        await LocalFolder.all().delete()
+        await LocalFolder.bulk_create(
+            LocalFolder(folder_id=folder.id, sort_id=folder.sort_id)
+            for folder in folders
+        )
     return folders
 
 
