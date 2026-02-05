@@ -1,11 +1,12 @@
 """Code relating to persisting subscriptions."""
 
 ##############################################################################
-# Tortoise imports.
-##############################################################################
 # OldAS subscriptions.
 from oldas import Subscription, Subscriptions
 from oldas.subscriptions import Categories, Category
+
+##############################################################################
+# Tortoise imports.
 from tortoise.transactions import in_transaction
 
 ##############################################################################
