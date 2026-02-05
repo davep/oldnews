@@ -1,6 +1,10 @@
 """Code relating to persisting the state of navigation."""
 
 ##############################################################################
+# Tortoise imports.
+from tortoise.transactions import in_transaction
+
+##############################################################################
 # Local imports.
 from .models import NavigationState
 
@@ -22,10 +26,11 @@ async def save_navigation_state(state: set[str]) -> None:
     Args:
         state: The state to save.
     """
-    await NavigationState.all().delete()
-    await NavigationState.bulk_create(
-        NavigationState(expanded_folder_id=folder) for folder in state
-    )
+    async with in_transaction():
+        await NavigationState.all().delete()
+        await NavigationState.bulk_create(
+            NavigationState(expanded_folder_id=folder) for folder in state
+        )
 
 
 ### navigation_state.py ends here
