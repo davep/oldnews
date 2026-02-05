@@ -58,7 +58,7 @@ async def save_local_articles(articles: Articles) -> Articles:
                     href=alternate.href,
                     mime_type=alternate.mime_type,
                 )
-                for alternate in article.alternates  # type: ignore
+                for alternate in article.alternate
             )
     return articles
 
