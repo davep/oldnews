@@ -28,7 +28,7 @@ class LocalSubscription(Model):
 class LocalSubscriptionCategory(Model):
     """A local copy of the categories associated with a subscription."""
 
-    subscription = fields.ForeignKeyField(
+    subscription: fields.ForeignKeyRelation[LocalSubscription] = fields.ForeignKeyField(
         "models.LocalSubscription", related_name="categories", on_delete=fields.CASCADE
     )
     """The ID of the subscription this category belongs to."""
