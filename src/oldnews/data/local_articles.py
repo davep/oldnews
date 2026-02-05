@@ -276,7 +276,8 @@ async def remove_subscription_articles(subscription: str | Subscription) -> None
     if isinstance(subscription, Subscription):
         subscription = subscription.id
     Log().debug(f"Removing all local articles for subscription {subscription}")
-    await LocalArticle.filter(origin_stream_id=subscription).delete()
+    deleted = await LocalArticle.filter(origin_stream_id=subscription).delete()
+    Log().debug(f"Articles removed that belonged to {subscription}: {deleted}")
 
 
 ### local_articles.py ends here
