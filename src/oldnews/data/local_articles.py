@@ -32,10 +32,8 @@ async def save_local_articles(articles: Articles) -> Articles:
     Returns:
         The articles.
     """
-    Log().debug("save_local_articles")
     for article in articles:
         async with in_transaction():
-            Log().debug("Step 1")
             local_article, _ = await LocalArticle.update_or_create(
                 article_id=article.id,
                 title=article.title,
@@ -48,16 +46,12 @@ async def save_local_articles(articles: Articles) -> Articles:
                 origin_title=article.origin.title,
                 origin_html_url=article.origin.html_url,
             )
-            Log().debug("Step 2")
             await LocalArticleCategory.filter(article=local_article).delete()
-            Log().debug("Step 3")
             await LocalArticleCategory.bulk_create(
                 LocalArticleCategory(article=local_article, category=str(category))
                 for category in article.categories
             )
-            Log().debug("Step 4")
             await LocalArticleAlternate.filter(article=local_article).delete()
-            Log().debug("Step 5")
             await LocalArticleAlternate.bulk_create(
                 LocalArticleAlternate(
                     article=local_article,
@@ -66,7 +60,6 @@ async def save_local_articles(articles: Articles) -> Articles:
                 )
                 for alternate in article.alternates  # type: ignore
             )
-    Log().debug("Done")
     return articles
 
 
