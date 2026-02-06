@@ -20,7 +20,7 @@ async def last_grabbed_data_at() -> datetime | None:
     Returns:
         The time at which we last grabbed data, or `None` if we never have.
     """
-    if (row := LastGrabbed.first()) and (last_grabbed := (await row)):
+    if last_grabbed := await LastGrabbed.first():
         return last_grabbed.at_time
     return None
 
