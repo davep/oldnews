@@ -4,6 +4,7 @@
 # Python imports.
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from functools import partial
 from webbrowser import open as open_url
 
 ##############################################################################
@@ -418,7 +419,7 @@ class Main(EnhancedScreen[None]):
         await TheOldReaderSync(
             self._session,
             on_new_step=Pipe[str, bool](self.SubTitle, self.post_message),
-            on_new_result=self.notify,
+            on_new_result=partial(self.notify, markup=False),
             on_new_folders=Pipe[Folders, bool](self.NewFolders, self.post_message),
             on_new_subscriptions=Pipe[Subscriptions, bool](
                 self.NewSubscriptions, self.post_message
@@ -575,7 +576,8 @@ class Main(EnhancedScreen[None]):
                 )
                 await self._refresh_article_list()
                 self.notify(
-                    f"{intcomma(len(ids_to_mark_read))} article{plural} marked read for {category_description}"
+                    f"{intcomma(len(ids_to_mark_read))} article{plural} marked read for {category_description}",
+                    markup=False,
                 )
             else:
                 self.notify(
@@ -667,7 +669,10 @@ class Main(EnhancedScreen[None]):
             else:
                 self.notify("Subscription added")
                 if result.stream_id and subscription.folder:
-                    self.notify(f"Moving new subscription into '{subscription.folder}'")
+                    self.notify(
+                        f"Moving new subscription into '{subscription.folder}'",
+                        markup=False,
+                    )
                     if await Subscriptions.move(
                         self._session, result.stream_id, subscription.folder
                     ):
@@ -737,7 +742,7 @@ class Main(EnhancedScreen[None]):
         ):
             if await Subscriptions.remove(self._session, subscription):
                 await remove_subscription_articles(subscription)
-                self.notify(f"Removed {subscription.title}")
+                self.notify(f"Removed {subscription.title}", markup=False)
                 self.post_message(RefreshFromTheOldReader())
             else:
                 self.notify("Remove failed", severity="error", timeout=8)
