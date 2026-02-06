@@ -21,7 +21,7 @@ def local_db_file() -> Path:
     Returns:
         The file that contains the database.
     """
-    return data_dir() / "local.db"
+    return data_dir() / "oldnews.db"
 
 
 ##############################################################################
