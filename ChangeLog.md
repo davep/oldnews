@@ -1,5 +1,12 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- BREAKING CHANGE: Rewrite of the local database support, swapped to using
+  Tortoise ORM. ([#107](https://github.com/davep/oldnews/pull/107))
+
 ## v0.8.0
 
 **Released: 2026-02-01**
