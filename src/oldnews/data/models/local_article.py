@@ -47,7 +47,7 @@ class LocalArticle(Model):
         """Remove a given category from the local article.
 
         Args:
-            category: The category to add.
+            category: The category to remove.
         """
         await LocalArticleCategory.filter(article=self, category=str(category)).delete()
 
