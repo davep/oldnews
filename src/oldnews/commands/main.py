@@ -39,7 +39,7 @@ class NextUnread(Command):
 class Next(Command):
     """Navigate to the next article regardless of read status"""
 
-    BINDING_KEY = "N"
+    BINDING_KEY = "N, ctrl+down"
 
 
 ##############################################################################
@@ -53,7 +53,7 @@ class PreviousUnread(Command):
 class Previous(Command):
     """Navigate to the next article regardless of read status"""
 
-    BINDING_KEY = "P"
+    BINDING_KEY = "P, ctrl+up"
 
 
 ##############################################################################
@@ -88,14 +88,14 @@ class CopyHomePageToClipboard(Command):
 class CopyFeedToClipboard(Command):
     """Copy the URL of the current subscription's feed to the clipboard"""
 
-    BINDING_KEY = "f4"
+    BINDING_KEY = "shift+f3"
 
 
 ##############################################################################
 class CopyArticleToClipboard(Command):
     """Copy the URL for the current article to the clipboard"""
 
-    BINDING_KEY = "f5"
+    BINDING_KEY = "super+f3"
 
 
 ##############################################################################
@@ -116,7 +116,7 @@ class AddSubscription(Command):
 class Rename(Command):
     """Rename the current folder or subscription"""
 
-    BINDING_KEY = "f6"
+    BINDING_KEY = "apostrophe"
 
 
 ##############################################################################
@@ -130,14 +130,14 @@ class Remove(Command):
 class MoveSubscription(Command):
     """Move the current subscription to folder"""
 
-    BINDING_KEY = "f7"
+    BINDING_KEY = "vertical_line"
 
 
 ##############################################################################
 class Information(Command):
     """Show low-level information about the selected item"""
 
-    BINDING_KEY = "f8"
+    BINDING_KEY = "i"
 
 
 ### main.py ends here

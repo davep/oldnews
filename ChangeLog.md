@@ -8,6 +8,8 @@
   clipboard. ([#119](https://github.com/davep/oldnews/pull/119))
 - Various small cosmetic tweaks to how dates and counts are shown.
   ([#120](https://github.com/davep/oldnews/pull/120))
+- Changed the default binding for a number of different commands.
+  ([#121](https://github.com/davep/oldnews/pull/121))
 
 ## v0.9.0
 
