@@ -32,7 +32,7 @@ class LocalSubscriptionCategory(Model):
         "models.LocalSubscription", related_name="categories", on_delete=fields.CASCADE
     )
     """The ID of the subscription this category belongs to."""
-    category_id = fields.CharField(max_length=255)
+    category_id = fields.CharField(max_length=255, index=True)
     """The ID for the category."""
     label = fields.CharField(max_length=255)
     """The label for the category."""

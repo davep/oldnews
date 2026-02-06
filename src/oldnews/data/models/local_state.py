@@ -18,7 +18,7 @@ class LastGrabbed(Model):
 class NavigationState(Model):
     """Table that holds state of the navigation table."""
 
-    expanded_folder_id = fields.CharField(max_length=256)
+    expanded_folder_id = fields.CharField(max_length=256, pk=True)
     """The ID of a folder that is in the expanded state."""
 
 

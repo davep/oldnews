@@ -28,7 +28,7 @@ class LocalArticle(Model):
     """The direction for the text in the summary."""
     summary_content = fields.TextField()
     """The content of the summary."""
-    origin_stream_id = fields.TextField()
+    origin_stream_id = fields.CharField(max_length=128, index=True)
     """The stream ID for the article's origin."""
     origin_title = fields.TextField()
     """The title of the origin of the article."""
@@ -60,7 +60,7 @@ class LocalArticleCategory(Model):
         "models.LocalArticle", related_name="categories", on_delete=fields.CASCADE
     )
     """The article that this category belongs to."""
-    category = fields.CharField(max_length=255)
+    category = fields.CharField(max_length=255, index=True)
     """The category."""
 
 
