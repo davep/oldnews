@@ -39,7 +39,7 @@ class NextUnread(Command):
 class Next(Command):
     """Navigate to the next article regardless of read status"""
 
-    BINDING_KEY = "N"
+    BINDING_KEY = "N, ctrl+down"
 
 
 ##############################################################################
@@ -53,7 +53,7 @@ class PreviousUnread(Command):
 class Previous(Command):
     """Navigate to the next article regardless of read status"""
 
-    BINDING_KEY = "P"
+    BINDING_KEY = "P, ctrl+up"
 
 
 ##############################################################################
