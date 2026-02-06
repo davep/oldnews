@@ -37,6 +37,9 @@ class Configuration:
     startup_refresh_holdoff_period: float = 600
     """The number of seconds to wait before hitting TheOldReader again on startup."""
 
+    article_download_batch_size: int = 50
+    """The batch size to use when downloading articles."""
+
 
 ##############################################################################
 def configuration_file() -> Path:

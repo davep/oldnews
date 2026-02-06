@@ -5,7 +5,7 @@
 from collections.abc import AsyncIterator, Callable, Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import Any, Final
+from typing import Any
 
 ##############################################################################
 # OldAS imports.
@@ -42,10 +42,6 @@ type Callback = Callable[[], Any] | None
 type CallbackWith[T] = Callable[[T], Any] | None
 """Type of callback with a single argument."""
 
-##############################################################################
-BATCH_SIZE: Final[int] = 10
-"""Batch size for downloading articles."""
-
 
 ##############################################################################
 @dataclass
@@ -69,6 +65,8 @@ class TheOldReaderSync:
 
     def __post_init__(self) -> None:
         """Initialise the sync object."""
+        self._batch_size = load_configuration().article_download_batch_size
+        """The size of the article batch to download and save."""
         self._last_sync: datetime | None = None
         """The time at which we last did a sync."""
         self._first_sync = True
@@ -107,21 +105,25 @@ class TheOldReaderSync:
             The number of articles downloaded.
         """
         loaded = 0
+        save_batch: list[Article] = []
         async for article in stream:
             # I've encountered articles that don't have an origin stream ID,
             # which means that I can't relate them back to a stream, which
             # means I'll never see them anyway...
             if not article.origin.stream_id:
                 continue
-            # TODO: Right now I'm saving articles one at a time; perhaps I
-            # should save them in small batches? This would be simple enough
-            # -- perhaps same them in batches the same size as the buffer
-            # window I'm using right now (currently BATCH_SIZE articles per
-            # trip to ToR).
-            await save_local_articles(Articles([article]))
+            save_batch.append(article)
             loaded += 1
-            if (loaded % BATCH_SIZE) == 0:
+            if (loaded % self._batch_size) == 0:
                 self._step(f"{description}: {loaded}", log=False)
+                Log().debug(f"Saving batch of articles: {len(save_batch)}")
+                await save_local_articles(Articles(save_batch))
+                Log().debug(f"Saved batch of articles: {len(save_batch)}")
+                save_batch = []
+        if save_batch:
+            Log().debug(f"Saving final batch of articles: {len(save_batch)}")
+            await save_local_articles(Articles(save_batch))
+            Log().debug(f"Saved final batch of articles: {len(save_batch)}")
         return loaded
 
     async def _get_updated_read_status(self) -> None:
@@ -151,7 +153,7 @@ class TheOldReaderSync:
         for subscription in subscriptions:
             if loaded := await self._download(
                 Articles.stream_new_since(
-                    self.session, cutoff, subscription, n=BATCH_SIZE
+                    self.session, cutoff, subscription, n=self._batch_size
                 ),
                 f"Downloading article backlog for {subscription.title}",
             ):
@@ -199,7 +201,7 @@ class TheOldReaderSync:
             new_grab - timedelta(days=load_configuration().local_history)
         )
         if loaded := await self._download(
-            Articles.stream_new_since(self.session, last_grabbed, n=BATCH_SIZE),
+            Articles.stream_new_since(self.session, last_grabbed, n=self._batch_size),
             "Downloading articles from TheOldReader",
         ):
             self._result(f"Articles downloaded: {loaded}")
