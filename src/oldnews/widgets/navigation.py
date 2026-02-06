@@ -11,6 +11,10 @@ from dataclasses import dataclass
 from typing import cast
 
 ##############################################################################
+# Humanize imports.
+from humanize import intcomma
+
+##############################################################################
 # OldAs imports.
 from oldas import Folder, Folders, Subscription, Subscriptions
 
@@ -65,7 +69,7 @@ class FolderView(Option):
             "▼" if expanded else "▶",
             f"[{style}]{escape(folder.name)}[/]",
             "",
-            str(unread) if unread else "",
+            intcomma(unread) if unread else "",
         )
         super().__init__(
             Group(rule := Rule(style="dim"), prompt, rule) if expanded else prompt,
@@ -103,7 +107,7 @@ class SubscriptionView(Option):
             "",
             f"[{style}]{escape(subscription.title)}[/]",
             "",
-            str(unread) if unread else "",
+            intcomma(unread) if unread else "",
         )
         super().__init__(prompt, id=subscription.id)
 
