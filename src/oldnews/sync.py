@@ -8,6 +8,10 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 ##############################################################################
+# Humanize imports.
+from humanize import intcomma, naturaltime
+
+##############################################################################
 # OldAS imports.
 from oldas import (
     Article,
@@ -115,7 +119,7 @@ class TheOldReaderSync:
             save_batch.append(article)
             loaded += 1
             if (loaded % self._batch_size) == 0:
-                self._step(f"{description}: {loaded}", log=False)
+                self._step(f"{description}: {intcomma(loaded)}", log=False)
                 Log().debug(f"Saving batch of articles: {len(save_batch)}")
                 await save_local_articles(Articles(save_batch))
                 Log().debug(f"Saved batch of articles: {len(save_batch)}")
@@ -140,7 +144,7 @@ class TheOldReaderSync:
             Log().debug(f"Articles found as marked read elsewhere: {mark_as_read}")
             await locally_mark_article_ids_read(mark_as_read)
             self._result(
-                f"Articles found read elsewhere on TheOldReader: {len(mark_as_read)}"
+                f"Articles found read elsewhere on TheOldReader: {intcomma(len(mark_as_read))}"
             )
 
     async def _download_backlog(self, subscriptions: Iterable[Subscription]) -> None:
@@ -158,7 +162,7 @@ class TheOldReaderSync:
                 f"Downloading article backlog for {subscription.title}",
             ):
                 self._result(
-                    f"Downloaded article backlog for {subscription.title}: {loaded}"
+                    f"Downloaded article backlog for {subscription.title}: {intcomma(loaded)}"
                 )
 
     async def _get_folders(self) -> Folders:
@@ -193,8 +197,8 @@ class TheOldReaderSync:
         """Download any new articles."""
         self._step(
             "Getting available articles"
-            if self._first_sync
-            else f"Getting new articles since {self._last_sync}"
+            if self._last_sync is None
+            else f"Getting new articles since {naturaltime(self._last_sync)}"
         )
         new_grab = datetime.now(UTC)
         last_grabbed = self._last_sync or (
@@ -204,7 +208,7 @@ class TheOldReaderSync:
             Articles.stream_new_since(self.session, last_grabbed, n=self._batch_size),
             "Downloading articles from TheOldReader",
         ):
-            self._result(f"Articles downloaded: {loaded}")
+            self._result(f"Articles downloaded: {intcomma(loaded)}")
         else:
             self._result("No new articles found on TheOldReader")
         await remember_we_last_grabbed_at(new_grab)
@@ -284,6 +288,7 @@ class TheOldReaderSync:
 
     async def sync(self) -> None:
         """Sync the data from TheOldReader."""
+        Log().info("Starting sync with TheOldReader")
         self._last_sync = await last_grabbed_data_at()
         self._first_sync = self._last_sync is None
         folders = await self._get_folders()
@@ -295,6 +300,7 @@ class TheOldReaderSync:
         await self._get_unread_counts(folders, subscriptions)
         if self.on_sync_finished:
             self.on_sync_finished()
+        Log().info("Finished sync with TheOldReader")
 
 
 ### sync.py ends here

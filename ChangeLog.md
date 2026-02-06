@@ -6,6 +6,8 @@
 
 - The new subscription dialog now defaults the feed to any URL found in the
   clipboard. ([#119](https://github.com/davep/oldnews/pull/119))
+- Various small cosmetic tweaks to how dates and counts are shown.
+  ([#120](https://github.com/davep/oldnews/pull/120))
 
 ## v0.9.0
 

@@ -11,6 +11,10 @@ from webbrowser import open as open_url
 from bagofstuff.pipe import Pipe
 
 ##############################################################################
+# Humanize imports.
+from humanize import intcomma
+
+##############################################################################
 # OldAs imports.
 from oldas import (
     Article,
@@ -332,7 +336,9 @@ class Main(EnhancedScreen[None]):
             message: The message requesting the sub-title be updated.
         """
         self.sub_title = (
-            message.title if message.title else f"{total_unread(self.unread)} unread"
+            message.title
+            if message.title
+            else f"{intcomma(total_unread(self.unread))} unread"
         )
 
     @on(NewFolders)
@@ -361,7 +367,7 @@ class Main(EnhancedScreen[None]):
             message: The message with the new unread counts.
         """
         self.unread = message.counts
-        self.post_message(self.SubTitle(""))
+        self.post_message(self.SubTitle())
 
     async def _refresh_article_list(self) -> None:
         """Refresh the content of the article list."""
@@ -403,7 +409,7 @@ class Main(EnhancedScreen[None]):
     async def _sync_finished(self) -> None:
         """Clean up after a sync from TheOldReader has finished."""
         await self._refresh_article_list()
-        self.post_message(self.SubTitle(""))
+        self.post_message(self.SubTitle())
 
     @on(RefreshFromTheOldReader)
     @work(exclusive=True)
