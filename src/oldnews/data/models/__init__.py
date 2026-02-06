@@ -10,14 +10,14 @@ from .local_subscription import LocalSubscription, LocalSubscriptionCategory
 ##############################################################################
 # Exports.
 __all__ = [
+    "LastGrabbed",
     "LocalArticle",
     "LocalArticleAlternate",
     "LocalArticleCategory",
     "LocalFolder",
-    "LastGrabbed",
-    "NavigationState",
     "LocalSubscription",
     "LocalSubscriptionCategory",
+    "NavigationState",
 ]
 
 
