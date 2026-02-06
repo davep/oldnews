@@ -6,6 +6,10 @@
 
 - BREAKING CHANGE: Rewrite of the local database support, swapped to using
   Tortoise ORM. ([#107](https://github.com/davep/oldnews/pull/107))
+- Article download batch size can now be changed via the config file.
+  ([#113](https://github.com/davep/oldnews/pull/113))
+- Article downloads are now saved in batches.
+  ([#113](https://github.com/davep/oldnews/pull/113))
 
 ## v0.8.0
 
