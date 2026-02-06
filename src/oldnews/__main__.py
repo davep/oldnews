@@ -9,7 +9,7 @@ from operator import attrgetter
 ##############################################################################
 # Local imports.
 from . import __doc__, __version__
-from .data import initialise_database, reset_data
+from .data import reset_data
 from .data.locations import config_dir, data_dir
 from .oldnews import OldNews
 
@@ -155,7 +155,6 @@ def main() -> None:
         case "themes":
             show_themes()
         case _:
-            initialise_database()
             OldNews(args).run()
 
 

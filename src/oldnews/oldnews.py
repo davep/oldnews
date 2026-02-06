@@ -22,8 +22,10 @@ from textual_enhanced.app import EnhancedApp
 from . import __version__
 from .data import (
     get_auth_token,
+    initialise_local_data,
     load_configuration,
     set_auth_token,
+    shutdown_local_data,
     update_configuration,
 )
 from .screens import Login, Main
@@ -92,7 +94,7 @@ class OldNews(EnhancedApp[None]):
         else:
             self.exit()
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         """Display the main screen.
 
         Note:
@@ -100,11 +102,16 @@ class OldNews(EnhancedApp[None]):
             shown; the main screen will then only be shown once a token as
             been acquired.
         """
+        await initialise_local_data()
         session = partial(Session, "OldNews")
         if token := get_auth_token():
             self.push_screen(Main(session(token)))
         else:
             self.push_screen(Login(session()), callback=self.login_bounce)
+
+    async def on_unmount(self) -> None:
+        """Clean up on application exit."""
+        await shutdown_local_data()
 
 
 ### oldnews.py ends here

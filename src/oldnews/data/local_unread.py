@@ -14,7 +14,9 @@ LocalUnread = dict[str, int]
 
 
 ##############################################################################
-def get_local_unread(folders: Folders, subscriptions: Subscriptions) -> LocalUnread:
+async def get_local_unread(
+    folders: Folders, subscriptions: Subscriptions
+) -> LocalUnread:
     """Get the local unread counts.
 
     Args:
@@ -24,10 +26,10 @@ def get_local_unread(folders: Folders, subscriptions: Subscriptions) -> LocalUnr
     Returns:
         The local unread counts.
     """
-    read = get_local_read_article_ids()
+    read = await get_local_read_article_ids()
     unread = LocalUnread()
     for category in [*folders, *subscriptions]:
-        unread[category.id] = unread_count_in(category, read)
+        unread[category.id] = await unread_count_in(category, read)
     return unread
 
 

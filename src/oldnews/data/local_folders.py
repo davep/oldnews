@@ -5,26 +5,16 @@
 from oldas import Folder, Folders
 
 ##############################################################################
-# TypeDAL imports.
-from typedal import TypedTable
+# Tortoise imports.
+from tortoise.transactions import in_transaction
 
 ##############################################################################
 # Local imports.
-from .tools import commit
+from .models import LocalFolder
 
 
 ##############################################################################
-class LocalFolder(TypedTable):
-    """A local copy of a folder."""
-
-    folder_id: str
-    """The ID of the folder."""
-    sort_id: str
-    """The sort ID of the folder."""
-
-
-##############################################################################
-def get_local_folders() -> Folders:
+async def get_local_folders() -> Folders:
     """Gets the local cache of known folders.
 
     Returns:
@@ -32,12 +22,12 @@ def get_local_folders() -> Folders:
     """
     return Folders(
         Folder(id=folder.folder_id, sort_id=folder.sort_id)
-        for folder in LocalFolder.select(LocalFolder.ALL)
+        for folder in await LocalFolder.all()
     )
 
 
 ##############################################################################
-def save_local_folders(folders: Folders) -> Folders:
+async def save_local_folders(folders: Folders) -> Folders:
     """Save the local copy of the known folders.
 
     Args:
@@ -46,11 +36,12 @@ def save_local_folders(folders: Folders) -> Folders:
     Returns:
         The folders.
     """
-    LocalFolder.truncate()
-    LocalFolder.bulk_insert(
-        [{"folder_id": folder.id, "sort_id": folder.sort_id} for folder in folders]
-    )
-    commit(LocalFolder)
+    async with in_transaction():
+        await LocalFolder.all().delete()
+        await LocalFolder.bulk_create(
+            LocalFolder(folder_id=folder.id, sort_id=folder.sort_id)
+            for folder in folders
+        )
     return folders
 
 

@@ -3,7 +3,7 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from webbrowser import open as open_url
 
 ##############################################################################
@@ -363,10 +363,12 @@ class Main(EnhancedScreen[None]):
         self.unread = message.counts
         self.post_message(self.SubTitle(""))
 
-    def _refresh_article_list(self) -> None:
+    async def _refresh_article_list(self) -> None:
         """Refresh the content of the article list."""
         if self.current_category:
-            self.articles = get_local_articles(self.current_category, not self.show_all)
+            self.articles = await get_local_articles(
+                self.current_category, not self.show_all
+            )
             # If the result is there's nothing showing, tidy up the content
             # side of the display and maybe move focus back to navigation.
             if not self.articles:
@@ -375,32 +377,32 @@ class Main(EnhancedScreen[None]):
                     self.navigation.focus()
         self.article_view.set_class(bool(self.articles), "--has-articles")
 
-    @work(thread=True, exclusive=True)
-    def _load_locally(self) -> None:
+    @work(exclusive=True)
+    async def _load_locally(self) -> None:
         """Load up any locally-held data."""
-        if subscriptions := get_local_subscriptions():
+        if subscriptions := await get_local_subscriptions():
             self.post_message(self.NewSubscriptions(subscriptions))
-        if folders := get_local_folders():
+        if folders := await get_local_folders():
             self.post_message(self.NewFolders(folders))
-        if cleaned := clean_old_read_articles(
+        if cleaned := await clean_old_read_articles(
             timedelta(days=load_configuration().local_history)
         ):
             self.notify(f"Old read articles cleaned from local storage: {cleaned}")
-        if unread := get_local_unread(folders, subscriptions):
+        if unread := await get_local_unread(folders, subscriptions):
             self.post_message(self.NewUnread(unread))
-        self._refresh_article_list()
+        await self._refresh_article_list()
         # If we've never grabbed data from ToR before, or if it's been long enough...
-        if (last_grabbed := last_grabbed_data_at()) is None or (
-            (datetime.now() - last_grabbed).seconds
+        if (last_grabbed := await last_grabbed_data_at()) is None or (
+            (datetime.now(UTC) - last_grabbed).seconds
             >= load_configuration().startup_refresh_holdoff_period
         ):
             # ...kick off a refresh from TheOldReader.
             self.post_message(RefreshFromTheOldReader())
 
     @on(SyncFinished)
-    def _sync_finished(self) -> None:
+    async def _sync_finished(self) -> None:
         """Clean up after a sync from TheOldReader has finished."""
-        self._refresh_article_list()
+        await self._refresh_article_list()
         self.post_message(self.SubTitle(""))
 
     @on(RefreshFromTheOldReader)
@@ -422,7 +424,9 @@ class Main(EnhancedScreen[None]):
         ).sync()
 
     @on(Navigation.CategorySelected)
-    def _handle_navigaion_selection(self, message: Navigation.CategorySelected) -> None:
+    async def _handle_navigaion_selection(
+        self, message: Navigation.CategorySelected
+    ) -> None:
         """Handle a navigation selection being made.
 
         Args:
@@ -430,12 +434,12 @@ class Main(EnhancedScreen[None]):
         """
         self.current_category = message.category
         self.article = None
-        self._refresh_article_list()
+        await self._refresh_article_list()
         self.article_list.focus()
 
-    def _watch_show_all(self) -> None:
+    async def _watch_show_all(self) -> None:
         """Handle changes to the show all flag."""
-        self._refresh_article_list()
+        await self._refresh_article_list()
 
     @work
     async def _mark_read(self, article: Article) -> None:
@@ -444,11 +448,11 @@ class Main(EnhancedScreen[None]):
         Args:
             article: The article to mark as read.
         """
-        locally_mark_read(article)
+        await locally_mark_read(article)
         self.post_message(
-            self.NewUnread(get_local_unread(self.folders, self.subscriptions))
+            self.NewUnread(await get_local_unread(self.folders, self.subscriptions))
         )
-        self._refresh_article_list()
+        await self._refresh_article_list()
         await article.mark_read(self._session)
 
     @on(ArticleList.ViewArticle)
@@ -557,11 +561,13 @@ class Main(EnhancedScreen[None]):
             )
         ):
             if await self._session.add_tag(ids_to_mark_read, State.READ):
-                locally_mark_article_ids_read(ids_to_mark_read)
+                await locally_mark_article_ids_read(ids_to_mark_read)
                 self.post_message(
-                    self.NewUnread(get_local_unread(self.folders, self.subscriptions))
+                    self.NewUnread(
+                        await get_local_unread(self.folders, self.subscriptions)
+                    )
                 )
-                self._refresh_article_list()
+                await self._refresh_article_list()
                 self.notify(
                     f"{len(ids_to_mark_read)} article{plural} marked read for {category_description}"
                 )
@@ -690,7 +696,7 @@ class Main(EnhancedScreen[None]):
             ModalInput("Subscription name", folder.name)
         ):
             if await Folders.rename(self._session, folder, new_name):
-                rename_folder_for_articles(folder, new_name)
+                await rename_folder_for_articles(folder, new_name)
                 self.notify("Renamed")
                 self.post_message(RefreshFromTheOldReader())
             else:
@@ -718,7 +724,7 @@ class Main(EnhancedScreen[None]):
             )
         ):
             if await Subscriptions.remove(self._session, subscription):
-                remove_subscription_articles(subscription)
+                await remove_subscription_articles(subscription)
                 self.notify(f"Removed {subscription.title}")
                 self.post_message(RefreshFromTheOldReader())
             else:
@@ -737,7 +743,7 @@ class Main(EnhancedScreen[None]):
             )
         ):
             if await Folders.remove(self._session, folder):
-                remove_folder_from_articles(folder)
+                await remove_folder_from_articles(folder)
                 self.notify(f"Removed {folder.name}")
                 self.post_message(RefreshFromTheOldReader())
             else:
@@ -760,7 +766,7 @@ class Main(EnhancedScreen[None]):
             target_folder := await self.app.push_screen_wait(FolderInput(self.folders))
         ) is not None:
             if await Subscriptions.move(self._session, subscription, target_folder):
-                move_subscription_articles(
+                await move_subscription_articles(
                     subscription, subscription.folder_id, target_folder
                 )
                 self.notify("Moved")
