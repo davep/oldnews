@@ -595,7 +595,9 @@ class Main(EnhancedScreen[None]):
                     title="Can't visit",
                 )
 
-    def _copy_to_clipboard(self, content: str | None, empty_error: str) -> None:
+    def _copy_to_clipboard(
+        self, content: str | None, empty_error: str, source: str = ""
+    ) -> None:
         """Copy some content to the clipboard.
 
         Args:
@@ -604,7 +606,7 @@ class Main(EnhancedScreen[None]):
         """
         if content:
             self.app.copy_to_clipboard(content)
-            self.notify("Copied to clipboard")
+            self.notify("Copied to clipboard", title=source)
         else:
             self.notify(empty_error, severity="error", title="Can't copy")
 
@@ -612,21 +614,25 @@ class Main(EnhancedScreen[None]):
         """Copy the URL of the current subscription's homepage to the clipboard."""
         if subscription := self.navigation.current_subscription:
             self._copy_to_clipboard(
-                subscription.html_url, "No home page URL available for the subscription"
+                subscription.html_url,
+                "No home page URL available for the subscription",
+                "Home page URL",
             )
 
     def action_copy_feed_to_clipboard_command(self) -> None:
         """Copy the URL of the current subscription's feed to the clipboard."""
         if subscription := self.navigation.current_subscription:
             self._copy_to_clipboard(
-                subscription.url, "No feed URL available for the subscription"
+                subscription.url,
+                "No feed URL available for the subscription",
+                "Feed URL",
             )
 
     def action_copy_article_to_clipboard_command(self) -> None:
         """Copy the URL of the current article to the clipboard."""
         if self.article:
             self._copy_to_clipboard(
-                self.article.html_url, "No URL available for the article"
+                self.article.html_url, "No URL available for the article", "Article URL"
             )
 
     def action_copy_command(self) -> None:
