@@ -575,7 +575,7 @@ class Main(EnhancedScreen[None]):
                 )
                 await self._refresh_article_list()
                 self.notify(
-                    f"{len(ids_to_mark_read)} article{plural} marked read for {category_description}"
+                    f"{intcomma(len(ids_to_mark_read))} article{plural} marked read for {category_description}"
                 )
             else:
                 self.notify(
