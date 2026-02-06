@@ -308,7 +308,7 @@ class Main(EnhancedScreen[None]):
             # If we're inside the navigation panel...
             if self.navigation.has_focus:
                 # ...we just care if there's anything unread somewhere.
-                return any(total for total in self.unread.values())
+                return any(self.unread.values())
             # Otherwise we care if we can see a current list of articles and
             # if there's something unread amongst them.
             return self.articles is not None and any(
