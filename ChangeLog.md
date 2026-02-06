@@ -5,7 +5,7 @@
 **Released: WiP**
 
 - The new subscription dialog now defaults the feed to any URL found in the
-  clipboard.
+  clipboard. ([#119](https://github.com/davep/oldnews/pull/119))
 
 ## v0.9.0
 
