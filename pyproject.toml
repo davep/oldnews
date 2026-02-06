@@ -19,7 +19,7 @@ keywords = [
     "news",
 ]
 dependencies = [
-    "bagofstuff>=0.1.0",
+    "bagofstuff>=0.2.0",
     "html-to-markdown>=2.15.0",
     "oldas>=0.10.0",
     "textual>=6.3.0",
