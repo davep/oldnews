@@ -130,7 +130,7 @@ class Remove(Command):
 class MoveSubscription(Command):
     """Move the current subscription to folder"""
 
-    BINDING_KEY = "f7"
+    BINDING_KEY = "vertical_line"
 
 
 ##############################################################################
