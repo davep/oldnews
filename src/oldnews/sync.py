@@ -129,10 +129,10 @@ class TheOldReaderSync:
         if self._first_sync:
             return
         self._step("Syncing read/unread status with TheOldReader")
-        remote_unread_articles = set(
+        remote_unread_articles = {
             article_id.full_id
             for article_id in await ArticleIDs.load_unread(self.session)
-        )
+        }
         local_unread_articles = set(await get_unread_article_ids())
         if mark_as_read := local_unread_articles - remote_unread_articles:
             Log().debug(f"Articles found as marked read elsewhere: {mark_as_read}")

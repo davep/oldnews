@@ -16,7 +16,7 @@ async def get_navigation_state() -> set[str]:
     Returns:
         The saved navigation state.
     """
-    return set(state.expanded_folder_id for state in await NavigationState.all())
+    return {state.expanded_folder_id for state in await NavigationState.all()}
 
 
 ##############################################################################
