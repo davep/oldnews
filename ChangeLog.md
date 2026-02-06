@@ -1,5 +1,12 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- The new subscription dialog now defaults the feed to any URL found in the
+  clipboard.
+
 ## v0.9.0
 
 **Released: 2026-02-06**
