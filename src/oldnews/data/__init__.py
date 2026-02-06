@@ -34,9 +34,8 @@ from .reset import reset_data
 ##############################################################################
 # Exports.
 __all__ = [
-    "Configuration",
-    "Log",
     "clean_old_read_articles",
+    "Configuration",
     "data_dump",
     "get_auth_token",
     "get_local_articles",
@@ -48,9 +47,10 @@ __all__ = [
     "initialise_local_data",
     "last_grabbed_data_at",
     "load_configuration",
-    "locally_mark_read",
     "locally_mark_article_ids_read",
+    "locally_mark_read",
     "LocalUnread",
+    "Log",
     "move_subscription_articles",
     "remember_we_last_grabbed_at",
     "remove_folder_from_articles",
@@ -62,8 +62,8 @@ __all__ = [
     "save_local_folders",
     "save_local_subscriptions",
     "save_navigation_state",
-    "shutdown_local_data",
     "set_auth_token",
+    "shutdown_local_data",
     "total_unread",
     "update_configuration",
 ]
