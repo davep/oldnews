@@ -151,9 +151,15 @@ async def locally_mark_article_ids_read(articles: Iterable[str]) -> None:
     Args:
         articles: The article IDs to mark as read.
     """
-    if articles := set(articles):
-        for article in await LocalArticle.filter(article_id__in=articles):
-            await article.add_category(State.READ)
+    if article_ids := set(articles):
+        Log().debug(f"Number of articles to mark as read: {len(article_ids)}")
+        await LocalArticleCategory.bulk_create(
+            [
+                LocalArticleCategory(article=article, category=str(State.READ))
+                for article in await LocalArticle.filter(article_id__in=article_ids)
+            ],
+            ignore_conflicts=True,
+        )
 
 
 ##############################################################################
