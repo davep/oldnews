@@ -116,7 +116,7 @@ class AddSubscription(Command):
 class Rename(Command):
     """Rename the current folder or subscription"""
 
-    BINDING_KEY = "f6"
+    BINDING_KEY = "apostrophe"
 
 
 ##############################################################################
