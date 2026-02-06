@@ -36,15 +36,17 @@ async def save_local_articles(articles: Articles) -> Articles:
         async with in_transaction():
             local_article, _ = await LocalArticle.update_or_create(
                 article_id=article.id,
-                title=article.title,
-                published=article.published,
-                updated=article.updated,
-                author=article.author,
-                summary_direction=article.summary.direction,
-                summary_content=article.summary.content,
-                origin_stream_id=article.origin.stream_id,
-                origin_title=article.origin.title,
-                origin_html_url=article.origin.html_url,
+                defaults={
+                    "title": article.title,
+                    "published": article.published,
+                    "updated": article.updated,
+                    "author": article.author,
+                    "summary_direction": article.summary.direction,
+                    "summary_content": article.summary.content,
+                    "origin_stream_id": article.origin.stream_id,
+                    "origin_title": article.origin.title,
+                    "origin_html_url": article.origin.html_url,
+                },
             )
             await LocalArticleCategory.filter(article=local_article).delete()
             await LocalArticleCategory.bulk_create(
