@@ -88,14 +88,14 @@ class CopyHomePageToClipboard(Command):
 class CopyFeedToClipboard(Command):
     """Copy the URL of the current subscription's feed to the clipboard"""
 
-    BINDING_KEY = "f4"
+    BINDING_KEY = "shift+f3"
 
 
 ##############################################################################
 class CopyArticleToClipboard(Command):
     """Copy the URL for the current article to the clipboard"""
 
-    BINDING_KEY = "f5"
+    BINDING_KEY = "super+f3"
 
 
 ##############################################################################
