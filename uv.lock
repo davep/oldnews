@@ -159,11 +159,11 @@ wheels = [
 
 [[package]]
 name = "bagofstuff"
-version = "0.1.0"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a1/3b/10d7c0fa260a09ce1c90e00a6effd30596d03ff87fc796a6cc1f1efd7a2f/bagofstuff-0.1.0.tar.gz", hash = "sha256:f72ca831650c84dddf3679dcc350b89a13f7702785a3c4808dcd051ced3c3b1c", size = 2786, upload-time = "2026-02-01T15:52:07.664Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/77/f2/32a00b91478cf44fb32ad947a6f7ebdc2a6885d1e08b18f61c3f438cdcc4/bagofstuff-0.2.0.tar.gz", hash = "sha256:886ce3c4cd7b259de20f2506eaab77b33550050c0b93e2bc9a6f2121c4578977", size = 3258, upload-time = "2026-02-06T19:04:17.22Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ac/55/a144cc562abf54e4810bb5b0ec970639f9a7d7bd4522cefb564b2146a1f4/bagofstuff-0.1.0-py3-none-any.whl", hash = "sha256:837d3441b15b150959dc7887778e4e5b7ccc8ebb896e14cc27f264388fe53264", size = 3844, upload-time = "2026-02-01T15:52:06.5Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/06/c27f103a1ebe239e2f52c5f98b0c502c77b94104b1a6e6791cfab33c69a8/bagofstuff-0.2.0-py3-none-any.whl", hash = "sha256:5238d531617cff6bb6366cf7eede1ff86faac9b94c6e08f0de1e9c8b0996424f", size = 4456, upload-time = "2026-02-06T19:04:16.177Z" },
 ]
 
 [[package]]
@@ -787,10 +787,12 @@ dependencies = [
     { name = "bagofstuff" },
     { name = "html-to-markdown" },
     { name = "oldas" },
+    { name = "pyperclip" },
     { name = "textual" },
     { name = "textual-autocomplete" },
     { name = "textual-enhanced" },
     { name = "tortoise-orm" },
+    { name = "types-pyperclip" },
     { name = "xdg-base-dirs" },
 ]
 
@@ -805,13 +807,15 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "bagofstuff", specifier = ">=0.1.0" },
+    { name = "bagofstuff", specifier = ">=0.2.0" },
     { name = "html-to-markdown", specifier = ">=2.15.0" },
     { name = "oldas", specifier = ">=0.10.0" },
+    { name = "pyperclip", specifier = ">=1.11.0" },
     { name = "textual", specifier = ">=6.3.0" },
     { name = "textual-autocomplete", specifier = ">=4.0.6" },
     { name = "textual-enhanced", specifier = ">=1.2.0" },
     { name = "tortoise-orm", specifier = ">=0.25.4" },
+    { name = "types-pyperclip", specifier = ">=1.9.0.20250801" },
     { name = "xdg-base-dirs", specifier = ">=6.0.2" },
 ]
 
@@ -949,6 +953,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b0/77/a5b8c569bf593b0140bde72ea885a803b82086995367bf2037de0159d924/pygments-2.19.2.tar.gz", hash = "sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887", size = 4968631, upload-time = "2025-06-21T13:39:12.283Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c7/21/705964c7812476f378728bdf590ca4b771ec72385c533964653c68e86bdc/pygments-2.19.2-py3-none-any.whl", hash = "sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b", size = 1225217, upload-time = "2025-06-21T13:39:07.939Z" },
+]
+
+[[package]]
+name = "pyperclip"
+version = "1.11.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/52/d87eba7cb129b81563019d1679026e7a112ef76855d6159d24754dbd2a51/pyperclip-1.11.0.tar.gz", hash = "sha256:244035963e4428530d9e3a6101a1ef97209c6825edab1567beac148ccc1db1b6", size = 12185, upload-time = "2025-09-26T14:40:37.245Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/80/fc9d01d5ed37ba4c42ca2b55b4339ae6e200b456be3a1aaddf4a9fa99b8c/pyperclip-1.11.0-py3-none-any.whl", hash = "sha256:299403e9ff44581cb9ba2ffeed69c7aa96a008622ad0c46cb575ca75b5b84273", size = 11063, upload-time = "2025-09-26T14:40:36.069Z" },
 ]
 
 [[package]]
@@ -1142,6 +1155,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/78/44/8a75e91a5d0e2e2545485de3e084fac1f4ff2ba4859e39240fa204c748d5/tortoise_orm-0.25.4.tar.gz", hash = "sha256:88c231ebe158f1287fc9c9497313f9a46cfb70b66c458ba39900921a4e52d01b", size = 232871, upload-time = "2026-02-02T17:57:10.825Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/af/8c/c5825518f67fb9042c4020c272f4c872e10ea5358424e087eb943cef6561/tortoise_orm-0.25.4-py3-none-any.whl", hash = "sha256:a699e629632abf760d14794e8afd3579a9c844623d50a58a6fbdcd6f52b5a37d", size = 168512, upload-time = "2026-02-02T17:57:08.776Z" },
+]
+
+[[package]]
+name = "types-pyperclip"
+version = "1.9.0.20250801"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/7d/144cc18484621f31b1c04f2b4e6b1cd925a25573f72f00770f0030061cd4/types_pyperclip-1.9.0.20250801.tar.gz", hash = "sha256:37eb1b8f6989ccc1ec2f80e2984316f74ccd2aedb385331c210252928ffc3a1f", size = 7202, upload-time = "2025-08-01T03:47:43.071Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/38/6e/af02c7af8178f2d3933b26560b5428236fcfa78966dbb4a52220f1b2253b/types_pyperclip-1.9.0.20250801-py3-none-any.whl", hash = "sha256:73ad08721a2380506549027d5b13a8b360db909a2480649e728a37d836c36456", size = 7606, upload-time = "2025-08-01T03:47:42.115Z" },
 ]
 
 [[package]]

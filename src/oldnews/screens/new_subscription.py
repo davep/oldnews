@@ -5,12 +5,21 @@
 from typing import NamedTuple
 
 ##############################################################################
+# BagOfStuff imports.
+from bagofstuff.url_tools import looks_webish
+
+##############################################################################
 # OldAS imports.
 from oldas import Folders
 
 ##############################################################################
+# Pyperclip imports.
+from pyperclip import PyperclipException
+from pyperclip import paste as from_clipboard
+
+##############################################################################
 # Textual imports.
-from textual import on
+from textual import on, work
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.getters import query_one
@@ -103,6 +112,10 @@ class NewSubscription(ModalScreen[NewSubscriptionData | None]):
                 folder_input, candidates=[folder.name for folder in self._folders]
             )
 
+    def on_mount(self) -> None:
+        """Configure the dialog once the DOM is mounted."""
+        self._suggest_feed()
+
     @on(Input.Changed, "#feed")
     def _refresh_state(self) -> None:
         """Refresh the state of the dialog."""
@@ -123,6 +136,41 @@ class NewSubscription(ModalScreen[NewSubscriptionData | None]):
     def action_cancel(self) -> None:
         """React to the user cancelling the dialog."""
         self.dismiss(None)
+
+    def _paste(self, url: str) -> None:
+        """Paste the given URL into the feed field.
+
+        Args:
+            url: The URL to paste.
+
+        Notes:
+            The given URL will only be pasted into the feed input field if
+            that field is empty.
+        """
+        if not self.feed_input.value:
+            self.feed_input.value = url
+
+    @work(thread=True)
+    def _suggest_feed(self) -> None:
+        """Get a feed suggestion by peeking in the user's clipboard."""
+        # Look for something in the external clipboard.
+        try:
+            external = from_clipboard()
+        except PyperclipException:
+            external = ""
+        # Looking at the Textual-internal clipboard, then the external
+        # clipboard...
+        for candidate in (self.app.clipboard, external):
+            # ...only looking at the first line of what we find...
+            try:
+                candidate = candidate.strip().splitlines()[0]
+            except IndexError:
+                candidate = ""
+            # If it looks like it might be a URL...
+            if looks_webish(candidate):
+                # ...paste it into the feed field.
+                self.app.call_from_thread(self._paste, candidate)
+                break
 
 
 ### new_subscription.py ends here
