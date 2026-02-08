@@ -452,18 +452,27 @@ class Main(EnhancedScreen[None]):
         """Handle changes to the show all flag."""
         await self._refresh_article_list()
 
+    @work
+    async def _remotely_mark_read(self, article: Article) -> None:
+        """Mark an article as read on the TheOldReader server.
+
+        Args:
+            article: The article to mark as read.
+        """
+        await article.mark_read(self._session)
+
     async def _mark_read(self, article: Article) -> None:
         """Mark the given article as read.
 
         Args:
             article: The article to mark as read.
         """
+        self._remotely_mark_read(article)
         await locally_mark_read(article)
         self.post_message(
             self.NewUnread(await get_local_unread(self.folders, self.subscriptions))
         )
         await self._refresh_article_list()
-        await article.mark_read(self._session)
 
     @on(ArticleContent.Displayed)
     async def _article_in_view(self, message: ArticleContent.Displayed) -> None:
