@@ -550,7 +550,7 @@ class Main(EnhancedScreen[None]):
     @work
     async def action_mark_all_read_command(self) -> None:
         """Mark all unread articles in the current category as read."""
-        if (current_category := self.current_category) is None:
+        if self.current_category is None:
             return
         if not (
             ids_to_mark_read := [
@@ -558,9 +558,13 @@ class Main(EnhancedScreen[None]):
             ]
         ):
             return
+        category_name = (
+            self.current_category.name
+            if isinstance(self.current_category, Folder)
+            else self.current_category.title
+        )
         category_description = (
-            f"{current_category.__class__.__name__.lower()} "
-            f"'{current_category.name if isinstance(current_category, Folder) else current_category.title}'"
+            f"{self.current_category.__class__.__name__.lower()} '{category_name}'"
         )
         plural = "s" if len(ids_to_mark_read) > 1 else ""
         if await self.app.push_screen_wait(
