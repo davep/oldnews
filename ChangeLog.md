@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v0.10.0
 
-**Released: WiP**
+**Released: 2026-02-08**
 
 - The new subscription dialog now defaults the feed to any URL found in the
   clipboard. ([#119](https://github.com/davep/oldnews/pull/119))
