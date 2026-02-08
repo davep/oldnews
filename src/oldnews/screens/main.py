@@ -29,6 +29,11 @@ from oldas import (
 )
 
 ##############################################################################
+# Pyperclip imports.
+from pyperclip import PyperclipException
+from pyperclip import copy as to_clipboard
+
+##############################################################################
 # Textual imports.
 from textual import on, work
 from textual.app import ComposeResult
@@ -614,7 +619,18 @@ class Main(EnhancedScreen[None]):
             empty_error: The message to show if there's no content.
         """
         if content:
+            # Copy the link to the clipboard using Textual's own facility;
+            # this has the benefit of pushing it through remote connections,
+            # where possible.
             self.app.copy_to_clipboard(content)
+            # Having done that copy, we'll also try and use pyperclip too.
+            # It's possible the user is within a Terminal that doesn't
+            # support the Textual approach, so this will belt-and-braces
+            # make sure the link gets to some clipboard.
+            try:
+                to_clipboard(content)
+            except PyperclipException:
+                pass
             self.notify("Copied to clipboard", title=source)
         else:
             self.notify(empty_error, severity="error", title="Can't copy")
