@@ -1,5 +1,12 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- More changes to how, when and where an article is marked as read when it
+  is displayed.
+
 ## v0.10.0
 
 **Released: 2026-02-08**
