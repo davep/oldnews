@@ -448,7 +448,6 @@ class Main(EnhancedScreen[None]):
         """Handle changes to the show all flag."""
         await self._refresh_article_list()
 
-    @work
     async def _mark_read(self, article: Article) -> None:
         """Mark the given article as read.
 
@@ -462,6 +461,16 @@ class Main(EnhancedScreen[None]):
         await self._refresh_article_list()
         await article.mark_read(self._session)
 
+    @on(ArticleContent.Displayed)
+    async def _article_in_view(self, message: ArticleContent.Displayed) -> None:
+        """Do some work once an article has been shown.
+
+        Args:
+            message: The message letting us known which article was displayed.
+        """
+        self.article_content.focus()
+        await self._mark_read(message.article)
+
     @on(ArticleList.ViewArticle)
     def _view_article(self, message: ArticleList.ViewArticle) -> None:
         """Handle a request to view an article.
@@ -470,11 +479,6 @@ class Main(EnhancedScreen[None]):
             message: The message requesting an article be viewed.
         """
         self.article = message.article
-        self.article_content.focus()
-        self.set_timer(
-            min(0.1, load_configuration().mark_read_on_read_timeout),
-            lambda: self._mark_read(message.article),
-        )
 
     def action_toggle_show_all_command(self) -> None:
         """Toggle showing all/unread."""

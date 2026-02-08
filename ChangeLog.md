@@ -10,6 +10,10 @@
   ([#120](https://github.com/davep/oldnews/pull/120))
 - Changed the default binding for a number of different commands.
   ([#121](https://github.com/davep/oldnews/pull/121))
+- Changed the way that an article is marked as read once it is displayed.
+  ([#127](https://github.com/davep/oldnews/pull/127))
+- BREAKING CHANGE: Removed `mark_read_on_read_timeout` from the application
+  configuration. ([#127](https://github.com/davep/oldnews/pull/127))
 
 ## v0.9.0
 
