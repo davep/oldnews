@@ -21,6 +21,7 @@ from textual_enhanced.app import EnhancedApp
 # Local imports.
 from . import __version__
 from .data import (
+    Log,
     get_auth_token,
     initialise_local_data,
     load_configuration,
@@ -110,7 +111,7 @@ class OldNews(EnhancedApp[None]):
             been acquired.
         """
         await initialise_local_data()
-        session = partial(Session, "OldNews")
+        session = partial(Session, "OldNews", logger=Log())
         if token := get_auth_token():
             self.push_screen(Main(session(token)))
         else:
