@@ -322,11 +322,10 @@ class Main(EnhancedScreen[None]):
             ) or self.article_view.has_focus_within
         if action == Information.action_name():
             return (
-                self.navigation.has_focus
-                and self.navigation.current_category is not None
+                self.navigation.has_focus and self.current_category is not None
             ) or (self.article_view.has_focus_within and self.article is not None)
         if action in (Rename.action_name(), Remove.action_name()):
-            return self.navigation.current_category is not None
+            return self.current_category is not None
         return True
 
     @on(SubTitle)
@@ -551,7 +550,7 @@ class Main(EnhancedScreen[None]):
     @work
     async def action_mark_all_read_command(self) -> None:
         """Mark all unread articles in the current category as read."""
-        if (current_category := self.navigation.current_category) is None:
+        if (current_category := self.current_category) is None:
             return
         if not (
             ids_to_mark_read := [
@@ -725,7 +724,7 @@ class Main(EnhancedScreen[None]):
 
     def action_rename_command(self) -> None:
         """Rename the current subscription."""
-        if category := self.navigation.current_category:
+        if category := self.current_category:
             if isinstance(category, Subscription):
                 self._rename_subscription(category)
             elif isinstance(category, Folder):
@@ -772,7 +771,7 @@ class Main(EnhancedScreen[None]):
 
     def action_remove_command(self) -> None:
         """Remove the current folder or subscription."""
-        if category := self.navigation.current_category:
+        if category := self.current_category:
             if isinstance(category, Subscription):
                 self._remove_subscription(category)
             elif isinstance(category, Folder):
@@ -804,9 +803,10 @@ class Main(EnhancedScreen[None]):
     async def action_information_command(self) -> None:
         """Show some information about the current item."""
         information: InformationDisplay | None = None
-        if self.navigation.has_focus and (category := self.navigation.current_category):
+        if self.navigation.has_focus and self.current_category:
             information = InformationDisplay(
-                category.__class__.__name__, data_dump(category)
+                self.current_category.__class__.__name__,
+                data_dump(self.current_category),
             )
         elif self.article_view.has_focus_within and self.article:
             information = InformationDisplay("Article", data_dump(self.article))
