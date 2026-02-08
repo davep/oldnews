@@ -2,6 +2,7 @@
 
 ##############################################################################
 # Python imports.
+from dataclasses import dataclass
 from typing import Self
 
 ##############################################################################
@@ -17,6 +18,7 @@ from oldas import Article
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.getters import query_one
+from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Label, Markdown, Rule
 
@@ -90,6 +92,13 @@ class ArticleContent(Vertical):
     content = query_one(VerticalScroll)
     """The article content."""
 
+    @dataclass
+    class Displayed(Message):
+        """Message sent once an article is displayed."""
+
+        article: Article
+        """The article that has been displayed."""
+
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
         yield Rule()
@@ -114,6 +123,7 @@ class ArticleContent(Vertical):
                 self.link.update(self.article.html_url)
             await self.markdown.update(convert(self.article.summary.content))
             self.content.scroll_home(animate=False)
+            self.post_message(self.Displayed(self.article))
         self.set_class(self.article is not None, "--has-article")
 
     def focus(self, scroll_visible: bool = True) -> Self:
