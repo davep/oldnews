@@ -164,7 +164,7 @@ class TheOldReaderSync:
             )
 
     async def _get_updated_read_status(self) -> None:
-        """Refresh the read status from the server."""
+        """Refresh the (un)read status from the server."""
         if self._first_sync:
             return
         self._step("Syncing read/unread status with TheOldReader")
