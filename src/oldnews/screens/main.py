@@ -2,6 +2,7 @@
 
 ##############################################################################
 # Python imports.
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from functools import partial
@@ -42,6 +43,7 @@ from textual.getters import query_one
 from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Footer, Header
+from textual.worker import Worker
 
 ##############################################################################
 # Textual enhanced imports.
@@ -477,18 +479,33 @@ class Main(EnhancedScreen[None]):
         """
         await article.mark_unread(self._session)
 
+    async def _mark(
+        self,
+        locally_mark: Callable[[Article], Awaitable[None]],
+        remotely_mark: Callable[[Article], Worker[None]],
+        article: Article,
+    ) -> None:
+        """Mark an article with the given methods and then update the display.
+
+        Args:
+            locally_mark: The function to locally mark the article.
+            remotely_mark: The function to locally mark the article.
+            article: The article to mark.
+        """
+        remotely_mark(article)
+        await locally_mark(article)
+        self.post_message(
+            self.NewUnread(await get_local_unread(self.folders, self.subscriptions))
+        )
+        await self._refresh_article_list()
+
     async def _mark_read(self, article: Article) -> None:
         """Mark the given article as read.
 
         Args:
             article: The article to mark as read.
         """
-        self._remotely_mark_read(article)
-        await locally_mark_read(article)
-        self.post_message(
-            self.NewUnread(await get_local_unread(self.folders, self.subscriptions))
-        )
-        await self._refresh_article_list()
+        await self._mark(locally_mark_read, self._remotely_mark_read, article)
 
     async def _mark_unread(self, article: Article) -> None:
         """Mark the given article as unread.
@@ -496,12 +513,7 @@ class Main(EnhancedScreen[None]):
         Args:
             article: The article to mark as unread.
         """
-        self._remotely_mark_unread(article)
-        await locally_mark_unread(article)
-        self.post_message(
-            self.NewUnread(await get_local_unread(self.folders, self.subscriptions))
-        )
-        await self._refresh_article_list()
+        await self._mark(locally_mark_unread, self._remotely_mark_unread, article)
 
     @on(ArticleContent.Displayed)
     async def _article_in_view(self, message: ArticleContent.Displayed) -> None:
