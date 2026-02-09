@@ -345,6 +345,8 @@ class Main(EnhancedScreen[None]):
             return self.article_view.has_focus_within and bool(
                 self.article or self.article_list.highlighted_article
             )
+        if action == UserInformation.action_name():
+            return self._session.logged_in
         return True
 
     @on(SubTitle)
