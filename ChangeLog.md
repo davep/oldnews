@@ -5,7 +5,9 @@
 **Released: WiP**
 
 - More changes to how, when and where an article is marked as read when it
-  is displayed.
+  is displayed. ([#133](https://github.com/davep/oldnews/pull/133))
+- The unread status of articles marked as unread elsewhere is now
+  synchronised. ([#134](https://github.com/davep/oldnews/pull/134))
 
 ## v0.10.0
 
