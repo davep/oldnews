@@ -12,6 +12,9 @@
   ([#135](https://github.com/davep/oldnews/pull/135))
 - Added the `MarkUnread` command for marking a specific article as unread.
   ([#135](https://github.com/davep/oldnews/pull/135))
+- Added the `UserInformation` command for showing all known information
+  about the currently-logged-in user.
+  (#136[](https://github.com/davep/oldnews/pull/136))
 
 ## v0.10.0
 

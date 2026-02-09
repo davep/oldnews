@@ -34,6 +34,7 @@ from ..commands import (
     Remove,
     Rename,
     ToggleShowAll,
+    UserInformation,
 )
 
 
@@ -71,6 +72,7 @@ class MainCommands(CommandsProvider):
         yield from self.maybe(Rename)
         yield from self.maybe(Remove)
         yield ToggleShowAll()
+        yield from self.maybe(UserInformation)
 
 
 ### main.py ends here

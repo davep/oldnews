@@ -7,7 +7,7 @@ from typing import Any
 
 ##############################################################################
 # OldAS imports.
-from oldas import Article, Folder, Subscription
+from oldas import Article, Folder, Subscription, User
 
 ##############################################################################
 type DataDump = tuple[tuple[str, str], ...]
@@ -69,6 +69,20 @@ def _(data: Article) -> DataDump:
             (f"Category[{n}]", f"{category}")
             for n, category in enumerate(data.categories)
         ),
+    )
+
+
+@data_dump.register
+def _(data: User) -> DataDump:
+    return (
+        ("User ID", data.user_id),
+        ("Name", data.name),
+        ("Profile ID", data.profile_id),
+        ("Email", data.email),
+        ("Is Blogger User", f"{data.is_blogger_user}"),
+        ("Signup Time", f"{data.signup_time}"),
+        ("Is Multi-Login Enabled", f"{data.is_multi_login_enabled}"),
+        ("Is Premium", f"{data.is_premium}"),
     )
 
 

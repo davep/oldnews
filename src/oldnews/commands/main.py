@@ -154,4 +154,11 @@ class Information(Command):
     BINDING_KEY = "i"
 
 
+##############################################################################
+class UserInformation(Command):
+    """Show the information known about the logged-in account"""
+
+    BINDING_KEY = "f4"
+
+
 ### main.py ends here
