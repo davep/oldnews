@@ -71,10 +71,24 @@ class OpenHomePage(Command):
 
 
 ##############################################################################
+class MarkRead(Command):
+    """Mark the current article as read"""
+
+    BINDING_KEY = "r"
+
+
+##############################################################################
 class MarkAllRead(Command):
     """Mark all unread articles in the current category as read"""
 
     BINDING_KEY = "R"
+
+
+##############################################################################
+class MarkUnread(Command):
+    """Mark the current article as unread"""
+
+    BINDING_KEY = "u"
 
 
 ##############################################################################
