@@ -9,6 +9,7 @@
 - The unread status of articles marked as unread elsewhere is now
   synchronised. ([#134](https://github.com/davep/oldnews/pull/134))
 - Added the `MarkUnread` command for marking a specific article as unread.
+  ([#135](https://github.com/davep/oldnews/pull/135))
 
 ## v0.10.0
 
