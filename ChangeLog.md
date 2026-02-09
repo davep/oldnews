@@ -8,6 +8,8 @@
   is displayed. ([#133](https://github.com/davep/oldnews/pull/133))
 - The unread status of articles marked as unread elsewhere is now
   synchronised. ([#134](https://github.com/davep/oldnews/pull/134))
+- Added the `MarkRead` command for marking a specific article as read.
+  ([#135](https://github.com/davep/oldnews/pull/135))
 - Added the `MarkUnread` command for marking a specific article as unread.
   ([#135](https://github.com/davep/oldnews/pull/135))
 

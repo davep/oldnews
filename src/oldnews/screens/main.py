@@ -63,6 +63,7 @@ from ..commands import (
     Escape,
     Information,
     MarkAllRead,
+    MarkRead,
     MarkUnread,
     MoveSubscription,
     Next,
@@ -188,6 +189,7 @@ class Main(EnhancedScreen[None]):
         Escape,
         Information,
         MarkAllRead,
+        MarkRead,
         MarkUnread,
         MoveSubscription,
         Next,
@@ -336,7 +338,7 @@ class Main(EnhancedScreen[None]):
             ) or (self.article_view.has_focus_within and self.article is not None)
         if action in (Rename.action_name(), Remove.action_name()):
             return self.current_category is not None
-        if action == MarkUnread.action_name():
+        if action in (MarkRead.action_name(), MarkUnread.action_name()):
             return self.article_view.has_focus_within and bool(
                 self.article or self.article_list.highlighted_article
             )
@@ -882,6 +884,11 @@ class Main(EnhancedScreen[None]):
             information = InformationDisplay("Article", data_dump(self.article))
         if information:
             await self.app.push_screen_wait(information)
+
+    async def action_mark_read_command(self) -> None:
+        """Mark the current article as read."""
+        if article := self.article or self.article_list.highlighted_article:
+            await self._mark_read(article)
 
     async def action_mark_unread_command(self) -> None:
         """Mark the current article as unread."""
