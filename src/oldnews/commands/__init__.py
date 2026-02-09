@@ -24,6 +24,7 @@ from .main import (
     Remove,
     Rename,
     ToggleShowAll,
+    UserInformation,
 )
 
 ##############################################################################
@@ -50,6 +51,7 @@ __all__ = [
     "Rename",
     "Remove",
     "ToggleShowAll",
+    "UserInformation",
 ]
 
 ### __init__.py ends here

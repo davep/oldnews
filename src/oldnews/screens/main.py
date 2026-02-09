@@ -27,6 +27,7 @@ from oldas import (
     State,
     Subscription,
     Subscriptions,
+    User,
 )
 
 ##############################################################################
@@ -76,6 +77,7 @@ from ..commands import (
     Remove,
     Rename,
     ToggleShowAll,
+    UserInformation,
 )
 from ..data import (
     LocalUnread,
@@ -200,6 +202,7 @@ class Main(EnhancedScreen[None]):
         PreviousUnread,
         Remove,
         Rename,
+        UserInformation,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -894,6 +897,14 @@ class Main(EnhancedScreen[None]):
         """Mark the current article as unread."""
         if article := self.article or self.article_list.highlighted_article:
             await self._mark_unread(article)
+
+    async def action_user_information_command(self) -> None:
+        """Show information about the logged-in user."""
+        self.app.push_screen(
+            InformationDisplay(
+                "Current User Information", data_dump(await User.load(self._session))
+            )
+        )
 
 
 ### main.py ends here
