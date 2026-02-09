@@ -335,7 +335,9 @@ class Main(EnhancedScreen[None]):
         if action in (Rename.action_name(), Remove.action_name()):
             return self.current_category is not None
         if action == MarkUnread.action_name():
-            return self.article_view.has_focus_within
+            return self.article_view.has_focus_within and bool(
+                self.article or self.article_list.highlighted_article
+            )
         return True
 
     @on(SubTitle)
