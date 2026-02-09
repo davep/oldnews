@@ -105,6 +105,13 @@ class ArticleList(EnhancedOptionList):
         article: Article
         """The article to view."""
 
+    @property
+    def highlighted_article(self) -> Article | None:
+        """The currently-highlighted article, or `None` if there isn't one."""
+        if self.highlighted is not None:
+            return cast(ArticleView, self.get_option_at_index(self.highlighted)).article
+        return None
+
     def _watch_articles(self) -> None:
         """React to the article list being changed."""
         # Normally preserved_highlight is good enough; but here I want to

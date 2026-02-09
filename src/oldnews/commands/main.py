@@ -78,6 +78,13 @@ class MarkAllRead(Command):
 
 
 ##############################################################################
+class MarkUnread(Command):
+    """Mark the current article as unread"""
+
+    BINDING_KEY = "u"
+
+
+##############################################################################
 class CopyHomePageToClipboard(Command):
     """Copy the URL of the current subscription's home page to the clipboard"""
 

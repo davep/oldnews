@@ -61,6 +61,7 @@ from ..commands import (
     Escape,
     Information,
     MarkAllRead,
+    MarkUnread,
     MoveSubscription,
     Next,
     NextUnread,
@@ -85,6 +86,7 @@ from ..data import (
     load_configuration,
     locally_mark_article_ids_read,
     locally_mark_read,
+    locally_mark_unread,
     move_subscription_articles,
     remove_folder_from_articles,
     remove_subscription_articles,
@@ -184,6 +186,7 @@ class Main(EnhancedScreen[None]):
         Escape,
         Information,
         MarkAllRead,
+        MarkUnread,
         MoveSubscription,
         Next,
         NextUnread,
@@ -331,6 +334,8 @@ class Main(EnhancedScreen[None]):
             ) or (self.article_view.has_focus_within and self.article is not None)
         if action in (Rename.action_name(), Remove.action_name()):
             return self.current_category is not None
+        if action == MarkUnread.action_name():
+            return self.article_view.has_focus_within
         return True
 
     @on(SubTitle)
@@ -461,6 +466,15 @@ class Main(EnhancedScreen[None]):
         """
         await article.mark_read(self._session)
 
+    @work
+    async def _remotely_mark_unread(self, article: Article) -> None:
+        """Mark an article as unread on the TheOldReader server.
+
+        Args:
+            article: The article to mark as unread.
+        """
+        await article.mark_unread(self._session)
+
     async def _mark_read(self, article: Article) -> None:
         """Mark the given article as read.
 
@@ -469,6 +483,19 @@ class Main(EnhancedScreen[None]):
         """
         self._remotely_mark_read(article)
         await locally_mark_read(article)
+        self.post_message(
+            self.NewUnread(await get_local_unread(self.folders, self.subscriptions))
+        )
+        await self._refresh_article_list()
+
+    async def _mark_unread(self, article: Article) -> None:
+        """Mark the given article as unread.
+
+        Args:
+            article: The article to mark as unread.
+        """
+        self._remotely_mark_unread(article)
+        await locally_mark_unread(article)
         self.post_message(
             self.NewUnread(await get_local_unread(self.folders, self.subscriptions))
         )
@@ -841,6 +868,11 @@ class Main(EnhancedScreen[None]):
             information = InformationDisplay("Article", data_dump(self.article))
         if information:
             await self.app.push_screen_wait(information)
+
+    async def action_mark_unread_command(self) -> None:
+        """Mark the current article as unread."""
+        if article := self.article or self.article_list.highlighted_article:
+            await self._mark_unread(article)
 
 
 ### main.py ends here

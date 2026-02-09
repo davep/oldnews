@@ -21,6 +21,7 @@ from ..commands import (
     Escape,
     Information,
     MarkAllRead,
+    MarkUnread,
     MoveSubscription,
     Next,
     NextUnread,
@@ -55,6 +56,7 @@ class MainCommands(CommandsProvider):
         yield Help()
         yield from self.maybe(Information)
         yield from self.maybe(MarkAllRead)
+        yield from self.maybe(MarkUnread)
         yield from self.maybe(MoveSubscription)
         yield from self.maybe(Next)
         yield from self.maybe(NextUnread)
