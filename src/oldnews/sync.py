@@ -32,7 +32,9 @@ from .data import (
     get_unread_article_ids,
     last_grabbed_data_at,
     load_configuration,
+    locally_known_article_ids,
     locally_mark_article_ids_read,
+    locally_mark_article_ids_unread,
     remember_we_last_grabbed_at,
     remove_subscription_articles,
     save_local_articles,
@@ -130,22 +132,50 @@ class TheOldReaderSync:
             Log().debug(f"Saved final batch of articles: {len(save_batch)}")
         return loaded
 
-    async def _get_updated_read_status(self) -> None:
-        """Refresh the read status from the server."""
-        if self._first_sync:
-            return
-        self._step("Syncing read/unread status with TheOldReader")
-        remote_unread_articles = {
-            article_id.full_id
-            for article_id in await ArticleIDs.load_unread(self.session)
-        }
-        local_unread_articles = set(await get_unread_article_ids())
-        if mark_as_read := local_unread_articles - remote_unread_articles:
+    async def _catchup_read(
+        self, remote_unread: set[str], local_unread: set[str]
+    ) -> None:
+        """Catch up on the read status of articles.
+
+        Args:
+            remote_unread: The IDs of articles unread on the server.
+            local_unread: The IDs of articles unread locally.
+        """
+        if mark_as_read := local_unread - remote_unread:
             Log().debug(f"Articles found as marked read elsewhere: {mark_as_read}")
             await locally_mark_article_ids_read(mark_as_read)
             self._result(
-                f"Articles found read elsewhere on TheOldReader: {intcomma(len(mark_as_read))}"
+                f"Articles found marked read elsewhere on TheOldReader: {intcomma(len(mark_as_read))}"
             )
+
+    async def _catchup_unread(
+        self, remote_unread: set[str], local_unread: set[str]
+    ) -> None:
+        """Catch up on the unread status of articles.
+
+        Args:
+            remote_unread: The IDs of articles unread on the server.
+            local_unread: The IDs of articles unread locally.
+        """
+        if mark_as_unread := remote_unread - local_unread:
+            Log().debug(f"Articles found as marked unread elsewhere: {mark_as_unread}")
+            await locally_mark_article_ids_unread(mark_as_unread)
+            self._result(
+                f"Articles found marked unread elsewhere on TheOldReader: {intcomma(len(mark_as_unread))}"
+            )
+
+    async def _get_updated_read_status(self) -> None:
+        """Refresh the (un)read status from the server."""
+        if self._first_sync:
+            return
+        self._step("Syncing read/unread status with TheOldReader")
+        remote_unread_articles = await locally_known_article_ids(
+            article_id.full_id
+            for article_id in await ArticleIDs.load_unread(self.session)
+        )
+        local_unread_articles = set(await get_unread_article_ids())
+        await self._catchup_read(remote_unread_articles, local_unread_articles)
+        await self._catchup_unread(remote_unread_articles, local_unread_articles)
 
     async def _download_backlog(self, subscriptions: Iterable[Subscription]) -> None:
         """Download the backlog of articles for the given subscriptions.

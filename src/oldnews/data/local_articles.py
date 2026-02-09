@@ -145,6 +145,33 @@ async def locally_mark_read(article: Article) -> None:
 
 
 ##############################################################################
+async def locally_mark_unread(article: Article) -> None:
+    """Mark the given article as unread.
+
+    Args:
+        article: The article to locally mark as unread.
+    """
+    if local_article := await LocalArticle.filter(article_id=article.id).get_or_none():
+        await local_article.remove_category(str(State.READ))
+
+
+##############################################################################
+async def locally_known_article_ids(articles: Iterable[str]) -> set[str]:
+    """Filters an iterable of article IDs down to those locally-known.
+
+    Args:
+        articles: The articles to filter down.
+
+    Returns:
+        A set of the article IDs that are known locally.
+    """
+    return {
+        article.article_id
+        for article in await LocalArticle.filter(article_id__in=set(articles))
+    }
+
+
+##############################################################################
 async def locally_mark_article_ids_read(articles: Iterable[str]) -> None:
     """Locally mark a collection of article IDs as being read.
 
@@ -160,6 +187,20 @@ async def locally_mark_article_ids_read(articles: Iterable[str]) -> None:
             ],
             ignore_conflicts=True,
         )
+
+
+##############################################################################
+async def locally_mark_article_ids_unread(articles: Iterable[str]) -> None:
+    """Locally mark a collection of article IDs as being unread.
+
+    Args:
+        articles: The article IDs to mark as unread.
+    """
+    if article_ids := set(articles):
+        Log().debug(f"Number of articles to mark as unread: {len(article_ids)}")
+        await LocalArticleCategory.filter(
+            category=str(State.READ), article_id__in=article_ids
+        ).delete()
 
 
 ##############################################################################
