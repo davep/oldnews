@@ -32,6 +32,7 @@ from .data import (
     get_unread_article_ids,
     last_grabbed_data_at,
     load_configuration,
+    locally_known_article_ids,
     locally_mark_article_ids_read,
     locally_mark_article_ids_unread,
     remember_we_last_grabbed_at,
@@ -168,10 +169,10 @@ class TheOldReaderSync:
         if self._first_sync:
             return
         self._step("Syncing read/unread status with TheOldReader")
-        remote_unread_articles = {
+        remote_unread_articles = await locally_known_article_ids(
             article_id.full_id
             for article_id in await ArticleIDs.load_unread(self.session)
-        }
+        )
         local_unread_articles = set(await get_unread_article_ids())
         await self._catchup_read(remote_unread_articles, local_unread_articles)
         await self._catchup_unread(remote_unread_articles, local_unread_articles)

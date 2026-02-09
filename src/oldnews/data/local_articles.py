@@ -156,6 +156,22 @@ async def locally_mark_unread(article: Article) -> None:
 
 
 ##############################################################################
+async def locally_known_article_ids(articles: Iterable[str]) -> set[str]:
+    """Filters an iterable of article IDs down to those locally-known.
+
+    Args:
+        articles: The articles to filter down.
+
+    Returns:
+        A set of the article IDs that are known locally.
+    """
+    return {
+        article.article_id
+        for article in await LocalArticle.filter(article_id__in=set(articles))
+    }
+
+
+##############################################################################
 async def locally_mark_article_ids_read(articles: Iterable[str]) -> None:
     """Locally mark a collection of article IDs as being read.
 
