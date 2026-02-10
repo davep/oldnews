@@ -101,7 +101,13 @@ from ..data import (
 )
 from ..providers import MainCommands
 from ..sync import TheOldReaderSync
-from ..widgets import ArticleContent, ArticleList, ArticleView, Navigation
+from ..widgets import (
+    ArticleContent,
+    ArticleList,
+    ArticleListHeader,
+    ArticleView,
+    Navigation,
+)
 from .folder_input import FolderInput
 from .information_display import InformationDisplay
 from .new_subscription import NewSubscription
@@ -270,10 +276,11 @@ class Main(EnhancedScreen[None]):
             Main.folders, Main.subscriptions, Main.unread
         )
         with ArticleView().data_bind(Main.articles):
+            yield ArticleListHeader().data_bind(Main.current_category)
             yield ArticleList(classes="panel").data_bind(
                 Main.articles, Main.current_category
             )
-            yield ArticleContent(classes="panel").data_bind(Main.article)
+            yield ArticleContent().data_bind(Main.article)
         yield Footer()
 
     def on_mount(self) -> None:

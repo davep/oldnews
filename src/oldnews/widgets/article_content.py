@@ -20,7 +20,7 @@ from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.getters import query_one
 from textual.message import Message
 from textual.reactive import var
-from textual.widgets import Label, Markdown, Rule
+from textual.widgets import Label, Markdown
 
 
 ##############################################################################
@@ -35,13 +35,10 @@ class ArticleContent(Vertical):
             display: block;
         }
 
-        Rule.-horizontal {
-            margin: 0;
-        }
-
         #header {
             height: auto;
             padding: 0 1 0 1;
+            background: $secondary;
 
             Horizontal {
                 height: auto;
@@ -50,18 +47,10 @@ class ArticleContent(Vertical):
             #title {
                 color: $text-accent;
                 width: 1fr;
+                padding-right: 2;
             }
             #published, #link {
                 color: $text-muted;
-            }
-        }
-
-        &:focus-within {
-            #header, Rule {
-                background: $boost;
-            }
-            Rule {
-                color: $border;
             }
         }
 
@@ -101,14 +90,12 @@ class ArticleContent(Vertical):
 
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
-        yield Rule()
         with Vertical(id="header"):
             with Horizontal():
                 yield Label(id="title", markup=False)
                 yield Label(id="published")
             yield Label(id="link", markup=False)
-        yield Rule()
-        with VerticalScroll():
+        with VerticalScroll(classes="panel"):
             yield Markdown()
 
     async def _watch_article(self) -> None:
