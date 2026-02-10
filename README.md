@@ -91,7 +91,8 @@ command palette:
 
 ## File locations
 
-OldNews stores files in a `oldnews` directory within both [`$XDG_DATA_HOME` and
+OldNews stores files in an `oldnews` directory within both [`$XDG_DATA_HOME`
+and
 `$XDG_CONFIG_HOME`](https://specifications.freedesktop.org/basedir-spec/latest/).
 If you wish to fully remove anything to do with OldNews you will need to
 remove those directories too.
