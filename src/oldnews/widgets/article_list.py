@@ -40,41 +40,47 @@ from ._next_matching_option import Direction, next_matching_option
 class ArticleView(Option):
     """The view of an article in the article list."""
 
-    def __init__(self, article: Article, showing_subscription: bool) -> None:
+    def __init__(
+        self, article: Article, showing_subscription: bool, compact: bool
+    ) -> None:
         """Initialise the article object.
 
         Args:
             article: The article to view.
             showing_subscription: Is the article list showing a subscription?
+            compact: Should we show a compact version?
         """
         self._article = article
         """The article to view."""
+        status = "[green]●[/]" if article.is_unread else ""
+        title = escape(article.title)
+        published = f"[dim]{escape(article.published.astimezone().strftime('%Y-%m-%d %H:%M:%S'))}[/]"
         header = Table.grid(expand=True)
         header.add_column(width=2)
-        header.add_column(ratio=1)
-        if article.is_unread:
-            header.add_row("[green]●[/]", escape(article.title))
+        header.add_column(ratio=1, no_wrap=compact)
+        content: Table | Group
+        if compact:
+            header.add_column(width=20, justify="right")
+            header.add_row(status, title, published)
+            content = header
         else:
-            header.add_row("", f"[dim bold]{escape(article.title)}[/]")
-        provenance = escape(
-            (
-                article.author
-                if showing_subscription
-                else f"{article.origin.title}, {article.author}"
+            header.add_row(status, title)
+            provenance = escape(
+                (
+                    article.author
+                    if showing_subscription
+                    else f"{article.origin.title}, {article.author}"
+                )
+                if article.author and article.author != article.origin.title
+                else article.origin.title
             )
-            if article.author and article.author != article.origin.title
-            else article.origin.title
-        )
-        details = Table.grid(expand=True)
-        details.add_column(width=2)
-        details.add_column(ratio=1)
-        details.add_column(width=20, justify="right")
-        details.add_row(
-            "",
-            f"[dim italic]{provenance}[/]",
-            f"[dim]{article.published.astimezone().strftime('%Y-%m-%d %H:%M:%S')}[/]",
-        )
-        super().__init__(Group(header, details), id=article.id)
+            details = Table.grid(expand=True)
+            details.add_column(width=2)
+            details.add_column(ratio=1)
+            details.add_column(width=20, justify="right")
+            details.add_row("", f"[dim italic]{provenance}[/]", published)
+            content = Group(header, details)
+        super().__init__(content, id=article.id)
 
     @property
     def article(self) -> Article:
@@ -97,6 +103,8 @@ class ArticleList(EnhancedOptionList):
     """The category of articles being shown."""
     articles: var[Articles] = var(Articles)
     """The list of articles to show."""
+    compact_ui: var[bool] = var(False)
+    """Should we try and make the UI as compact as possible?"""
 
     @dataclass
     class ViewArticle(Message):
@@ -127,7 +135,7 @@ class ArticleList(EnhancedOptionList):
         with self.preserved_highlight:
             self.set_options(
                 [
-                    ArticleView(article, showing_subscription)
+                    ArticleView(article, showing_subscription, self.compact_ui)
                     for article in self.articles
                 ]
             )
@@ -139,6 +147,10 @@ class ArticleList(EnhancedOptionList):
         if current_id is not None and current_id != new_id:
             self.highlighted = 0
         self.can_focus = bool(self.option_count)
+
+    def _watch_compact_ui(self) -> None:
+        """React to the compact setting being toggled."""
+        self.mutate_reactive(ArticleList.articles)
 
     @on(EnhancedOptionList.OptionSelected)
     def _select_article(self, message: EnhancedOptionList.OptionSelected) -> None:

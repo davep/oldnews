@@ -37,6 +37,9 @@ class Configuration:
     article_download_batch_size: int = 50
     """The batch size to use when downloading articles."""
 
+    compact_ui: bool = False
+    """Use a more compact user interface."""
+
 
 ##############################################################################
 def configuration_file() -> Path:

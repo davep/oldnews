@@ -75,6 +75,7 @@ from ..commands import (
     RefreshFromTheOldReader,
     Remove,
     Rename,
+    ToggleCompact,
     ToggleShowAll,
     UserInformation,
 )
@@ -201,6 +202,7 @@ class Main(EnhancedScreen[None]):
         Remove,
         Rename,
         UserInformation,
+        ToggleCompact,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -221,6 +223,8 @@ class Main(EnhancedScreen[None]):
     """The currently-viewed article."""
     show_all: var[bool] = var(False)
     """Should we show all articles or only new?"""
+    compact_ui: var[bool] = var(False)
+    """Should we try and make the UI as compact as possible?"""
 
     navigation = query_one(Navigation)
     """The navigation panel."""
@@ -275,16 +279,17 @@ class Main(EnhancedScreen[None]):
             Main.folders, Main.subscriptions, Main.unread
         )
         with ArticleView().data_bind(Main.articles):
-            yield ArticleListHeader().data_bind(Main.current_category)
+            yield ArticleListHeader().data_bind(Main.current_category, Main.compact_ui)
             yield ArticleList(classes="panel").data_bind(
-                Main.articles, Main.current_category
+                Main.articles, Main.current_category, Main.compact_ui
             )
-            yield ArticleContent().data_bind(Main.article)
+            yield ArticleContent().data_bind(Main.article, Main.compact_ui)
         yield Footer()
 
     def on_mount(self) -> None:
         """Configure the application once the DOM is mounted."""
         self.show_all = load_configuration().show_all
+        self.compact_ui = load_configuration().compact_ui
         self._load_locally()
 
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
@@ -905,6 +910,12 @@ class Main(EnhancedScreen[None]):
                 "Current User Information", data_dump(await User.load(self._session))
             )
         )
+
+    def action_toggle_compact_command(self) -> None:
+        """Toggle a more compact user interface."""
+        with update_configuration() as config:
+            config.compact_ui = not config.compact_ui
+            self.compact_ui = config.compact_ui
 
 
 ### main.py ends here

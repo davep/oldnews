@@ -57,6 +57,10 @@ class ArticleContent(Vertical):
         Markdown {
             padding: 0 1 0 1;
         }
+
+        &.--compact #header {
+            padding: 0 2;
+        }
     }
     """
 
@@ -69,6 +73,8 @@ class ArticleContent(Vertical):
 
     article: var[Article | None] = var(None)
     """The article being viewed."""
+    compact_ui: var[bool] = var(False, toggle_class="--compact")
+    """Should we try and make the UI as compact as possible?"""
 
     title = query_one("#title", Label)
     """The title label."""
