@@ -20,7 +20,7 @@ from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.getters import query_one
 from textual.message import Message
 from textual.reactive import var
-from textual.widgets import Label, Markdown, Rule
+from textual.widgets import Label, Markdown
 
 
 ##############################################################################
@@ -35,13 +35,10 @@ class ArticleContent(Vertical):
             display: block;
         }
 
-        Rule.-horizontal {
-            margin: 0;
-        }
-
         #header {
             height: auto;
-            padding: 0 1 0 1;
+            padding: 1 2;
+            background: $secondary;
 
             Horizontal {
                 height: auto;
@@ -50,23 +47,19 @@ class ArticleContent(Vertical):
             #title {
                 color: $text-accent;
                 width: 1fr;
+                padding-right: 2;
             }
             #published, #link {
                 color: $text-muted;
             }
         }
 
-        &:focus-within {
-            #header, Rule {
-                background: $boost;
-            }
-            Rule {
-                color: $border;
-            }
-        }
-
         Markdown {
             padding: 0 1 0 1;
+        }
+
+        &.--compact #header {
+            padding: 0 2;
         }
     }
     """
@@ -80,6 +73,8 @@ class ArticleContent(Vertical):
 
     article: var[Article | None] = var(None)
     """The article being viewed."""
+    compact_ui: var[bool] = var(False, toggle_class="--compact")
+    """Should we try and make the UI as compact as possible?"""
 
     title = query_one("#title", Label)
     """The title label."""
@@ -101,21 +96,21 @@ class ArticleContent(Vertical):
 
     def compose(self) -> ComposeResult:
         """Compose the content of the widget."""
-        yield Rule()
         with Vertical(id="header"):
             with Horizontal():
                 yield Label(id="title", markup=False)
                 yield Label(id="published")
             yield Label(id="link", markup=False)
-        yield Rule()
-        with VerticalScroll():
+        with VerticalScroll(classes="panel"):
             yield Markdown()
 
     async def _watch_article(self) -> None:
         """React to the article being updated."""
         if self.article is not None:
             self.title.update(self.article.title)
-            self.published.update(str(self.article.published))
+            self.published.update(
+                self.article.published.astimezone().strftime("%Y-%m-%d %H:%M:%S")
+            )
             if self.article.html_url is None:
                 self.link.visible = False
             else:

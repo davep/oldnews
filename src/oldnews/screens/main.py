@@ -39,7 +39,6 @@ from pyperclip import copy as to_clipboard
 # Textual imports.
 from textual import on, work
 from textual.app import ComposeResult
-from textual.containers import Vertical
 from textual.getters import query_one
 from textual.message import Message
 from textual.reactive import var
@@ -76,6 +75,7 @@ from ..commands import (
     RefreshFromTheOldReader,
     Remove,
     Rename,
+    ToggleCompact,
     ToggleShowAll,
     UserInformation,
 )
@@ -101,7 +101,13 @@ from ..data import (
 )
 from ..providers import MainCommands
 from ..sync import TheOldReaderSync
-from ..widgets import ArticleContent, ArticleList, Navigation
+from ..widgets import (
+    ArticleContent,
+    ArticleList,
+    ArticleListHeader,
+    ArticleView,
+    Navigation,
+)
 from .folder_input import FolderInput
 from .information_display import InformationDisplay
 from .new_subscription import NewSubscription
@@ -157,13 +163,6 @@ class Main(EnhancedScreen[None]):
             width: 25%;
         }
 
-        #article-view {
-            display: none;
-            &.--has-articles {
-                display: block;
-            }
-        }
-
         ArticleList {
             height: 1fr;
         }
@@ -203,6 +202,7 @@ class Main(EnhancedScreen[None]):
         Remove,
         Rename,
         UserInformation,
+        ToggleCompact,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -223,10 +223,12 @@ class Main(EnhancedScreen[None]):
     """The currently-viewed article."""
     show_all: var[bool] = var(False)
     """Should we show all articles or only new?"""
+    compact_ui: var[bool] = var(False)
+    """Should we try and make the UI as compact as possible?"""
 
     navigation = query_one(Navigation)
     """The navigation panel."""
-    article_view = query_one("#article-view", Vertical)
+    article_view = query_one(ArticleView)
     """The panel that contains views of articles."""
     article_list = query_one(ArticleList)
     """The article list panel."""
@@ -276,16 +278,18 @@ class Main(EnhancedScreen[None]):
         yield Navigation(classes="panel").data_bind(
             Main.folders, Main.subscriptions, Main.unread
         )
-        with Vertical(id="article-view"):
+        with ArticleView().data_bind(Main.articles):
+            yield ArticleListHeader().data_bind(Main.current_category, Main.compact_ui)
             yield ArticleList(classes="panel").data_bind(
-                Main.articles, Main.current_category
+                Main.articles, Main.current_category, Main.compact_ui
             )
-            yield ArticleContent(classes="panel").data_bind(Main.article)
+            yield ArticleContent().data_bind(Main.article, Main.compact_ui)
         yield Footer()
 
     def on_mount(self) -> None:
         """Configure the application once the DOM is mounted."""
         self.show_all = load_configuration().show_all
+        self.compact_ui = load_configuration().compact_ui
         self._load_locally()
 
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
@@ -402,7 +406,6 @@ class Main(EnhancedScreen[None]):
                 self.article = None
                 if self.article_view.has_focus_within:
                     self.navigation.focus()
-        self.article_view.set_class(bool(self.articles), "--has-articles")
 
     @work(exclusive=True)
     async def _load_locally(self) -> None:
@@ -907,6 +910,12 @@ class Main(EnhancedScreen[None]):
                 "Current User Information", data_dump(await User.load(self._session))
             )
         )
+
+    def action_toggle_compact_command(self) -> None:
+        """Toggle a more compact user interface."""
+        with update_configuration() as config:
+            config.compact_ui = not config.compact_ui
+            self.compact_ui = config.compact_ui
 
 
 ### main.py ends here

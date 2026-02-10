@@ -161,4 +161,11 @@ class UserInformation(Command):
     BINDING_KEY = "f4"
 
 
+##############################################################################
+class ToggleCompact(Command):
+    """Toggle a more compact user interface"""
+
+    BINDING_KEY = "f5"
+
+
 ### main.py ends here

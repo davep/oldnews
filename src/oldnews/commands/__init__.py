@@ -23,6 +23,7 @@ from .main import (
     RefreshFromTheOldReader,
     Remove,
     Rename,
+    ToggleCompact,
     ToggleShowAll,
     UserInformation,
 )
@@ -50,6 +51,7 @@ __all__ = [
     "RefreshFromTheOldReader",
     "Rename",
     "Remove",
+    "ToggleCompact",
     "ToggleShowAll",
     "UserInformation",
 ]
