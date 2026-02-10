@@ -33,7 +33,7 @@ $ pipx install oldnews
 
 ### uv
 
-The package can be installed using [`uv`](https://docs.astral.sh/uv/getting-started/installation/):
+The application can be installed using [`uv`](https://docs.astral.sh/uv/getting-started/installation/):
 
 ```sh
 uv tool install oldnews
