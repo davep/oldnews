@@ -17,7 +17,7 @@ class ArticleListHeader(Static):
     DEFAULT_CSS = """
     ArticleListHeader {
         background: $secondary;
-        padding-left: 1;
+        padding: 1 2;
         color: $text-accent;
     }
     """

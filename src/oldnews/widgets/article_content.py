@@ -37,7 +37,7 @@ class ArticleContent(Vertical):
 
         #header {
             height: auto;
-            padding: 0 1 0 1;
+            padding: 1 2;
             background: $secondary;
 
             Horizontal {
