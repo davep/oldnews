@@ -16,9 +16,11 @@
   about the currently-logged-in user.
   (#136[](https://github.com/davep/oldnews/pull/136))
 - Added a header to the article list to make it clear what's being viewed.
+  ([#139](https://github.com/davep/oldnews/pull/139))
 - Made various cosmetic changes to the UI.
+  ([#139](https://github.com/davep/oldnews/pull/139))
 - Added the `ToggleCompact` command for toggling between a compact and more
-  relaxed UI.
+  relaxed UI. ([#139](https://github.com/davep/oldnews/pull/139))
 
 ## v0.10.0
 
