@@ -15,6 +15,10 @@
 - Added the `UserInformation` command for showing all known information
   about the currently-logged-in user.
   (#136[](https://github.com/davep/oldnews/pull/136))
+- Added a header to the article list to make it clear what's being viewed.
+- Made various cosmetic changes to the UI.
+- Added the `ToggleCompact` command for toggling between a compact and more
+  relaxed UI.
 
 ## v0.10.0
 
