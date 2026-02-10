@@ -93,7 +93,7 @@ select = [
     "I",
 ]
 ignore = [
-    # I think try...expect...pass reads far better.
+    # I think try...except...pass reads far better.
     "SIM105",
 ]
 

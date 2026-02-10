@@ -33,7 +33,7 @@ $ pipx install oldnews
 
 ### uv
 
-The package can be installed using [`uv`](https://docs.astral.sh/uv/getting-started/installation/):
+The application can be installed using [`uv`](https://docs.astral.sh/uv/getting-started/installation/):
 
 ```sh
 uv tool install oldnews
@@ -91,7 +91,8 @@ command palette:
 
 ## File locations
 
-OldNews stores files in a `oldnews` directory within both [`$XDG_DATA_HOME` and
+OldNews stores files in an `oldnews` directory within both [`$XDG_DATA_HOME`
+and
 `$XDG_CONFIG_HOME`](https://specifications.freedesktop.org/basedir-spec/latest/).
 If you wish to fully remove anything to do with OldNews you will need to
 remove those directories too.
@@ -105,10 +106,7 @@ Expanding for the common locations, the files normally created are:
 
 If you need help, or have any ideas, please feel free to [raise an
 issue](https://github.com/davep/oldnews/issues) or [start a
-discussion](https://github.com/davep/oldnews/discussions). However, please
-keep in mind that at the moment the application is very much an ongoing work
-in progress; expect lots of obvious functionality to be missing and "coming
-soon"; perhaps also expect bugs.
+discussion](https://github.com/davep/oldnews/discussions).
 
 ## TODO
 
