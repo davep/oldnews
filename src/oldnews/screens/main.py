@@ -803,9 +803,16 @@ class Main(EnhancedScreen[None]):
             else:
                 self.notify("Rename failed", severity="error", timeout=8)
 
+    @property
+    def _current_category_in_context(self) -> Folder | Subscription | None:
+        """The current category, depending on the user's focus."""
+        if self.article_view.has_focus_within:
+            return self.current_category
+        return self.navigation.current_category
+
     def action_rename_command(self) -> None:
         """Rename the current subscription."""
-        if category := self.current_category:
+        if category := self._current_category_in_context:
             if isinstance(category, Subscription):
                 self._rename_subscription(category)
             elif isinstance(category, Folder):
@@ -852,7 +859,7 @@ class Main(EnhancedScreen[None]):
 
     def action_remove_command(self) -> None:
         """Remove the current folder or subscription."""
-        if category := self.current_category:
+        if category := self._current_category_in_context:
             if isinstance(category, Subscription):
                 self._remove_subscription(category)
             elif isinstance(category, Folder):
