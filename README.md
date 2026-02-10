@@ -106,10 +106,7 @@ Expanding for the common locations, the files normally created are:
 
 If you need help, or have any ideas, please feel free to [raise an
 issue](https://github.com/davep/oldnews/issues) or [start a
-discussion](https://github.com/davep/oldnews/discussions). However, please
-keep in mind that at the moment the application is very much an ongoing work
-in progress; expect lots of obvious functionality to be missing and "coming
-soon"; perhaps also expect bugs.
+discussion](https://github.com/davep/oldnews/discussions).
 
 ## TODO
 
