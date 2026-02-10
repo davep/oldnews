@@ -101,7 +101,7 @@ from ..data import (
 )
 from ..providers import MainCommands
 from ..sync import TheOldReaderSync
-from ..widgets import ArticleContent, ArticleList, Navigation
+from ..widgets import ArticleContent, ArticleList, ArticleView, Navigation
 from .folder_input import FolderInput
 from .information_display import InformationDisplay
 from .new_subscription import NewSubscription
@@ -155,13 +155,6 @@ class Main(EnhancedScreen[None]):
         Navigation {
             height: 1fr;
             width: 25%;
-        }
-
-        #article-view {
-            display: none;
-            &.--has-articles {
-                display: block;
-            }
         }
 
         ArticleList {
@@ -226,7 +219,7 @@ class Main(EnhancedScreen[None]):
 
     navigation = query_one(Navigation)
     """The navigation panel."""
-    article_view = query_one("#article-view", Vertical)
+    article_view = query_one(ArticleView)
     """The panel that contains views of articles."""
     article_list = query_one(ArticleList)
     """The article list panel."""
@@ -276,7 +269,7 @@ class Main(EnhancedScreen[None]):
         yield Navigation(classes="panel").data_bind(
             Main.folders, Main.subscriptions, Main.unread
         )
-        with Vertical(id="article-view"):
+        with ArticleView().data_bind(Main.articles):
             yield ArticleList(classes="panel").data_bind(
                 Main.articles, Main.current_category
             )
@@ -402,7 +395,6 @@ class Main(EnhancedScreen[None]):
                 self.article = None
                 if self.article_view.has_focus_within:
                     self.navigation.focus()
-        self.article_view.set_class(bool(self.articles), "--has-articles")
 
     @work(exclusive=True)
     async def _load_locally(self) -> None:
