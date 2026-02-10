@@ -71,7 +71,7 @@ class ArticleView(Option):
         details.add_column(width=20, justify="right")
         details.add_row(
             "",
-            f"[dim italic]{escape(provenance)}[/]",
+            f"[dim italic]{provenance}[/]",
             f"[dim]{article.published.astimezone().strftime('%Y-%m-%d %H:%M:%S')}[/]",
         )
         super().__init__(Group(header, details), id=article.id)
