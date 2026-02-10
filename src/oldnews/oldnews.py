@@ -59,14 +59,6 @@ class OldNews(EnhancedApp[None]):
     this program. If not, see <https://www.gnu.org/licenses/>.
     """
 
-    CSS = f"""
-    {EnhancedApp.CSS}
-    * {{
-        /* https://github.com/Textualize/textual/issues/6349 */
-        pointer: default;
-    }}
-    """
-
     COMMANDS = set()
 
     def __init__(self, arguments: Namespace) -> None:

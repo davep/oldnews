@@ -132,6 +132,7 @@ class Main(EnhancedScreen[None]):
         hatch: right $surface;
 
         * {
+            pointer: default; /* https://github.com/Textualize/textual/issues/6349 */
             scrollbar-background: $surface;
             scrollbar-background-hover: $surface;
             scrollbar-background-active: $surface;

@@ -21,6 +21,8 @@
   ([#139](https://github.com/davep/oldnews/pull/139))
 - Added the `ToggleCompact` command for toggling between a compact and more
   relaxed UI. ([#139](https://github.com/davep/oldnews/pull/139))
+- Fixed a crash caused by https://github.com/Textualize/textual/issues/6360
+  ([#140](https://github.com/davep/oldnews/pull/140))
 
 ## v0.10.0
 
