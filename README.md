@@ -2,7 +2,7 @@
 
 ![OldNews](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/.images/oldnews-social-banner.png)
 
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/davep/oldnews/style-lint-and-test.yaml)](https://github.com/davep/oldnews/actions)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/davep/oldnews/style-and-lint.yaml)](https://github.com/davep/oldnews/actions)
 [![GitHub commits since latest release](https://img.shields.io/github/commits-since/davep/oldnews/latest)](https://github.com/davep/oldnews/commits/main/)
 [![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/davep/oldnews)](https://github.com/davep/oldnews/issues)
 [![GitHub Release Date](https://img.shields.io/github/release-date/davep/oldnews)](https://github.com/davep/oldnews/releases)
