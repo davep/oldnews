@@ -39,7 +39,6 @@ from pyperclip import copy as to_clipboard
 # Textual imports.
 from textual import on, work
 from textual.app import ComposeResult
-from textual.containers import Vertical
 from textual.getters import query_one
 from textual.message import Message
 from textual.reactive import var
