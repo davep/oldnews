@@ -103,7 +103,7 @@ class ArticleContent(Vertical):
         if self.article is not None:
             self.title.update(self.article.title)
             self.published.update(
-                str(self.article.published.astimezone().strftime("%Y-%m-%d %H:%M:%S"))
+                self.article.published.astimezone().strftime("%Y-%m-%d %H:%M:%S")
             )
             if self.article.html_url is None:
                 self.link.visible = False
