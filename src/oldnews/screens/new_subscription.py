@@ -30,6 +30,10 @@ from textual.widgets import Button, Input, Label
 # Textual-autocomplete imports.
 from textual_autocomplete import AutoComplete
 
+##############################################################################
+# Textual Enhanced imports.
+from textual_enhanced.tools import add_key
+
 
 ##############################################################################
 class NewSubscriptionData(NamedTuple):
@@ -106,8 +110,15 @@ class NewSubscription(ModalScreen[NewSubscriptionData | None]):
                 )
             )
             with Horizontal():
-                yield Button("Add", id="add", variant="primary", disabled=True)
-                yield Button("Cancel [dim]\\[Esc][/]", id="cancel", variant="error")
+                yield Button(
+                    add_key("Add", "Enter", self),
+                    id="add",
+                    variant="primary",
+                    disabled=True,
+                )
+                yield Button(
+                    add_key("Cancel", "Esc", self), id="cancel", variant="error"
+                )
             yield AutoComplete(
                 folder_input, candidates=[folder.name for folder in self._folders]
             )
@@ -119,9 +130,10 @@ class NewSubscription(ModalScreen[NewSubscriptionData | None]):
     @on(Input.Changed, "#feed")
     def _refresh_state(self) -> None:
         """Refresh the state of the dialog."""
-        self.add_button.disabled = not bool(self.feed_input.value.strip())
+        self.add_button.disabled = not looks_webish(self.feed_input.value.strip())
 
     @on(Button.Pressed, "#add")
+    @on(Input.Submitted)
     def action_add(self) -> None:
         """React to the user pressing the add button."""
         if feed := self.feed_input.value.strip():
