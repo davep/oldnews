@@ -25,7 +25,7 @@
 - Fixed a crash caused by https://github.com/Textualize/textual/issues/6360
   ([#140](https://github.com/davep/oldnews/pull/140))
 - Improved the dialog that gets the name of a folder when moving a
-  subscription.
+  subscription. ([#156](https://github.com/davep/oldnews/pull/156))
 
 ## v0.10.0
 
