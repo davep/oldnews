@@ -1,6 +1,6 @@
 [project]
 name = "oldnews"
-version = "0.10.0"
+version = "1.0.0"
 description = "A terminal-based client for TheOldReader"
 readme = "README.md"
 authors = [
@@ -32,20 +32,25 @@ dependencies = [
     "xdg-base-dirs>=6.0.2",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Topic :: Internet",
+    "Topic :: Terminals",
     "Typing :: Typed",
 ]
 
 [project.urls]
 Homepage = "https://github.com/davep/oldnews"
 Repository = "https://github.com/davep/oldnews"
-Documentation = "https://oldnews.davep.dev/"
+Documentation = "https://github.com/davep/oldnews/blob/main/README.md"
 Source = "https://github.com/davep/oldnews"
 Issues = "https://github.com/davep/oldnews/issues"
 Discussions = "https://github.com/davep/oldnews/discussions"
@@ -54,7 +59,7 @@ Discussions = "https://github.com/davep/oldnews/discussions"
 oldnews = "oldnews.__main__:main"
 
 [build-system]
-requires = ["uv_build>=0.9.4,<0.11.0"]
+requires = ["uv_build>=0.9.4"]
 build-backend = "uv_build"
 
 [[tool.uv.index]]
