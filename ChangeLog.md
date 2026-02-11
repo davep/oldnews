@@ -27,6 +27,7 @@
 - Improved the dialog that gets the name of a folder when moving a
   subscription. ([#156](https://github.com/davep/oldnews/pull/156))
 - Tidied up the captions of various dialog buttons.
+  ([#157](https://github.com/davep/oldnews/pull/157))
 
 ## v0.10.0
 
