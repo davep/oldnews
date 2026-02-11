@@ -277,7 +277,7 @@ class Main(EnhancedScreen[None]):
         """Compose the content of the main screen."""
         yield Header()
         yield Navigation(classes="panel").data_bind(
-            Main.folders, Main.subscriptions, Main.unread
+            Main.folders, Main.subscriptions, Main.unread, Main.compact_ui
         )
         with ArticleView().data_bind(Main.articles):
             yield ArticleListHeader().data_bind(Main.current_category, Main.compact_ui)
