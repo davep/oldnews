@@ -13,6 +13,10 @@ from textual.getters import query_one
 from textual.screen import ModalScreen
 from textual.widgets import Button, DataTable
 
+##############################################################################
+# Textual Enhanced imports.
+from textual_enhanced.tools import add_key
+
 
 ##############################################################################
 class InformationDisplay(ModalScreen[None]):
@@ -64,7 +68,7 @@ class InformationDisplay(ModalScreen[None]):
             dialog.border_title = f"{self._title} Information"
             yield DataTable(show_header=False, cursor_type="row")
             with Center():
-                yield Button("Close")
+                yield Button(add_key("Close", "Esc", self))
 
     def on_mount(self) -> None:
         """Populate the dialog once the DOM is ready."""

@@ -30,6 +30,10 @@ from textual.widgets import Button, Input, Label
 # Textual-autocomplete imports.
 from textual_autocomplete import AutoComplete
 
+##############################################################################
+# Textual Enhanced imports.
+from textual_enhanced.tools import add_key
+
 
 ##############################################################################
 class NewSubscriptionData(NamedTuple):
@@ -107,7 +111,9 @@ class NewSubscription(ModalScreen[NewSubscriptionData | None]):
             )
             with Horizontal():
                 yield Button("Add", id="add", variant="primary", disabled=True)
-                yield Button("Cancel [dim]\\[Esc][/]", id="cancel", variant="error")
+                yield Button(
+                    add_key("Cancel", "Esc", self), id="cancel", variant="error"
+                )
             yield AutoComplete(
                 folder_input, candidates=[folder.name for folder in self._folders]
             )

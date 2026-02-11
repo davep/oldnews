@@ -13,6 +13,10 @@ from textual.getters import query_one
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input
 
+##############################################################################
+# Textual Enhanced imports.
+from textual_enhanced.tools import add_key
+
 
 ##############################################################################
 class Login(ModalScreen[Session | None]):
@@ -72,7 +76,9 @@ class Login(ModalScreen[Session | None]):
             yield Input(id="password", password=True, placeholder="Password")
             with Horizontal():
                 yield Button("Login", id="login", variant="primary")
-                yield Button("Cancel [dim]\\[Esc][/]", id="cancel", variant="error")
+                yield Button(
+                    add_key("Cancel", "Esc", self), id="cancel", variant="error"
+                )
 
     @on(Button.Pressed, "#login")
     async def login(self) -> None:
