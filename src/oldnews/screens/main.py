@@ -214,7 +214,7 @@ class Main(EnhancedScreen[None]):
     """The folders that subscriptions are assigned to."""
     subscriptions: var[Subscriptions] = var(Subscriptions)
     """The list of subscriptions."""
-    current_category: var[Folder | Subscription | None] = var(None)
+    selected_category: var[Folder | Subscription | None] = var(None)
     """The navigation category that is currently selected."""
     unread: var[LocalUnread] = var(LocalUnread)
     """The unread counts."""
@@ -280,9 +280,9 @@ class Main(EnhancedScreen[None]):
             Main.folders, Main.subscriptions, Main.unread, Main.compact_ui
         )
         with ArticleView().data_bind(Main.articles):
-            yield ArticleListHeader().data_bind(Main.current_category, Main.compact_ui)
+            yield ArticleListHeader().data_bind(Main.selected_category, Main.compact_ui)
             yield ArticleList(classes="panel").data_bind(
-                Main.articles, Main.current_category, Main.compact_ui
+                Main.articles, Main.selected_category, Main.compact_ui
             )
             yield ArticleContent().data_bind(Main.article, Main.compact_ui)
         yield Footer()
@@ -342,10 +342,10 @@ class Main(EnhancedScreen[None]):
             ) or self.article_view.has_focus_within
         if action == Information.action_name():
             return (
-                self.navigation.has_focus and self.current_category is not None
+                self.navigation.has_focus and self.selected_category is not None
             ) or (self.article_view.has_focus_within and self.article is not None)
         if action in (Rename.action_name(), Remove.action_name()):
-            return self.current_category is not None
+            return self._current_category_in_context is not None
         if action in (MarkRead.action_name(), MarkUnread.action_name()):
             return self.article_view.has_focus_within and bool(
                 self.article or self.article_list.highlighted_article
@@ -397,9 +397,9 @@ class Main(EnhancedScreen[None]):
 
     async def _refresh_article_list(self) -> None:
         """Refresh the content of the article list."""
-        if self.current_category:
+        if self.selected_category:
             self.articles = await get_local_articles(
-                self.current_category, not self.show_all
+                self.selected_category, not self.show_all
             )
             # If the result is there's nothing showing, tidy up the content
             # side of the display and maybe move focus back to navigation.
@@ -463,7 +463,7 @@ class Main(EnhancedScreen[None]):
         Args:
             message: The message to react to.
         """
-        self.current_category = message.category
+        self.selected_category = message.category
         self.article = None
         await self._refresh_article_list()
         self.article_list.focus()
@@ -616,7 +616,7 @@ class Main(EnhancedScreen[None]):
     @work
     async def action_mark_all_read_command(self) -> None:
         """Mark all unread articles in the current category as read."""
-        if self.current_category is None:
+        if self.selected_category is None:
             return
         if not (
             ids_to_mark_read := [
@@ -625,12 +625,12 @@ class Main(EnhancedScreen[None]):
         ):
             return
         category_name = (
-            self.current_category.name
-            if isinstance(self.current_category, Folder)
-            else self.current_category.title
+            self.selected_category.name
+            if isinstance(self.selected_category, Folder)
+            else self.selected_category.title
         )
         category_description = (
-            f"{self.current_category.__class__.__name__.lower()} '{category_name}'"
+            f"{self.selected_category.__class__.__name__.lower()} '{category_name}'"
         )
         plural = "s" if len(ids_to_mark_read) > 1 else ""
         if await self.app.push_screen_wait(
@@ -807,7 +807,7 @@ class Main(EnhancedScreen[None]):
     def _current_category_in_context(self) -> Folder | Subscription | None:
         """The current category, depending on the user's focus."""
         if self.article_view.has_focus_within:
-            return self.current_category
+            return self.selected_category
         return self.navigation.current_category
 
     def action_rename_command(self) -> None:
@@ -891,10 +891,10 @@ class Main(EnhancedScreen[None]):
     async def action_information_command(self) -> None:
         """Show some information about the current item."""
         information: InformationDisplay | None = None
-        if self.navigation.has_focus and self.current_category:
+        if self.navigation.has_focus and self.selected_category:
             information = InformationDisplay(
-                self.current_category.__class__.__name__,
-                data_dump(self.current_category),
+                self.selected_category.__class__.__name__,
+                data_dump(self.selected_category),
             )
         elif self.article_view.has_focus_within and self.article:
             information = InformationDisplay("Article", data_dump(self.article))
