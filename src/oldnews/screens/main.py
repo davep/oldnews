@@ -340,11 +340,11 @@ class Main(EnhancedScreen[None]):
                 self.navigation.has_focus
                 and self.navigation.current_subscription is not None
             ) or self.article_view.has_focus_within
-        if action == Information.action_name():
-            return (
-                self.navigation.has_focus and self.selected_category is not None
-            ) or (self.article_view.has_focus_within and self.article is not None)
-        if action in (Rename.action_name(), Remove.action_name()):
+        if action in (
+            Information.action_name(),
+            Rename.action_name(),
+            Remove.action_name(),
+        ):
             return self._current_category_in_context is not None
         if action in (MarkRead.action_name(), MarkUnread.action_name()):
             return self.article_view.has_focus_within and bool(
@@ -897,13 +897,18 @@ class Main(EnhancedScreen[None]):
     async def action_information_command(self) -> None:
         """Show some information about the current item."""
         information: InformationDisplay | None = None
-        if self.navigation.has_focus and self.selected_category:
-            information = InformationDisplay(
-                self.selected_category.__class__.__name__,
-                data_dump(self.selected_category),
-            )
-        elif self.article_view.has_focus_within and self.article:
+        if self.article_content.has_focus_within and self.article:
             information = InformationDisplay("Article", data_dump(self.article))
+        elif self.article_list.has_focus and self.article_list.selected_category:
+            information = InformationDisplay(
+                self.article_list.selected_category.__class__.__name__,
+                data_dump(self.article_list.selected_category),
+            )
+        elif self._current_category_in_context:
+            information = InformationDisplay(
+                self._current_category_in_context.__class__.__name__,
+                data_dump(self._current_category_in_context),
+            )
         if information:
             await self.app.push_screen_wait(information)
 
