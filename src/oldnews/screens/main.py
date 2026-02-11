@@ -433,9 +433,10 @@ class Main(EnhancedScreen[None]):
     @on(SyncFinished)
     async def _sync_finished(self) -> None:
         """Clean up after a sync from TheOldReader has finished."""
-        # Ensure the selected category is refreshed because it could be that
-        # a folder or subscription got renamed.
-        self.selected_category = self.navigation.current_category
+        # Ensure the selected category (if there is one) is refreshed
+        # because it could be that a folder or subscription got renamed.
+        if self.selected_category:
+            self.selected_category = self.navigation.current_category
         # Ensure that any article list that is showing gets a refresh.
         await self._refresh_article_list()
         # Put the title of the application in its default state.
