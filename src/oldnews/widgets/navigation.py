@@ -47,22 +47,27 @@ from ._next_matching_option import Direction, next_matching_option
 class FolderView(Option):
     """The view of a folder within the navigation widget."""
 
-    def __init__(self, folder: Folder, expanded: bool, counts: LocalUnread) -> None:
+    def __init__(
+        self, folder: Folder, expanded: bool, counts: LocalUnread, compact: bool
+    ) -> None:
         """Initialise the folder view object.
 
         Args:
             folder: The folder to view.
             expanded: Should we show as being expanded?
             counts: The unread counts.
+            compact: Should we show a compact view?
         """
         self._folder = folder
         """The folder we're viewing."""
         style = "bold dim"
         if unread := counts.get(folder.id, 0):
             style = "bold"
+        if compact:
+            style += " italic"
         prompt = Table.grid(expand=True)
         prompt.add_column(width=2)
-        prompt.add_column(ratio=1)
+        prompt.add_column(ratio=1, no_wrap=compact)
         prompt.add_column(width=1)
         prompt.add_column()
         prompt.add_row(
@@ -72,7 +77,9 @@ class FolderView(Option):
             intcomma(unread) if unread else "",
         )
         super().__init__(
-            Group(rule := Rule(style="dim"), prompt, rule) if expanded else prompt,
+            (prompt if compact else Group(rule := Rule(style="dim"), prompt, rule))
+            if expanded
+            else prompt,
             id=folder.id,
         )
 
@@ -86,12 +93,15 @@ class FolderView(Option):
 class SubscriptionView(Option):
     """The view of a subscription within the navigation widget."""
 
-    def __init__(self, subscription: Subscription, counts: LocalUnread) -> None:
+    def __init__(
+        self, subscription: Subscription, counts: LocalUnread, compact: bool
+    ) -> None:
         """Initialise the subscription view object.
 
         Args:
             subscription: The subscription we're viewing.
             counts: The unread counts.
+            compact: Should we show a compact view?
         """
         self._subscription = subscription
         """The subscription we're viewing."""
@@ -100,7 +110,7 @@ class SubscriptionView(Option):
             style = f"not {style}"
         prompt = Table.grid(expand=True)
         prompt.add_column(width=2)
-        prompt.add_column(ratio=1)
+        prompt.add_column(ratio=1, no_wrap=compact)
         prompt.add_column(width=1)
         prompt.add_column()
         prompt.add_row(
@@ -143,6 +153,8 @@ class Navigation(EnhancedOptionList):
     """The list of subscriptions."""
     unread: var[LocalUnread] = var(LocalUnread)
     """The unread counts."""
+    compact_ui: var[bool] = var(False)
+    """Should we try and make the UI as compact as possible?"""
 
     @dataclass
     class CategorySelected(Message):
@@ -194,7 +206,7 @@ class Navigation(EnhancedOptionList):
             Views of the subscriptions.
         """
         yield from (
-            SubscriptionView(subscription, self.unread)
+            SubscriptionView(subscription, self.unread, self.compact_ui)
             for subscription in sorted(subscriptions, key=self._key("title"))
         )
 
@@ -223,7 +235,10 @@ class Navigation(EnhancedOptionList):
         """
         for folder in sorted(self.folders, key=self._key("name")):
             yield FolderView(
-                folder, expanded := folder.id in self._expanded, self.unread
+                folder,
+                expanded := folder.id in self._expanded,
+                self.unread,
+                self.compact_ui,
             )
             if expanded:
                 yield from self._gather_subscriptions_for_folder(folder)
@@ -257,6 +272,10 @@ class Navigation(EnhancedOptionList):
 
     def _watch_unread(self) -> None:
         """React to the unread data being updated."""
+        self._refresh_navigation()
+
+    def _watch_compact_ui(self) -> None:
+        """React to the compact UI being toggled."""
         self._refresh_navigation()
 
     async def _load_state(self) -> None:
