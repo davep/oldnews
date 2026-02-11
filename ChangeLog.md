@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v1.0.0
 
-**Released: WiP**
+**Released: 2026-02-11**
 
 - More changes to how, when and where an article is marked as read when it
   is displayed. ([#133](https://github.com/davep/oldnews/pull/133))
