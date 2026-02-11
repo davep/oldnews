@@ -345,7 +345,7 @@ class Main(EnhancedScreen[None]):
                 self.navigation.has_focus and self.current_category is not None
             ) or (self.article_view.has_focus_within and self.article is not None)
         if action in (Rename.action_name(), Remove.action_name()):
-            return self.current_category is not None
+            return self._current_category_in_context is not None
         if action in (MarkRead.action_name(), MarkUnread.action_name()):
             return self.article_view.has_focus_within and bool(
                 self.article or self.article_list.highlighted_article
