@@ -108,8 +108,8 @@ from ..widgets import (
     ArticleView,
     Navigation,
 )
-from .folder_input import FolderInput
 from .information_display import InformationDisplay
+from .move_subscription import MoveSubscriptionTo
 from .new_subscription import NewSubscription
 from .process_subscription import ProcessSubscription
 
@@ -874,10 +874,14 @@ class Main(EnhancedScreen[None]):
     @work
     async def action_move_subscription_command(self) -> None:
         """Move a subscription to a different folder."""
-        if not (subscription := self.navigation.current_subscription):
+        if not isinstance(
+            subscription := self._current_category_in_context, Subscription
+        ):
             return
         if (
-            target_folder := await self.app.push_screen_wait(FolderInput(self.folders))
+            target_folder := await self.app.push_screen_wait(
+                MoveSubscriptionTo(subscription, self.folders)
+            )
         ) is not None:
             if await Subscriptions.move(self._session, subscription, target_folder):
                 await move_subscription_articles(
