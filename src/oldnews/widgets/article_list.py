@@ -99,7 +99,7 @@ class ArticleList(EnhancedOptionList):
     that is highlighted in the navigation panel.
     """
 
-    current_category: var[Folder | Subscription | None] = var(None)
+    selected_category: var[Folder | Subscription | None] = var(None)
     """The category of articles being shown."""
     articles: var[Articles] = var(Articles)
     """The list of articles to show."""
@@ -131,7 +131,7 @@ class ArticleList(EnhancedOptionList):
             if self.highlighted is not None
             else None
         )
-        showing_subscription = isinstance(self.current_category, Subscription)
+        showing_subscription = isinstance(self.selected_category, Subscription)
         with self.preserved_highlight:
             self.set_options(
                 [

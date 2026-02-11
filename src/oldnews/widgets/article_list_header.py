@@ -25,17 +25,17 @@ class ArticleListHeader(Static):
     }
     """
 
-    current_category: var[Folder | Subscription | None] = var(None)
+    selected_category: var[Folder | Subscription | None] = var(None)
     """The navigation category that is currently selected."""
     compact_ui: var[bool] = var(False, toggle_class="--compact")
     """Should we try and make the UI as compact as possible?"""
 
-    def _watch_current_category(self) -> None:
+    def _watch_selected_category(self) -> None:
         """React to the current category being updated."""
-        if isinstance(self.current_category, Folder):
-            self.update(self.current_category.name)
-        elif isinstance(self.current_category, Subscription):
-            self.update(self.current_category.title)
+        if isinstance(self.selected_category, Folder):
+            self.update(self.selected_category.name)
+        elif isinstance(self.selected_category, Subscription):
+            self.update(self.selected_category.title)
         else:
             self.update("")
 
