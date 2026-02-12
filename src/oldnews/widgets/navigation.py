@@ -262,8 +262,9 @@ class Navigation(EnhancedOptionList):
                 (*self._gather_folderless_subscrtiptions(), *self._gather_folders())
             )
 
-    def _watch_folders(self) -> None:
+    async def _watch_folders(self) -> None:
         """React to the folders being updated."""
+        await self._load_state()
         self._refresh_navigation()
 
     def _watch_subscriptions(self) -> None:
@@ -297,6 +298,11 @@ class Navigation(EnhancedOptionList):
         Args:
             new_state: The new state to set.
         """
+        # Ensure that the new state *only* includes folders that are known
+        # to us. We do this because folders can get renamed and, over time,
+        # we can end up with IDs in the navigation state that no longer
+        # exist.
+        new_state &= {folder.id for folder in self.folders}
         self._expanded = new_state
         self._save_state(new_state)
         self._refresh_navigation()

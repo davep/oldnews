@@ -96,6 +96,7 @@ from ..data import (
     remove_folder_from_articles,
     remove_subscription_articles,
     rename_folder_for_articles,
+    rename_folder_in_navigation_state,
     total_unread,
     update_configuration,
 )
@@ -804,6 +805,7 @@ class Main(EnhancedScreen[None]):
         ):
             if await Folders.rename(self._session, folder, new_name):
                 await rename_folder_for_articles(folder, new_name)
+                await rename_folder_in_navigation_state(folder, new_name)
                 self.notify("Renamed")
                 self.post_message(RefreshFromTheOldReader())
             else:

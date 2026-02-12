@@ -31,7 +31,11 @@ from .local_folders import get_local_folders, save_local_folders
 from .local_subscriptions import get_local_subscriptions, save_local_subscriptions
 from .local_unread import LocalUnread, get_local_unread, total_unread
 from .log import Log
-from .navigation_state import get_navigation_state, save_navigation_state
+from .navigation_state import (
+    get_navigation_state,
+    rename_folder_in_navigation_state,
+    save_navigation_state,
+)
 from .reset import reset_data
 
 ##############################################################################
@@ -62,6 +66,7 @@ __all__ = [
     "remove_folder_from_articles",
     "remove_subscription_articles",
     "rename_folder_for_articles",
+    "rename_folder_in_navigation_state",
     "reset_data",
     "save_configuration",
     "save_local_articles",
