@@ -30,7 +30,7 @@ class Remove(Command):
 class MoveSubscription(Command):
     """Move the current subscription to folder"""
 
-    BINDING_KEY = "vertical_line"
+    BINDING_KEY = "m"
 
 
 ### admin.py ends here
