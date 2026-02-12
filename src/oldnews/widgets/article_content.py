@@ -7,7 +7,11 @@ from typing import Self
 
 ##############################################################################
 # html-to-markdown imports.
-from html_to_markdown import convert
+from html_to_markdown import ConversionOptions, convert
+
+##############################################################################
+# httpx imports.
+from httpx import AsyncClient, HTTPStatusError, RequestError
 
 ##############################################################################
 # OldAS imports.
@@ -21,6 +25,11 @@ from textual.getters import query_one
 from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Label, Markdown
+from textual_enhanced.binding import HelpfulBinding
+
+##############################################################################
+# Local imports.
+from .. import __user_agent__
 
 
 ##############################################################################
@@ -70,6 +79,15 @@ class ArticleContent(Vertical):
     This panel is the view of the summary of the current article; here you
     can read the text of the article as is provided in the feed.
     """
+
+    BINDINGS = [
+        HelpfulBinding(
+            "g",
+            "grab_full_content",
+            "Grab Full",
+            tooltip="Grab the page of the article and render it as text",
+        )
+    ]
 
     article: var[Article | None] = var(None)
     """The article being viewed."""
@@ -124,6 +142,49 @@ class ArticleContent(Vertical):
     def focus(self, scroll_visible: bool = True) -> Self:
         self.content.focus(scroll_visible)
         return self
+
+    def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
+        """Check if an action is possible to perform right now.
+
+        Args:
+            action: The action to perform.
+            parameters: The parameters of the action.
+
+        Returns:
+            `True` if it can perform, `False` or `None` if not.
+        """
+        if self.is_mounted and action == "action_grab_full_content":
+            return bool(self.article and self.article.html_url)
+        return True
+
+    async def action_grab_full_content(self) -> None:
+        """Attempt to grab and show the full content of the article."""
+        if not self.article or not self.article.html_url:
+            return
+        self.content.loading = True
+        try:
+            async with AsyncClient() as client:
+                response = await client.get(
+                    self.article.html_url,
+                    follow_redirects=True,
+                    headers={"user-agent": __user_agent__},
+                )
+        except RequestError as error:
+            self.notify(str(error), title="Request error", severity="error", timeout=8)
+            return
+        finally:
+            self.content.loading = False
+        try:
+            response.raise_for_status()
+        except HTTPStatusError as error:
+            self.notify(str(error), title="Response error", severity="error", timeout=8)
+            return
+        await self.markdown.update(
+            convert(
+                response.text,
+                ConversionOptions(extract_metadata=False, skip_images=True),
+            )
+        )
 
 
 ### article_content.py ends here

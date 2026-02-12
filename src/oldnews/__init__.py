@@ -13,5 +13,6 @@ __maintainer__ = "Dave Pearson"
 __email__ = "davep@davep.org"
 __version__ = version("oldnews")
 __licence__ = "GPLv3+"
+__user_agent__ = f"OldNews v{__version__} (https://github.com/davep/oldnews)"
 
 ### __init__.py ends here

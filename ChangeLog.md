@@ -8,6 +8,8 @@
   ([#162](https://github.com/davep/oldnews/pull/162))
 - Changed the default binding for `MoveSubscription` to <kbd>m</kbd>.
   ([#163](https://github.com/davep/oldnews/pull/163))
+- Added the ability to download and view the text from the full page of an
+  article; useful for those feeds that are stingy with the summary content.
 
 ## v1.0.0
 
