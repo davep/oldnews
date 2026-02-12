@@ -6,6 +6,8 @@
 
 - When a folder is renamed, its expanded/collapsed state is now retained.
   ([#162](https://github.com/davep/oldnews/pull/162))
+- Changed the default binding for `MoveSubscription` to <kbd>m</kbd>.
+  ([#163](https://github.com/davep/oldnews/pull/163))
 
 ## v1.0.0
 
