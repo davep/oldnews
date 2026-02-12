@@ -77,8 +77,8 @@ class FolderView(Option):
             intcomma(unread) if unread else "",
         )
         super().__init__(
-            (prompt if compact else Group(rule := Rule(style="dim"), prompt, rule))
-            if expanded
+            Group(rule := Rule(style="dim"), prompt, rule)
+            if expanded and not compact
             else prompt,
             id=folder.id,
         )
