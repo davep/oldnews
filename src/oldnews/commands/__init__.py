@@ -2,30 +2,42 @@
 
 ##############################################################################
 # Local imports.
-from .main import (
+from .admin import (
     AddSubscription,
+    MoveSubscription,
+    Remove,
+    Rename,
+)
+from .copying import (
     Copy,
     CopyArticleToClipboard,
     CopyFeedToClipboard,
     CopyHomePageToClipboard,
-    Escape,
+)
+from .main import (
     Information,
+    RefreshFromTheOldReader,
+    UserInformation,
+)
+from .marking import (
     MarkAllRead,
     MarkRead,
     MarkUnread,
-    MoveSubscription,
+)
+from .navigation import (
+    Escape,
     Next,
     NextUnread,
-    OpenArticle,
-    OpenHomePage,
     Previous,
     PreviousUnread,
-    RefreshFromTheOldReader,
-    Remove,
-    Rename,
+)
+from .opening import (
+    OpenArticle,
+    OpenHomePage,
+)
+from .ui import (
     ToggleCompact,
     ToggleShowAll,
-    UserInformation,
 )
 
 ##############################################################################
