@@ -791,6 +791,7 @@ source = { editable = "." }
 dependencies = [
     { name = "bagofstuff" },
     { name = "html-to-markdown" },
+    { name = "httpx" },
     { name = "humanize" },
     { name = "oldas" },
     { name = "pyperclip" },
@@ -815,6 +816,7 @@ dev = [
 requires-dist = [
     { name = "bagofstuff", specifier = ">=0.2.0" },
     { name = "html-to-markdown", specifier = ">=2.15.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "humanize", specifier = ">=4.15.0" },
     { name = "oldas", specifier = ">=1.0.0" },
     { name = "pyperclip", specifier = ">=1.11.0" },
