@@ -297,6 +297,11 @@ class Navigation(EnhancedOptionList):
         Args:
             new_state: The new state to set.
         """
+        # Ensure that the new state *only* includes folders that are known
+        # to us. We do this because folders can get renamed and, over time,
+        # we can end up with IDs in the navigation state that no longer
+        # exist.
+        new_state &= {folder.id for folder in self.folders}
         self._expanded = new_state
         self._save_state(new_state)
         self._refresh_navigation()
