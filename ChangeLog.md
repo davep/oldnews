@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v1.1.0
 
-**Released: WiP**
+**Released: 2026-02-12**
 
 - When a folder is renamed, its expanded/collapsed state is now retained.
   ([#162](https://github.com/davep/oldnews/pull/162))
