@@ -262,8 +262,9 @@ class Navigation(EnhancedOptionList):
                 (*self._gather_folderless_subscrtiptions(), *self._gather_folders())
             )
 
-    def _watch_folders(self) -> None:
+    async def _watch_folders(self) -> None:
         """React to the folders being updated."""
+        await self._load_state()
         self._refresh_navigation()
 
     def _watch_subscriptions(self) -> None:
