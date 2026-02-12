@@ -53,9 +53,10 @@ async def rename_folder_in_navigation_state(
     rename_from = Folders.full_id(folder)
     rename_to = Folders.full_id(rename_to)
     Log().debug(f"Replacing {rename_from} with {rename_to} in navigation state")
-    async with in_transaction():
-        await NavigationState.filter(expanded_folder_id=rename_from).delete()
-        await NavigationState.create(expanded_folder_id=rename_to)
+    if is_expanded := await NavigationState.get_or_none(expanded_folder_id=rename_from):
+        async with in_transaction():
+            await is_expanded.delete()
+            await NavigationState.create(expanded_folder_id=rename_to)
 
 
 ### navigation_state.py ends here
