@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v1.2.0
 
-**Released: WiP**
+**Released: 2026-02-13**
 
 - Added the ability to set a CSS selector filter per subscription which is
   used when grabbing a the full page for an article to read locally. This is
