@@ -1,6 +1,6 @@
 # OldNews - A terminal-based client for TheOldReader
 
-![OldNews](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/.images/oldnews-social-banner.png)
+![OldNews](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/docs/images/oldnews-social-banner.png)
 
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/davep/oldnews/style-and-lint.yaml)](https://github.com/davep/oldnews/actions)
 [![GitHub commits since latest release](https://img.shields.io/github/commits-since/davep/oldnews/latest)](https://github.com/davep/oldnews/commits/main/)
@@ -60,7 +60,7 @@ OldNews only works if you have an account on
 [TheOldReader](https://theoldreader.com). When you first run up OldNews you
 will get a login screen:
 
-![OldNews login](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/.images/login.png)
+![OldNews login](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/docs/images/login.png)
 
 Enter your TheOldReader login details to log in.
 
@@ -74,7 +74,7 @@ form your subscriptions. From then on it will synchronise the read/unread
 status as you read articles, and will refresh with the server if you request
 a refresh, or when you next start the application (within a set time limit).
 
-![Reading an article with OldNews](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/.images/reading.png)
+![Reading an article with OldNews](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/docs/images/reading.png)
 
 ## Using OldNews
 
@@ -82,12 +82,12 @@ At the moment the best way to get to know OldNews is to read the helps
 screen; once in the main application you can see this by pressing
 <kbd>F1</kbd>.
 
-![OldNews help](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/.images/help.png)
+![OldNews help](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/docs/images/help.png)
 
 You can also discover commands and their keyboard shortcuts using the
 command palette:
 
-![OldNews command palette](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/.images/command-palette.png)
+![OldNews command palette](https://raw.githubusercontent.com/davep/oldnews/refs/heads/main/docs/images/command-palette.png)
 
 ## File locations
 

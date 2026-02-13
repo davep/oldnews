@@ -78,6 +78,8 @@ exclude=[".venv"]
 [dependency-groups]
 dev = [
     "codespell>=2.4.1",
+    "markdown-exec>=1.12.1",
+    "mkdocs-material>=9.7.1",
     "mypy>=1.18.2",
     "pre-commit>=4.3.0",
     "ruff>=0.14.0",

@@ -1,0 +1,74 @@
+site_name: OldNews
+docs_dir: docs
+repo_url: https://github.com/davep/oldnews
+
+nav:
+  - OldNews:
+      - index.md
+      - getting_started.md
+      - using.md
+      - command_line.md
+      - "Configuration": configuration.md
+      - "Grab Filters": grab_filters.md
+  - Change Log: changelog.md
+  - License: license.md
+
+watch:
+  - docs/
+
+markdown_extensions:
+  - admonition
+  - pymdownx.snippets
+  - pymdownx.superfences:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: bash
+          class: bash
+          validator: !!python/name:markdown_exec.validator
+          format: !!python/name:markdown_exec.formatter
+
+plugins:
+  search:
+
+theme:
+  name: material
+  icon:
+    logo: fontawesome/solid/newspaper
+  features:
+    - navigation.tabs
+    - navigation.indexes
+    - navigation.tabs.sticky
+    - navigation.footer
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      accent: purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/davep
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/user/davepearson/
+    - icon: fontawesome/brands/mastodon
+      link: https://fosstodon.org/@davep
+    - icon: fontawesome/brands/bluesky
+      link: https://bsky.app/profile/davep.org
+    - icon: fontawesome/brands/threads
+      link: https://www.threads.net/@davepdotorg
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/@DavePearson
+    - icon: fontawesome/brands/steam
+      link: https://steamcommunity.com/id/davepdotorg
+
+### mkdocs.yml ends here
