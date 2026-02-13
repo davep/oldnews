@@ -11,7 +11,11 @@ from tortoise.transactions import in_transaction
 
 ##############################################################################
 # Local imports.
-from .models import LocalSubscription, LocalSubscriptionCategory
+from .models import (
+    LocalSubscription,
+    LocalSubscriptionCategory,
+    LocalSubscriptionGrabFilter,
+)
 
 
 ##############################################################################
@@ -74,6 +78,44 @@ async def save_local_subscriptions(subscriptions: Subscriptions) -> Subscription
             for category in subscription.categories
         )
     return subscriptions
+
+
+##############################################################################
+async def get_content_grab_filter_for(subscription: Subscription | str) -> str | None:
+    """Get any content grab filter associated with the subscription.
+
+    Args:
+        subscription: The subscription to get the content grab filter for.
+
+    Returns:
+        `None` if there is no filter, otherwise the CSS selector to use.
+    """
+    if isinstance(subscription, Subscription):
+        subscription = subscription.id
+    if grab_filter := await LocalSubscriptionGrabFilter.get_or_none(
+        subscription_id=subscription
+    ):
+        return grab_filter.selector
+    return None
+
+
+##############################################################################
+async def set_content_grab_filter_for(
+    subscription: Subscription | str, selector: str
+) -> None:
+    """Set the content grab filter associated with the subscription.
+
+    Args:
+        subscription: The subscription to set the content grab filter for.
+    """
+    if isinstance(subscription, Subscription):
+        subscription = subscription.id
+    if selector:
+        await LocalSubscriptionGrabFilter.update_or_create(
+            subscription_id=subscription, defaults={"selector": selector}
+        )
+    else:
+        await LocalSubscriptionGrabFilter.filter(subscription_id=subscription).delete()
 
 
 ### local_subscriptions.py ends here

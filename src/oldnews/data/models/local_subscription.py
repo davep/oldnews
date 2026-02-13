@@ -38,4 +38,14 @@ class LocalSubscriptionCategory(Model):
     """The label for the category."""
 
 
+##############################################################################
+class LocalSubscriptionGrabFilter(Model):
+    """A content filter to apply to any content grab for the subscription."""
+
+    subscription_id = fields.CharField(max_length=255, pk=True)
+    """The ID of the subscription this filter belongs to."""
+    selector = fields.TextField()
+    """The CSS selector used to grab the content."""
+
+
 ### local_subscription.py ends here

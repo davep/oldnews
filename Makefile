@@ -105,7 +105,7 @@ pep8ify:			# Reformat the code to be as PEP8 as possible.
 	$(fmt) $(src)
 
 .PHONY: tidy
-tidy: delint pep8ify		# Tidy up the code, fixing lint and format issues.
+tidy: pep8ify delint		# Tidy up the code, fixing lint and format issues.
 
 .PHONY: use-local-odas
 use-local-odas:			# Use local oldas for testing/coding

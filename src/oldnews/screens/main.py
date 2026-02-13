@@ -75,6 +75,7 @@ from ..commands import (
     RefreshFromTheOldReader,
     Remove,
     Rename,
+    SetSubscriptionContentFilter,
     ToggleCompact,
     ToggleShowAll,
     UserInformation,
@@ -83,6 +84,7 @@ from ..data import (
     LocalUnread,
     clean_old_read_articles,
     data_dump,
+    get_content_grab_filter_for,
     get_local_articles,
     get_local_folders,
     get_local_subscriptions,
@@ -97,6 +99,7 @@ from ..data import (
     remove_subscription_articles,
     rename_folder_for_articles,
     rename_folder_in_navigation_state,
+    set_content_grab_filter_for,
     total_unread,
     update_configuration,
 )
@@ -113,6 +116,7 @@ from .information_display import InformationDisplay
 from .move_subscription import MoveSubscriptionTo
 from .new_subscription import NewSubscription
 from .process_subscription import ProcessSubscription
+from .subscription_content_filter import SubscriptionContentFilter
 
 
 ##############################################################################
@@ -205,6 +209,7 @@ class Main(EnhancedScreen[None]):
         Rename,
         UserInformation,
         ToggleCompact,
+        SetSubscriptionContentFilter,
     ]
 
     BINDINGS = Command.bindings(*COMMAND_MESSAGES)
@@ -318,6 +323,7 @@ class Main(EnhancedScreen[None]):
             CopyFeedToClipboard.action_name(),
             CopyHomePageToClipboard.action_name(),
             MoveSubscription.action_name(),
+            SetSubscriptionContentFilter.action_name(),
         ):
             return self.navigation.current_subscription is not None
         if action in (Next.action_name(), Previous.action_name()):
@@ -941,6 +947,34 @@ class Main(EnhancedScreen[None]):
         with update_configuration() as config:
             config.compact_ui = not config.compact_ui
             self.compact_ui = config.compact_ui
+
+    @work
+    async def action_set_subscription_content_filter_command(self) -> None:
+        """Set a subscription's content filter when grabbing more content."""
+        if (
+            isinstance(subscription := self._current_category_in_context, Subscription)
+            and (
+                new_filter := await self.app.push_screen_wait(
+                    SubscriptionContentFilter(
+                        subscription,
+                        (await get_content_grab_filter_for(subscription)) or "",
+                    )
+                )
+            )
+            is not None
+        ):
+            await set_content_grab_filter_for(subscription, new_filter)
+            if new_filter:
+                self.notify(
+                    f"Content grab filter for {subscription.title} set to {new_filter}",
+                    title="Filter set",
+                    markup=False,
+                )
+            else:
+                self.notify(
+                    f"Content grab filter for {subscription.title} removed",
+                    markup=False,
+                )
 
 
 ### main.py ends here

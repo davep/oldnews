@@ -1,5 +1,13 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- Added the ability to set a CSS selector filter per subscription which is
+  used when grabbing a the full page for an article to read locally. This is
+  set with the new `SetSubscriptionContentFilter` command.
+
 ## v1.1.0
 
 **Released: 2026-02-12**

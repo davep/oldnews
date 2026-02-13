@@ -33,4 +33,11 @@ class MoveSubscription(Command):
     BINDING_KEY = "m"
 
 
+##############################################################################
+class SetSubscriptionContentFilter(Command):
+    """Set the content grab filter for the current subscription"""
+
+    BINDING_KEY = "f"
+
+
 ### admin.py ends here

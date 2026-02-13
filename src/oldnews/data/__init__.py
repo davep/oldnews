@@ -28,7 +28,12 @@ from .local_articles import (
 )
 from .local_data import initialise_local_data, shutdown_local_data
 from .local_folders import get_local_folders, save_local_folders
-from .local_subscriptions import get_local_subscriptions, save_local_subscriptions
+from .local_subscriptions import (
+    get_content_grab_filter_for,
+    get_local_subscriptions,
+    save_local_subscriptions,
+    set_content_grab_filter_for,
+)
 from .local_unread import LocalUnread, get_local_unread, total_unread
 from .log import Log
 from .navigation_state import (
@@ -45,6 +50,7 @@ __all__ = [
     "Configuration",
     "data_dump",
     "get_auth_token",
+    "get_content_grab_filter_for",
     "get_local_articles",
     "get_local_folders",
     "get_local_subscriptions",
@@ -74,6 +80,7 @@ __all__ = [
     "save_local_subscriptions",
     "save_navigation_state",
     "set_auth_token",
+    "set_content_grab_filter_for",
     "shutdown_local_data",
     "total_unread",
     "update_configuration",
