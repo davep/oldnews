@@ -7,6 +7,7 @@
 - Added the ability to set a CSS selector filter per subscription which is
   used when grabbing a the full page for an article to read locally. This is
   set with the new `SetSubscriptionContentFilter` command.
+  ([#166](https://github.com/davep/oldnews/pull/166))
 
 ## v1.1.0
 
