@@ -9,6 +9,7 @@ nav:
       - using.md
       - command_line.md
       - "Configuration": configuration.md
+      - "Grab Filters": grab_filters.md
   - Change Log: changelog.md
   - License: license.md
 
