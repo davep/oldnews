@@ -29,6 +29,7 @@ from .local_articles import (
 from .local_data import initialise_local_data, shutdown_local_data
 from .local_folders import get_local_folders, save_local_folders
 from .local_subscriptions import (
+    get_all_content_grab_filters,
     get_content_grab_filter_for,
     get_local_subscriptions,
     save_local_subscriptions,
@@ -49,6 +50,7 @@ __all__ = [
     "clean_old_read_articles",
     "Configuration",
     "data_dump",
+    "get_all_content_grab_filters",
     "get_auth_token",
     "get_content_grab_filter_for",
     "get_local_articles",
