@@ -8,6 +8,7 @@ nav:
       - getting_started.md
       - using.md
       - command_line.md
+      - "Configuration": configuration.md
   - Change Log: changelog.md
   - License: license.md
 
