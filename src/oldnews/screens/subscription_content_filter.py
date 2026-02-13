@@ -6,7 +6,7 @@ from oldas import Subscription
 
 ##############################################################################
 # Textual imports.
-from textual import on
+from textual import on, work
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.getters import query_one
@@ -14,8 +14,16 @@ from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Label
 
 ##############################################################################
+# Textual-autocomplete imports.
+from textual_autocomplete import AutoComplete
+
+##############################################################################
 # Textual Enhanced imports.
 from textual_enhanced.tools import add_key
+
+##############################################################################
+# Local imports.
+from ..data import get_all_content_grab_filters
 
 
 ##############################################################################
@@ -78,7 +86,7 @@ class SubscriptionContentFilter(ModalScreen[str | None]):
 
     def compose(self) -> ComposeResult:
         """Compose the content of the screen."""
-        with Vertical() as dialog:
+        with Vertical(id="dialog") as dialog:
             dialog.border_title = "Subscription content filter"
             yield Label(
                 "When using the 'grab' facility to view the content of an article "
@@ -99,6 +107,20 @@ class SubscriptionContentFilter(ModalScreen[str | None]):
                 yield Button(
                     add_key("Cancel", "Esc", self), id="cancel", variant="error"
                 )
+
+    @work
+    async def _attach_selector_suggestions(self) -> None:
+        """Attach some suggestions to the input."""
+        self.query_one("#dialog").mount(
+            AutoComplete(
+                self.selector_input,
+                candidates=sorted(await get_all_content_grab_filters()),
+            ),
+        )
+
+    def on_mount(self) -> None:
+        """Configure the dialog one the DOM is mounted."""
+        self._attach_selector_suggestions()
 
     @on(Button.Pressed, "#cancel")
     def action_cancel(self) -> None:
