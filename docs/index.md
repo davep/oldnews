@@ -57,7 +57,7 @@ Expanding for the common locations, the files normally created are:
 - `~/.config/oldnews/configuration.json` -- The configuration file.
 - `~/.local/share/oldnews/*` -- The locally-held data.
 
-## Getting help
+## Questions and feedback
 
 If you need help, or have any ideas, please feel free to [raise an
 issue](https://github.com/davep/oldnews/issues) or [start a

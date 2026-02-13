@@ -20,7 +20,7 @@ called `~/.config/oldnews/configuration.json`.
 
 OldNews allows for a degree of configuration of its keyboard bindings;
 providing a method for setting up replacement bindings for the commands that
-appear in the [command palette](index.md#the-command-palette).
+appear in the [command palette](using.md).
 
 ### Bindable commands
 
