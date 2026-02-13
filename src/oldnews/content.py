@@ -50,12 +50,13 @@ async def _download_content_from(url: str) -> str:
         HTTPStatusError: If there was an error with the site.
     """
     async with AsyncClient() as client:
-        response = await client.get(
-            url,
-            follow_redirects=True,
-            headers={"user-agent": __user_agent__},
-        )
-    response.raise_for_status()
+        (
+            response := await client.get(
+                url,
+                follow_redirects=True,
+                headers={"user-agent": __user_agent__},
+            )
+        ).raise_for_status()
     return response.text
 
 
