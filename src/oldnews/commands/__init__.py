@@ -7,6 +7,7 @@ from .admin import (
     MoveSubscription,
     Remove,
     Rename,
+    SetSubscriptionContentFilter,
 )
 from .copying import (
     Copy,
@@ -63,6 +64,7 @@ __all__ = [
     "RefreshFromTheOldReader",
     "Rename",
     "Remove",
+    "SetSubscriptionContentFilter",
     "ToggleCompact",
     "ToggleShowAll",
     "UserInformation",

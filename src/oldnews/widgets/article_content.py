@@ -7,11 +7,7 @@ from typing import Self
 
 ##############################################################################
 # html-to-markdown imports.
-from html_to_markdown import ConversionOptions, convert
-
-##############################################################################
-# httpx imports.
-from httpx import AsyncClient, HTTPStatusError, RequestError
+from html_to_markdown import convert
 
 ##############################################################################
 # OldAS imports.
@@ -29,7 +25,7 @@ from textual_enhanced.binding import HelpfulBinding
 
 ##############################################################################
 # Local imports.
-from .. import __user_agent__
+from ..content import download_content_of
 
 
 ##############################################################################
@@ -159,32 +155,18 @@ class ArticleContent(Vertical):
 
     async def action_grab_full_content(self) -> None:
         """Attempt to grab and show the full content of the article."""
-        if not self.article or not self.article.html_url:
+        if not self.article:
             return
         self.content.loading = True
         try:
-            async with AsyncClient() as client:
-                response = await client.get(
-                    self.article.html_url,
-                    follow_redirects=True,
-                    headers={"user-agent": __user_agent__},
-                )
-        except RequestError as error:
-            self.notify(str(error), title="Request error", severity="error", timeout=8)
-            return
+            content = await download_content_of(self.article)
         finally:
             self.content.loading = False
-        try:
-            response.raise_for_status()
-        except HTTPStatusError as error:
-            self.notify(str(error), title="Response error", severity="error", timeout=8)
-            return
-        await self.markdown.update(
-            convert(
-                response.text,
-                ConversionOptions(extract_metadata=False, skip_images=True),
-            )
-        )
+
+        if isinstance(content, str):
+            await self.markdown.update(content)
+        else:
+            self.notify(content.reason, title="Could not get content", severity="error")
 
 
 ### article_content.py ends here

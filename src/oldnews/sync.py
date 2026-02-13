@@ -41,6 +41,7 @@ from .data import (
     save_local_folders,
     save_local_subscriptions,
 )
+from .data.models import LocalSubscriptionGrabFilter
 
 ##############################################################################
 type Callback = Callable[[], Any] | None
@@ -304,6 +305,13 @@ class TheOldReaderSync:
             for subscription in removed_subscriptions:
                 await remove_subscription_articles(subscription)
 
+    async def _clean_orphaned_filters(self, subscriptions: Subscriptions) -> None:
+        """Clean out any content filters related to subscriptions we no longer have."""
+        Log().info("Checking for orphaned content filters")
+        await LocalSubscriptionGrabFilter.filter(
+            subscription_id__not_in={subscription.id for subscription in subscriptions}
+        ).delete()
+
     async def _get_unread_counts(
         self, folders: Folders, subscriptions: Subscriptions
     ) -> None:
@@ -328,6 +336,7 @@ class TheOldReaderSync:
         await self._get_historical_articles(original_subscriptions, subscriptions)
         await self._clean_orphaned_articles(original_subscriptions, subscriptions)
         await self._get_unread_counts(folders, subscriptions)
+        await self._clean_orphaned_filters(subscriptions)
         if self.on_sync_finished:
             self.on_sync_finished()
         Log().info("Finished sync with TheOldReader")

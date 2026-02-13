@@ -33,6 +33,7 @@ from ..commands import (
     RefreshFromTheOldReader,
     Remove,
     Rename,
+    SetSubscriptionContentFilter,
     ToggleCompact,
     ToggleShowAll,
     UserInformation,
@@ -72,6 +73,7 @@ class MainCommands(CommandsProvider):
         yield RefreshFromTheOldReader()
         yield from self.maybe(Rename)
         yield from self.maybe(Remove)
+        yield from self.maybe(SetSubscriptionContentFilter)
         yield ToggleCompact()
         yield ToggleShowAll()
         yield from self.maybe(UserInformation)
