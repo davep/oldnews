@@ -118,4 +118,17 @@ async def set_content_grab_filter_for(
         await LocalSubscriptionGrabFilter.filter(subscription_id=subscription).delete()
 
 
+##############################################################################
+async def get_all_content_grab_filters() -> set[str]:
+    """Get the full set of used content grab filters.
+
+    Returns:
+        The set of content filters the user as set up.
+    """
+    return {
+        content_filter.selector
+        for content_filter in await LocalSubscriptionGrabFilter.all()
+    }
+
+
 ### local_subscriptions.py ends here
