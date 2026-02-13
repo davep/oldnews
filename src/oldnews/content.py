@@ -74,8 +74,9 @@ async def _filter_content(article: Article, content: str) -> str:
         content_filter := await get_content_grab_filter_for(article.origin.stream_id)
     ):
         Log().debug(f"Found selector '{content_filter}'")
-        parsed_content = BeautifulSoup(content, "html.parser")
-        if target_content := parsed_content.select_one(content_filter):
+        if target_content := BeautifulSoup(content, "html.parser").select_one(
+            content_filter
+        ):
             content = str(target_content)
         else:
             Log().warning(
