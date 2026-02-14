@@ -527,7 +527,8 @@ class Main(EnhancedScreen[None]):
         Args:
             article: The article to mark as read.
         """
-        await self._mark(locally_mark_read, self._remotely_mark_read, article)
+        if article.is_unread:
+            await self._mark(locally_mark_read, self._remotely_mark_read, article)
 
     async def _mark_unread(self, article: Article) -> None:
         """Mark the given article as unread.
@@ -535,7 +536,8 @@ class Main(EnhancedScreen[None]):
         Args:
             article: The article to mark as unread.
         """
-        await self._mark(locally_mark_unread, self._remotely_mark_unread, article)
+        if article.is_read:
+            await self._mark(locally_mark_unread, self._remotely_mark_unread, article)
 
     @on(ArticleContent.Displayed)
     async def _article_in_view(self, message: ArticleContent.Displayed) -> None:
