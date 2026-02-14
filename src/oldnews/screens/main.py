@@ -369,9 +369,7 @@ class Main(EnhancedScreen[None]):
             message: The message requesting the sub-title be updated.
         """
         self.sub_title = (
-            message.title
-            if message.title
-            else f"{intcomma(total_unread(self.unread))} unread"
+            message.title or f"{intcomma(total_unread(self.unread))} unread"
         )
 
     @on(NewFolders)
