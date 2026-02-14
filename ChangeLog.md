@@ -1,5 +1,13 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- The work to mark an article as read or unread is now only done if it will
+  swap the status of the article.
+  ([#175](https://github.com/davep/oldnews/pull/175))
+
 ## v1.2.0
 
 **Released: 2026-02-13**
