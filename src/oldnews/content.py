@@ -109,9 +109,12 @@ async def download_content_of(article: Article) -> str | NoContent:
     except (RequestError, HTTPStatusError) as error:
         return NoContent(str(error))
 
-    return convert(
-        await _filter_content(article, article_content),
-        ConversionOptions(extract_metadata=False, skip_images=True),
+    return (
+        convert(
+            await _filter_content(article, article_content),
+            ConversionOptions(extract_metadata=False, skip_images=True),
+        )["content"]
+        or ""
     )
 
 
