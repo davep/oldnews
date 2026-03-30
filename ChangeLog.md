@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v1.3.0
 
-**Released: WiP**
+**Released: 2026-03-30**
 
 - The work to mark an article as read or unread is now only done if it will
   swap the status of the article.
