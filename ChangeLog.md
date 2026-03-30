@@ -7,6 +7,8 @@
 - The work to mark an article as read or unread is now only done if it will
   swap the status of the article.
   ([#175](https://github.com/davep/oldnews/pull/175))
+- Fixed a crash when viewing an article due to [an API change in
+  `html_to_markdown`](https://github.com/kreuzberg-dev/html-to-markdown/releases/tag/v3.0.0).
 
 ## v1.2.0
 
