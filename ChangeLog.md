@@ -1,8 +1,8 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v1.4.0
 
-**Released: WiP**
+**Released: 2026-04-14**
 
 - Added `JumpToSubscriptions`, `JumpToArticles` and `JumpToArticle` commands
   for quickly jumping between the 3 main panels.
