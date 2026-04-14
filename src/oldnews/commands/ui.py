@@ -28,7 +28,7 @@ class JumpToSubscriptions(Command):
 
 ##############################################################################
 class JumpToArticles(Command):
-    """Jump to the articles panel (if it's available)"""
+    """Jump to the articles panel"""
 
     BINDING_KEY = "2"
 
@@ -36,7 +36,7 @@ class JumpToArticles(Command):
 ##############################################################################
 #
 class JumpToArticle(Command):
-    """Jump to the article panel (if it's available)"""
+    """Jump to the article panel"""
 
     BINDING_KEY = "3"
 
