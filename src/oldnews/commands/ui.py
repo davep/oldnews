@@ -6,6 +6,13 @@ from textual_enhanced.commands import Command
 
 
 ##############################################################################
+class Escape(Command):
+    """Back out through the panes, or exit the app if the navigation pane has focus"""
+
+    BINDING_KEY = "escape, q"
+
+
+##############################################################################
 class ToggleShowAll(Command):
     """Toggle between showing all and showing only unread"""
 

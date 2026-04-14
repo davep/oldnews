@@ -26,7 +26,6 @@ from .marking import (
     MarkUnread,
 )
 from .navigation import (
-    Escape,
     Next,
     NextUnread,
     Previous,
@@ -37,6 +36,7 @@ from .opening import (
     OpenHomePage,
 )
 from .ui import (
+    Escape,
     JumpToArticle,
     JumpToArticles,
     JumpToSubscriptions,
