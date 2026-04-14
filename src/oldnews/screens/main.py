@@ -322,14 +322,16 @@ class Main(EnhancedScreen[None]):
             # but okay let's be defensive... (when I can come up with a nice
             # little MRE I'll report it).
             return True
-        if action in (
-            OpenArticle.action_name(),
-            CopyArticleToClipboard.action_name(),
-            JumpToArticle.action_name(),
-        ):
+        if action in (OpenArticle.action_name(), CopyArticleToClipboard.action_name()):
             return self.article is not None
         if action == JumpToArticles.action_name():
-            return bool(self.articles)
+            return bool(self.articles) and not self.article_list.has_focus
+        if action == JumpToSubscriptions.action_name():
+            return not self.navigation.has_focus
+        if action == JumpToArticle.action_name():
+            return (
+                self.article is not None and not self.article_content.has_focus_within
+            )
         if action in (
             OpenHomePage.action_name(),
             CopyFeedToClipboard.action_name(),

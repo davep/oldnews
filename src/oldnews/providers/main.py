@@ -64,7 +64,7 @@ class MainCommands(CommandsProvider):
         yield from self.maybe(Information)
         yield from self.maybe(JumpToArticle)
         yield from self.maybe(JumpToArticles)
-        yield JumpToSubscriptions()
+        yield from self.maybe(JumpToSubscriptions)
         yield from self.maybe(MarkAllRead)
         yield from self.maybe(MarkRead)
         yield from self.maybe(MarkUnread)
