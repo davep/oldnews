@@ -34,7 +34,6 @@ class JumpToArticles(Command):
 
 
 ##############################################################################
-#
 class JumpToArticle(Command):
     """Jump to the article panel"""
 
