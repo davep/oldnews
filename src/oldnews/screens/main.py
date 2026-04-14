@@ -62,6 +62,9 @@ from ..commands import (
     CopyHomePageToClipboard,
     Escape,
     Information,
+    JumpToArticle,
+    JumpToArticles,
+    JumpToSubscriptions,
     MarkAllRead,
     MarkRead,
     MarkUnread,
@@ -195,6 +198,9 @@ class Main(EnhancedScreen[None]):
         CopyHomePageToClipboard,
         Escape,
         Information,
+        JumpToArticle,
+        JumpToArticles,
+        JumpToSubscriptions,
         MarkAllRead,
         MarkRead,
         MarkUnread,
@@ -316,8 +322,14 @@ class Main(EnhancedScreen[None]):
             # but okay let's be defensive... (when I can come up with a nice
             # little MRE I'll report it).
             return True
-        if action in (OpenArticle.action_name(), CopyArticleToClipboard.action_name()):
+        if action in (
+            OpenArticle.action_name(),
+            CopyArticleToClipboard.action_name(),
+            JumpToArticle.action_name(),
+        ):
             return self.article is not None
+        if action == JumpToArticles.action_name():
+            return bool(self.articles)
         if action in (
             OpenHomePage.action_name(),
             CopyFeedToClipboard.action_name(),
@@ -581,6 +593,20 @@ class Main(EnhancedScreen[None]):
             self.navigation.focus()
         elif self.focused is self.navigation:
             self.app.exit()
+
+    def action_jump_to_subscriptions_command(self) -> None:
+        """Jump to the subscriptions list in the navigation."""
+        self.navigation.focus()
+
+    def action_jump_to_articles_command(self) -> None:
+        """Jump to the article list."""
+        if self.articles:
+            self.article_list.focus()
+
+    def action_jump_to_article_command(self) -> None:
+        """Jump to the current article."""
+        if self.article:
+            self.article_content.focus()
 
     def action_next_command(self) -> None:
         """Go to the next article in the currently-viewed category."""

@@ -19,4 +19,26 @@ class ToggleCompact(Command):
     BINDING_KEY = "f5"
 
 
+##############################################################################
+class JumpToSubscriptions(Command):
+    """Jump to the subscriptions panel"""
+
+    BINDING_KEY = "1"
+
+
+##############################################################################
+class JumpToArticles(Command):
+    """Jump to the articles panel (if it's available)"""
+
+    BINDING_KEY = "2"
+
+
+##############################################################################
+#
+class JumpToArticle(Command):
+    """Jump to the article panel (if it's available)"""
+
+    BINDING_KEY = "3"
+
+
 ### ui.py ends here

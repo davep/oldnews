@@ -37,6 +37,9 @@ from .opening import (
     OpenHomePage,
 )
 from .ui import (
+    JumpToArticle,
+    JumpToArticles,
+    JumpToSubscriptions,
     ToggleCompact,
     ToggleShowAll,
 )
@@ -51,6 +54,9 @@ __all__ = [
     "CopyHomePageToClipboard",
     "Escape",
     "Information",
+    "JumpToArticle",
+    "JumpToArticles",
+    "JumpToSubscriptions",
     "MarkAllRead",
     "MarkRead",
     "MarkUnread",
