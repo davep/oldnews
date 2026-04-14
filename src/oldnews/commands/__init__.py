@@ -26,7 +26,6 @@ from .marking import (
     MarkUnread,
 )
 from .navigation import (
-    Escape,
     Next,
     NextUnread,
     Previous,
@@ -37,6 +36,10 @@ from .opening import (
     OpenHomePage,
 )
 from .ui import (
+    Escape,
+    JumpToArticle,
+    JumpToArticles,
+    JumpToSubscriptions,
     ToggleCompact,
     ToggleShowAll,
 )
@@ -51,6 +54,9 @@ __all__ = [
     "CopyHomePageToClipboard",
     "Escape",
     "Information",
+    "JumpToArticle",
+    "JumpToArticles",
+    "JumpToSubscriptions",
     "MarkAllRead",
     "MarkRead",
     "MarkUnread",

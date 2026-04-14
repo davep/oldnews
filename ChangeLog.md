@@ -1,5 +1,13 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- Added `JumpToSubscriptions`, `JumpToArticles` and `JumpToArticle` commands
+  for quickly jumping between the 3 main panels.
+  ([#197](https://github.com/davep/oldnews/pull/197))
+
 ## v1.3.0
 
 **Released: 2026-03-30**
