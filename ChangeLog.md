@@ -4,9 +4,20 @@
 
 **Released: WiP**
 
+- Added `JumpToSubscriptions`, `JumpToArticles` and `JumpToArticle` commands
+  for quickly jumping between the 3 main panels.
+  ([#197](https://github.com/davep/oldnews/pull/197))
+
+## v1.3.0
+
+**Released: 2026-03-30**
+
 - The work to mark an article as read or unread is now only done if it will
   swap the status of the article.
   ([#175](https://github.com/davep/oldnews/pull/175))
+- Fixed a crash when viewing an article due to [an API change in
+  `html_to_markdown`](https://github.com/kreuzberg-dev/html-to-markdown/releases/tag/v3.0.0).
+  ([#191](https://github.com/davep/oldnews/pull/191))
 
 ## v1.2.0
 

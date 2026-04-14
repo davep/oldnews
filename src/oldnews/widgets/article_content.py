@@ -130,7 +130,9 @@ class ArticleContent(Vertical):
             else:
                 self.link.visible = True
                 self.link.update(self.article.html_url)
-            await self.markdown.update(convert(self.article.summary.content))
+            await self.markdown.update(
+                convert(self.article.summary.content)["content"] or ""
+            )
             self.content.scroll_home(animate=False)
             self.post_message(self.Displayed(self.article))
         self.set_class(self.article is not None, "--has-article")

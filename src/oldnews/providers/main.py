@@ -20,6 +20,9 @@ from ..commands import (
     CopyHomePageToClipboard,
     Escape,
     Information,
+    JumpToArticle,
+    JumpToArticles,
+    JumpToSubscriptions,
     MarkAllRead,
     MarkRead,
     MarkUnread,
@@ -59,6 +62,9 @@ class MainCommands(CommandsProvider):
         yield Escape()
         yield Help()
         yield from self.maybe(Information)
+        yield from self.maybe(JumpToArticle)
+        yield from self.maybe(JumpToArticles)
+        yield from self.maybe(JumpToSubscriptions)
         yield from self.maybe(MarkAllRead)
         yield from self.maybe(MarkRead)
         yield from self.maybe(MarkUnread)
