@@ -1,5 +1,12 @@
 # OldNews ChangeLog
 
+## v1.4.1
+
+**Released: 2026-04-25**
+
+- Pinned `html_to_markdown` to v3.0.0 for now, as the API seems to keep
+  changing and breaking.
+
 ## v1.4.0
 
 **Released: 2026-04-14**
