@@ -5,7 +5,7 @@
 **Released: 2026-04-25**
 
 - Pinned `html_to_markdown` to v3.0.0 for now, as the API seems to keep
-  changing and breaking.
+  changing and breaking. ([#206](https://github.com/davep/oldnews/pull/206))
 
 ## v1.4.0
 
