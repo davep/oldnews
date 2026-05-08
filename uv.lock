@@ -1507,11 +1507,11 @@ wheels = [
 
 [[package]]
 name = "types-pyperclip"
-version = "1.11.0.20260408"
+version = "1.11.0.20260508"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/37/69/e3b6e85843b4b87a6ce165ace29631a76faa6438ef5b032a6a789cf9d36c/types_pyperclip-1.11.0.20260408.tar.gz", hash = "sha256:bee46a28fb7d0280f401c91dacd5c0a72b430580361955b263466bf65832a138", size = 7291, upload-time = "2026-04-08T04:30:33.596Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7a/ab/189f37a135df54686543ab99e8e1e6f8892efedc389beb80a72e038416e9/types_pyperclip-1.11.0.20260508.tar.gz", hash = "sha256:e5dafdc929874f3f6bf495171d06cbc22483954a9ac0699ca53abbf9eadc592d", size = 7323, upload-time = "2026-05-08T04:48:18.355Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4b/4a/89d0e4ac8b24e97f8008ffac6c2d37c6f7db931becb26ec70c170cb47191/types_pyperclip-1.11.0.20260408-py3-none-any.whl", hash = "sha256:37fdeae3b2d51cc6915da58034020e31f05bc43899699d07c998f7dacb1b2a16", size = 7635, upload-time = "2026-04-08T04:30:32.825Z" },
+    { url = "https://files.pythonhosted.org/packages/d2/61/02207b51ce9f3967d52e72749118d77a730cc29acad1ad623aa9b49a4e2f/types_pyperclip-1.11.0.20260508-py3-none-any.whl", hash = "sha256:4c55f5d7d2224804c54d936881a0e53d8e41b909a64611333662eb04e9bfd1e4", size = 7628, upload-time = "2026-05-08T04:48:17.593Z" },
 ]
 
 [[package]]
