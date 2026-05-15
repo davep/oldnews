@@ -453,14 +453,9 @@ wheels = [
 
 [[package]]
 name = "html-to-markdown"
-version = "3.0.0"
+version = "3.4.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/72/89/fb576d72ef669684cfedc6c0a15f6be62d37a4d13ce2bff992c6015b152b/html_to_markdown-3.0.0.tar.gz", hash = "sha256:8ab372c66d353cddd452a7b5b96e70652835ed5ebab5eb6c41ebb64fc45ca94b", size = 263752, upload-time = "2026-03-30T16:05:51.019Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/7a/07798d0a25a3b267b09aebd2f7ae2396e42ead00caee5ddbffe2f2f37596/html_to_markdown-3.0.0-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:6eef5111a89b5c4f7da8f173789ae0261c2c5eff950b539a38e6779351b80f49", size = 9137925, upload-time = "2026-03-30T16:05:43.639Z" },
-    { url = "https://files.pythonhosted.org/packages/f9/12/6b92c41a79cc6d05844f2b190559057ed00e6dd0a9f969ebbaf1f4a7015f/html_to_markdown-3.0.0-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:b7d57e82722ce2587b98a77bbf8c878aa5c1a5adf358754a774a99df4968cf02", size = 9979528, upload-time = "2026-03-30T16:05:46.228Z" },
-    { url = "https://files.pythonhosted.org/packages/1f/af/f142bb57aeb549cfc3ba7021dbe8dd7f3886c09e5f5c9bfef81d576d9583/html_to_markdown-3.0.0-cp310-abi3-win_amd64.whl", hash = "sha256:8bd542675cf0d6875e2f365143b4f7c5993a3682a0bd1e65268c06dbbf704233", size = 9609908, upload-time = "2026-03-30T16:05:48.647Z" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/ae/30/a4aa8f9c9febf6096b0d14e3fa3559a8e100802fa81bd67deb8a8031c14d/html_to_markdown-3.4.0.tar.gz", hash = "sha256:3e7e0813cc871c7abe2d5ea927e9038374bea339e8dd72f3b4c2f1c0b8e51672", size = 283028, upload-time = "2026-05-09T11:07:49.784Z" }
 
 [[package]]
 name = "httpcore"
@@ -1061,7 +1056,7 @@ dev = [
 requires-dist = [
     { name = "bagofstuff", specifier = ">=0.2.0" },
     { name = "beautifulsoup4", specifier = ">=4.14.3" },
-    { name = "html-to-markdown", specifier = "==3.0.0" },
+    { name = "html-to-markdown", specifier = "==3.4.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "humanize", specifier = ">=4.15.0" },
     { name = "oldas", specifier = ">=1.0.0" },
