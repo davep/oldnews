@@ -16,6 +16,8 @@ from html_to_markdown import convert
 if TYPE_CHECKING:
     # Workaround for what seems to be some weirdness with the type of
     # ConversionOptions in the library.
+    #
+    # https://github.com/kreuzberg-dev/html-to-markdown/issues/375
     from html_to_markdown._html_to_markdown import ConversionOptions
 else:
     from html_to_markdown import ConversionOptions
