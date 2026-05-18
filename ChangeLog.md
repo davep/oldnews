@@ -1,5 +1,11 @@
 # OldNews ChangeLog
 
+## Unreleased
+
+**Released: WiP**
+
+- Opened up the pin for `html_to_markdown`, moving to v3.4.0 or later.
+
 ## v1.4.1
 
 **Released: 2026-04-25**
