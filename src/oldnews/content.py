@@ -3,6 +3,7 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 ##############################################################################
 # BeautifulSoup imports.
@@ -10,7 +11,16 @@ from bs4 import BeautifulSoup
 
 ##############################################################################
 # html-to-markdown imports.
-from html_to_markdown import ConversionOptions, convert
+from html_to_markdown import convert
+
+if TYPE_CHECKING:
+    # Workaround for what seems to be some weirdness with the type of
+    # ConversionOptions in the library.
+    #
+    # https://github.com/kreuzberg-dev/html-to-markdown/issues/375
+    from html_to_markdown._html_to_markdown import ConversionOptions
+else:
+    from html_to_markdown import ConversionOptions
 
 ##############################################################################
 # httpx imports.
@@ -113,7 +123,7 @@ async def download_content_of(article: Article) -> str | NoContent:
         convert(
             await _filter_content(article, article_content),
             ConversionOptions(extract_metadata=False, skip_images=True),
-        )["content"]
+        ).content
         or ""
     )
 
