@@ -1,10 +1,11 @@
 # OldNews ChangeLog
 
-## Unreleased
+## v1.4.2
 
-**Released: WiP**
+**Released: 2026-05-18**
 
 - Opened up the pin for `html_to_markdown`, moving to v3.4.0 or later.
+  ([#215](https://github.com/davep/oldnews/pull/215))
 
 ## v1.4.1
 
