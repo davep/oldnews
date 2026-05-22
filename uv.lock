@@ -1509,14 +1509,14 @@ wheels = [
 
 [[package]]
 name = "textual-enhanced"
-version = "1.4.0"
+version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "textual" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d5/ec/0f3ac6921887a5b1f4a2869bc4819effd6bb7b07c0533f1c2c993c17bdcc/textual_enhanced-1.4.0.tar.gz", hash = "sha256:5bd17662e66417b44c7954bbc72c42fc97e88d27df840a1a16b5738a47a00105", size = 15347, upload-time = "2026-04-03T15:41:57.139Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/90/5f/01369681adf4e33e2d393e94093e25b8d0d6ce2791b204b67ddbb7cdecbd/textual_enhanced-1.5.0.tar.gz", hash = "sha256:acd77b29f78e213f0ca1a677baf99d5ed834e9d065aba7dd07ab7b31692db993", size = 15446, upload-time = "2026-05-22T18:21:29.683Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/01/09/146cc8dbf7ce224f42111b82b8c72a1383faedc3ed27f1da5481a046ba96/textual_enhanced-1.4.0-py3-none-any.whl", hash = "sha256:a37d7bf55159d6433e9ab6d87564ac712a4b6198fb77f6302049b93d9e143adc", size = 23501, upload-time = "2026-04-03T15:41:58.226Z" },
+    { url = "https://files.pythonhosted.org/packages/4f/72/55d82f77fa02d2bb445ec949156e4616e6e18beb817c3b25ebff931b3350/textual_enhanced-1.5.0-py3-none-any.whl", hash = "sha256:48c5ff1b8e35b290c2b829dcb1d2e0f238616f99347064ce3c9e6fd68ff22435", size = 23625, upload-time = "2026-05-22T18:21:27.966Z" },
 ]
 
 [[package]]
