@@ -3,7 +3,6 @@
 ##############################################################################
 # Python imports.
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 ##############################################################################
 # BeautifulSoup imports.
@@ -11,16 +10,7 @@ from bs4 import BeautifulSoup
 
 ##############################################################################
 # html-to-markdown imports.
-from html_to_markdown import convert
-
-if TYPE_CHECKING:
-    # Workaround for what seems to be some weirdness with the type of
-    # ConversionOptions in the library.
-    #
-    # https://github.com/kreuzberg-dev/html-to-markdown/issues/375
-    from html_to_markdown._html_to_markdown import ConversionOptions
-else:
-    from html_to_markdown import ConversionOptions
+from html_to_markdown import ConversionOptions, convert
 
 ##############################################################################
 # httpx imports.
